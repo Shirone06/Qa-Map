@@ -770,19 +770,35 @@ function submitAdd() {
 }
 
 // ── แก้ไข/ลบ ─────────────────────────────────────────────
+// ── lookup helpers (ใช้ code แทน index เพื่อป้องกัน index ผิดหลัง Firebase reload) ──
+function findUnitByCode(code) {
+  for (let mi = 0; mi < markers.length; mi++) {
+    const d = markers[mi]._raw;
+    if (d.units) {
+      for (let ui = 0; ui < d.units.length; ui++) {
+        if (d.units[ui].code === code) return { mi, ui, m: markers[mi], d, u: d.units[ui] };
+      }
+    } else {
+      if (d.code === code) return { mi, ui: -1, m: markers[mi], d, u: d };
+    }
+  }
+  return null;
+}
+
 function renderMgmtList(q) {
   q = q.toLowerCase().trim();
   const items = [];
-  markers.forEach((m,mi) => {
+  markers.forEach((m) => {
     const d = m._raw;
-    if (d.units) d.units.forEach((u,ui) => items.push(Object.assign({},u,{mi,ui})));
-    else items.push(Object.assign({},d,{mi,ui:-1}));
+    if (d.units) d.units.forEach(u => items.push({ code:u.code, name:u.name, qa:u.qa }));
+    else items.push({ code:d.code, name:d.name, qa:d.qa });
   });
   const filtered = q ? items.filter(i=>(i.code||'').toLowerCase().includes(q)||(i.name||'').toLowerCase().includes(q)) : items;
   const container = document.getElementById('mgmtList');
   if (!filtered.length) { container.innerHTML='<div style="padding:14px;color:#718096;text-align:center">ไม่พบข้อมูล</div>'; return; }
   container.innerHTML = filtered.map(i => {
     const c = QA_COLOR[i.qa]||'#999';
+    const safeCode = (i.code||'').replace(/'/g,"\\'");
     return '<div class="mgmt-item">'
       + '<div class="mgmt-info">'
       + '<div class="mgmt-code" style="color:' + c + '">' + (i.code||'') + '</div>'
@@ -790,83 +806,110 @@ function renderMgmtList(q) {
       + '<div class="mgmt-qa">' + (i.qa||'') + '</div>'
       + '</div>'
       + '<div class="mgmt-actions">'
-      + '<button class="btn-edit-sm" onclick="openEditDetail(' + i.mi + ',' + i.ui + ')">✏️</button>'
-      + '<button class="btn-del-sm"  onclick="deleteUnit(' + i.mi + ',' + i.ui + ')">🗑</button>'
+      + '<button class="btn-edit-sm" onclick="openEditDetail(\'' + safeCode + '\')">✏️</button>'
+      + '<button class="btn-del-sm"  onclick="deleteUnit(\'' + safeCode + '\')">🗑</button>'
       + '</div>'
       + '</div>';
   }).join('');
 }
 
-function openEditDetail(mi, ui) {
-  const m=markers[mi]; const d=m._raw;
-  const u = ui===-1 ? d : d.units[ui];
-  document.getElementById('e_mi').value=mi; document.getElementById('e_ui').value=ui;
-  document.getElementById('e_code').value=u.code||'';
-  document.getElementById('e_name').value=u.name||'';
-  document.getElementById('e_qa').value=u.qa||'Qa1';
-  document.getElementById('e_count').value=u.count||0;
-  document.getElementById('e_lat').value=u.lat||d.lat||'';
-  document.getElementById('e_lng').value=u.lng||d.lng||'';
-  document.getElementById('e_link').value=u.link||'';
-  setExtra('e',u);
+function openEditDetail(code) {
+  const found = findUnitByCode(code);
+  if (!found) { showToast('⚠️ ไม่พบข้อมูล code: ' + code); return; }
+  const { mi, ui, d, u } = found;
+  document.getElementById('e_mi').value = mi;
+  document.getElementById('e_ui').value = ui;
+  // เก็บ code ต้นฉบับไว้ใน hidden field เผื่อใช้ fallback
+  document.getElementById('e_mi').dataset.origCode = code;
+  document.getElementById('e_code').value  = u.code  || '';
+  document.getElementById('e_name').value  = u.name  || '';
+  document.getElementById('e_qa').value    = u.qa    || 'Qa1';
+  document.getElementById('e_count').value = u.count || 0;
+  document.getElementById('e_lat').value   = u.lat   || d.lat || '';
+  document.getElementById('e_lng').value   = u.lng   || d.lng || '';
+  document.getElementById('e_link').value  = u.link  || '';
+  setExtra('e', u);
   closeModal('mgmtModal');
-  document.getElementById('editDetailModal').classList.add('open');
+  const modal = document.getElementById('editDetailModal');
+  modal.classList.add('open');
+  // scroll modal content ขึ้นบนสุด
+  setTimeout(() => { const m = modal.querySelector('.modal'); if(m) m.scrollTop = 0; }, 50);
 }
 
 function submitEdit() {
-  const mi    = parseInt(document.getElementById('e_mi').value);
-  const ui    = parseInt(document.getElementById('e_ui').value);
+  // ลอง lookup ด้วย code ต้นฉบับก่อน (กันกรณี Firebase reload ทำให้ index เปลี่ยน)
+  const origCode = document.getElementById('e_mi').dataset.origCode || '';
+  let mi  = parseInt(document.getElementById('e_mi').value);
+  let ui  = parseInt(document.getElementById('e_ui').value);
+
+  if (origCode) {
+    const found = findUnitByCode(origCode);
+    if (found) { mi = found.mi; ui = found.ui; }
+  }
+
   const code  = document.getElementById('e_code').value.trim();
   const name  = document.getElementById('e_name').value.trim();
   const qa    = document.getElementById('e_qa').value;
-  const count = parseInt(document.getElementById('e_count').value)||0;
+  const count = parseInt(document.getElementById('e_count').value) || 0;
   const lat   = parseFloat(document.getElementById('e_lat').value);
   const lng   = parseFloat(document.getElementById('e_lng').value);
   const link  = document.getElementById('e_link').value.trim();
   const extra = getExtra('e');
-  if (!code||!name||isNaN(lat)||isNaN(lng)) { showToast('⚠️ กรอกข้อมูลให้ครบ'); return; }
-  const m=markers[mi]; const d=m._raw;
-  if (ui===-1) {
-    Object.assign(d,{code,name,qa,count,lat,lng,link},extra);
+
+  // validation พร้อมบอก field ที่ผิด
+  if (!code) { showToast('⚠️ กรุณากรอก รหัส'); document.getElementById('e_code').focus(); return; }
+  if (!name) { showToast('⚠️ กรุณากรอก ชื่อหน่วยงาน'); document.getElementById('e_name').focus(); return; }
+  if (isNaN(lat)) { showToast('⚠️ Latitude ไม่ถูกต้อง'); document.getElementById('e_lat').focus(); return; }
+  if (isNaN(lng)) { showToast('⚠️ Longitude ไม่ถูกต้อง'); document.getElementById('e_lng').focus(); return; }
+
+  if (isNaN(mi) || mi < 0 || mi >= markers.length) { showToast('⚠️ ไม่พบ marker กรุณาปิดแล้วเปิดใหม่'); return; }
+
+  const m = markers[mi]; const d = m._raw;
+  if (ui === -1) {
+    Object.assign(d, {code, name, qa, count, lat, lng, link}, extra);
     m.setLatLng([lat,lng]); m.setIcon(makeIconForData(d)); m._qaList=[qa]; m._size=getSizeFromCount(d.count);
-    m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},d), true) + '</div>',{maxWidth:300});
+    m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},d), true) + '</div>', {maxWidth:300});
   } else {
-    Object.assign(d.units[ui],{code,name,qa,count,link},extra);
+    Object.assign(d.units[ui], {code, name, qa, count, link}, extra);
     d.lat=lat; d.lng=lng; m.setLatLng([lat,lng]);
     m.setIcon(makeIconForData(d)); m._qaList=d.units.map(u=>u.qa);
-    const pop = d.units.length>1
+    const pop = d.units.length > 1
       ? '<div class="my-popup"><div class="pop-location">📍 ' + d.units.length + ' หน่วยงาน</div>' + d.units.map(u=>renderUnit(u,false)).join('') + '</div>'
-      : '<div class="my-popup">' + renderUnit(d.units[0],false) + '</div>';
-    m.bindPopup(pop,{maxWidth:320});
+      : '<div class="my-popup">' + renderUnit(d.units[0], false) + '</div>';
+    m.bindPopup(pop, {maxWidth:320});
   }
   rebuildSearchIndex();
   closeModal('editDetailModal');
-  map.setView([lat,lng],15,{animate:true}); setTimeout(()=>m.openPopup(),400);
+  map.setView([lat,lng], 15, {animate:true});
+  setTimeout(() => m.openPopup(), 400);
   saveData();
   showToast('💾 บันทึกแล้ว!');
 }
 
-function deleteUnit(mi, ui) {
-  const m=markers[mi]; const d=m._raw; let code='';
-  if (ui===-1) {
-    code=d.code; map.removeLayer(m); markers.splice(mi,1); DATA.splice(DATA.indexOf(d),1);
+function deleteUnit(code) {
+  const found = findUnitByCode(code);
+  if (!found) { showToast('⚠️ ไม่พบ: ' + code); return; }
+  const { mi, ui, m, d } = found;
+  if (ui === -1) {
+    map.removeLayer(m); markers.splice(mi, 1); DATA.splice(DATA.indexOf(d), 1);
   } else {
-    code=d.units[ui].code; d.units.splice(ui,1);
-    if (!d.units.length) { map.removeLayer(m); markers.splice(mi,1); DATA.splice(DATA.indexOf(d),1); }
-    else if (d.units.length===1) {
-      const u=d.units[0]; Object.assign(d,u); delete d.units;
+    d.units.splice(ui, 1);
+    if (!d.units.length) {
+      map.removeLayer(m); markers.splice(mi, 1); DATA.splice(DATA.indexOf(d), 1);
+    } else if (d.units.length === 1) {
+      const u = d.units[0]; Object.assign(d, u); delete d.units;
       m.setIcon(makeIconForData(d)); m._qaList=[d.qa]; m._size=getSizeFromCount(d.count);
-      m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},d), true) + '</div>',{maxWidth:300});
+      m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},d), true) + '</div>', {maxWidth:300});
     } else {
       m.setIcon(makeIconForData(d)); m._qaList=d.units.map(u=>u.qa);
-      m.bindPopup('<div class="my-popup"><div class="pop-location">📍 ' + d.units.length + ' หน่วยงาน</div>' + d.units.map(u=>renderUnit(u,false)).join('') + '</div>',{maxWidth:320});
+      m.bindPopup('<div class="my-popup"><div class="pop-location">📍 ' + d.units.length + ' หน่วยงาน</div>' + d.units.map(u=>renderUnit(u,false)).join('') + '</div>', {maxWidth:320});
     }
   }
   rebuildSearchIndex(); updateCount();
-  document.getElementById('totalBadge').textContent=markers.length+' จุด';
+  document.getElementById('totalBadge').textContent = markers.length + ' จุด';
   renderMgmtList(document.getElementById('mgmtSearch').value);
   saveData();
-  showToast('🗑 ลบ '+code+' แล้ว');
+  showToast('🗑 ลบ ' + code + ' แล้ว');
 }
 
 // ── Export HTML ───────────────────────────────────────────
