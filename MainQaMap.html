@@ -117,50 +117,6 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
 .save-indicator{position:fixed;top:12px;right:12px;background:#2d4a2d;border:1px solid #48bb78;border-radius:20px;padding:4px 12px;font-size:11px;color:#48bb78;z-index:9998;opacity:0;transition:opacity .3s;pointer-events:none}
 .save-indicator.show{opacity:1}
 </style>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAc7_R3-9M5S3eNoJ7bzLfs4YGNFKi0yAU",
-  authDomain: "qa-map-e3f27.firebaseapp.com",
-  projectId: "qa-map-e3f27",
-  storageBucket: "qa-map-e3f27.firebasestorage.app",
-  messagingSenderId: "416522148616",
-  appId: "1:416522148616:web:86b0452bb837cf09d2eabd"
-};
-
-const _app = initializeApp(firebaseConfig);
-const _db  = getFirestore(_app);
-window._db     = _db;
-window._col    = (name) => collection(_db, name);
-window._setDoc = (ref, data) => setDoc(ref, data);
-window._docRef = (name, id) => doc(_db, name, id);
-window._getDocs = getDocs;
-
-// โหลดข้อมูลจาก Firestore ก่อน แล้วค่อย init map
-getDocs(collection(_db, 'units')).then(snap => {
-  if (!snap.empty) {
-    DATA.length = 0;
-    snap.forEach(d => DATA.push(d.data()));
-    console.log('Firebase loaded:', DATA.length, 'items');
-  } else {
-    // Firestore ว่าง → อัปโหลดข้อมูลเริ่มต้น
-    console.log('Firestore empty, uploading initial data...');
-    DATA.forEach(d => {
-      const key = d.units
-        ? 'multi_' + String(d.lat).replace(/\./g,'_') + '_' + String(d.lng).replace(/\./g,'_')
-        : (d.code||'x').replace(/[^a-zA-Z0-9ก-๙_-]/g,'_');
-      setDoc(doc(_db, 'units', key), JSON.parse(JSON.stringify(d)));
-    });
-  }
-}).catch(e => console.warn('Firebase load error:', e))
-.finally(() => {
-  window._fbReady = true;
-  document.getElementById('loadingOverlay').style.display = 'none';
-  window._initMap();
-});
-</script>
 </head>
 <body>
 <div class="header">
@@ -557,13 +513,14 @@ const STORAGE_KEY = 'qa_map_v4_' + encodeURIComponent(window.location.pathname);
 
 function saveData() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA)); } catch(e) {}
+  // บันทึก Firestore
   if (window._fbReady) {
     DATA.forEach(d => {
       const key = d.units
-        ? 'multi_' + String(d.lat).replace(/\./g,'_') + '_' + String(d.lng).replace(/\./g,'_')
-        : (d.code||'x').replace(/[^a-zA-Z0-9ก-๙_-]/g,'_');
+        ? 'multi_' + String(d.lat).replace(/[^0-9]/g,'') + String(d.lng).replace(/[^0-9]/g,'')
+        : (d.code||'x').replace(/[^a-zA-Z0-9_-]/g,'_');
       window._setDoc(window._docRef('units', key), JSON.parse(JSON.stringify(d)))
-        .catch(e => console.warn('save error', key, e));
+        .catch(e => console.warn('save error', e));
     });
   }
   const ind = document.getElementById('saveInd');
@@ -572,35 +529,9 @@ function saveData() {
 }
 
 function mergeFromStorage() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return;
-    const saved = JSON.parse(raw);
-    // สร้าง lookup จาก code -> saved entry
-    const lookup = {};
-    saved.forEach(s => {
-      if (s.units) s.units.forEach(u => lookup[u.code] = u);
-      else lookup[s.code] = s;
-    });
-    // merge เข้า DATA
-    let count = 0;
-    DATA.forEach(d => {
-      const entries = d.units ? d.units : [d];
-      entries.forEach(e => {
-        if (lookup[e.code]) {
-          const sv = lookup[e.code];
-          ['count','qa','supervisor','supervisorPhone','clientName','clientPhone','note'].forEach(k => {
-            if (sv[k] !== undefined && sv[k] !== '') e[k] = sv[k];
-          });
-          count++;
-        }
-      });
-    });
-    if (count > 0) showToast('✅ โหลด Cache แล้ว (' + count + ' รายการ)');
-  } catch(e) {}
+  // ไม่ทำอะไร — Firebase จัดการแล้วผ่าน script ท้ายไฟล์
 }
 
-window._initMap = function() {
 // ── Map init ──────────────────────────────────────────────
 const map = L.map('map').setView([13.76, 100.5], 11);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
@@ -646,6 +577,9 @@ function renderUnit(u, showCoords) {
     ${u.link ? `<a class="pop-link" href="${u.link}" target="_blank">📍 Google Maps</a>` : ''}
   </div>`;
 }
+
+// โหลด cache ก่อนสร้าง markers
+mergeFromStorage();
 
 const markers = [];
 DATA.forEach(d => {
@@ -745,9 +679,7 @@ function updateCount() {
 }
 updateCount();
 
-// ── Search
-};
- ────────────────────────────────────────────────
+// ── Search ────────────────────────────────────────────────
 const searchIndex = [];
 function rebuildSearchIndex() {
   searchIndex.length = 0;
@@ -1011,11 +943,117 @@ function exportPDF() {
     const c=QA_COLOR[r.qa]||'#666';
     return `<tr><td style="text-align:center;color:#718096">${i+1}</td><td style="font-family:monospace;font-weight:700">${r.code}</td><td>${r.name}</td><td style="text-align:center"><span style="background:${c}20;color:${c};padding:1px 8px;border-radius:20px;font-size:10px;font-weight:700">${({Qa1:"พี่จุ๊",Qa2:"พี่รุ่ง",Qa3:"พี่เปิ้ล",Qa4:"พี่เอก"}[r.qa]||r.qa)}</span></td><td style="text-align:center">${r.count}</td><td>${r.supervisor}</td><td>${r.supervisorPhone}</td><td>${r.clientName}</td><td>${r.clientPhone}</td><td style="color:#718096">${r.note}</td></tr>`;
   }).join('');
-  const pdfHtml=`<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><title>รายงาน QA</title><style>@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap');*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Sarabun',sans-serif;font-size:11px;color:#2d3748;padding:20px}.header{border-bottom:3px solid #2b6cb0;padding-bottom:10px;margin-bottom:12px}.header h1{font-size:16px;font-weight:700;color:#1a365d}.header .sub{font-size:10px;color:#718096;margin-top:2px}.summary{display:flex;gap:10px;margin-bottom:12px}.sbox{background:#f7fafc;border:1px solid #e2e8f0;border-radius:6px;padding:6px 14px}.sbox .lbl{font-size:10px;color:#718096}.sbox .val{font-size:14px;font-weight:700;color:#2b6cb0}table{width:100%;border-collapse:collapse}thead tr{background:#2b6cb0;color:white}thead th{padding:6px 8px;text-align:left;font-size:10px;font-weight:700}tbody tr:nth-child(even){background:#f7fafc}tbody td{padding:5px 8px;border-bottom:1px solid #e2e8f0;font-size:10px;vertical-align:top}.footer{margin-top:10px;text-align:right;font-size:9px;color:#a0aec0}@media print{body{padding:10px}thead{display:table-header-group}tr{page-break-inside:avoid}}</style></head><body><div class="header"><h1>📋 รายงานหน่วยงาน QA</h1><div class="sub">QA: ${qaLabel} | ${today}</div></div><div class="summary"><div class="sbox"><div class="lbl">หน่วยงาน</div><div class="val">${rows.length} แห่ง</div></div><div class="sbox"><div class="lbl">🧹 แม่บ้านรวม</div><div class="val">${total.toLocaleString()} คน</div></div></div><table><thead><tr><th style="width:28px">#</th><th style="width:65px">รหัส</th><th>ชื่อหน่วยงาน</th><th style="width:50px">QA</th><th style="width:55px">แม่บ้าน</th><th style="width:90px">หัวหน้างาน</th><th style="width:85px">เบอร์หัวหน้า</th><th style="width:90px">ลูกค้า</th><th style="width:85px">เบอร์ลูกค้า</th><th>หมายเหตุ</th></tr></thead><tbody>${trs}</tbody></table><div class="footer">แผนที่หน่วยงาน QA | ${today}</div><script>window.onload=()=>window.print();<\/script></body></html>`;
+  const pdfHtml=`<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><title>รายงาน QA</title><style>@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap');*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Sarabun',sans-serif;font-size:11px;color:#2d3748;padding:20px}.header{border-bottom:3px solid #2b6cb0;padding-bottom:10px;margin-bottom:12px}.header h1{font-size:16px;font-weight:700;color:#1a365d}.header .sub{font-size:10px;color:#718096;margin-top:2px}.summary{display:flex;gap:10px;margin-bottom:12px}.sbox{background:#f7fafc;border:1px solid #e2e8f0;border-radius:6px;padding:6px 14px}.sbox .lbl{font-size:10px;color:#718096}.sbox .val{font-size:14px;font-weight:700;color:#2b6cb0}table{width:100%;border-collapse:collapse}thead tr{background:#2b6cb0;color:white}thead th{padding:6px 8px;text-align:left;font-size:10px;font-weight:700}tbody tr:nth-child(even){background:#f7fafc}tbody td{padding:5px 8px;border-bottom:1px solid #e2e8f0;font-size:10px;vertical-align:top}.footer{margin-top:10px;text-align:right;font-size:9px;color:#a0aec0}@media print{body{padding:10px}thead{display:table-header-group}tr{page-break-inside:avoid}}</style></head><body><div class="header"><h1>📋 รายงานหน่วยงาน QA</h1><div class="sub">QA: ${qaLabel} | ${today}</div></div><div class="summary"><div class="sbox"><div class="lbl">หน่วยงาน</div><div class="val">${rows.length} แห่ง</div></div><div class="sbox"><div class="lbl">🧹 แม่บ้านรวม</div><div class="val">${total.toLocaleString()} คน</div></div></div><table><thead><tr><th style="width:28px">#</th><th style="width:65px">รหัส</th><th>ชื่อหน่วยงาน</th><th style="width:50px">QA</th><th style="width:55px">แม่บ้าน</th><th style="width:90px">หัวหน้างาน</th><th style="width:85px">เบอร์หัวหน้า</th><th style="width:90px">ลูกค้า</th><th style="width:85px">เบอร์ลูกค้า</th><th>หมายเหตุ</th></tr></thead><tbody>${trs}</tbody></table><div class="footer">แผนที่หน่วยงาน QA | ${today}</div><script>window.onload=()=>window.print();<\/script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAc7_R3-9M5S3eNoJ7bzLfs4YGNFKi0yAU",
+  authDomain: "qa-map-e3f27.firebaseapp.com",
+  projectId: "qa-map-e3f27",
+  storageBucket: "qa-map-e3f27.firebasestorage.app",
+  messagingSenderId: "416522148616",
+  appId: "1:416522148616:web:86b0452bb837cf09d2eabd"
+};
+
+const _app = initializeApp(firebaseConfig);
+const _db  = getFirestore(_app);
+
+// expose ให้ main script ใช้ได้
+window._fbReady  = false;
+window._db       = _db;
+window._setDoc   = (ref, data) => setDoc(ref, data);
+window._docRef   = (name, id) => doc(_db, name, id);
+
+// โหลดข้อมูลจาก Firestore
+getDocs(collection(_db, 'units'))
+  .then(snap => {
+    if (!snap.empty) {
+      // มีข้อมูลใน Firestore → ใช้เลย
+      DATA.length = 0;
+      snap.forEach(d => DATA.push(d.data()));
+      console.log('✅ Firebase loaded:', DATA.length, 'items');
+    } else {
+      // Firestore ว่าง → อัปโหลดข้อมูลเริ่มต้น
+      console.log('📤 Uploading initial data...');
+      DATA.forEach(d => {
+        const key = d.units
+          ? 'multi_' + String(d.lat).replace(/[^0-9]/g,'') + String(d.lng).replace(/[^0-9]/g,'')
+          : (d.code||'x').replace(/[^a-zA-Z0-9_-]/g,'_');
+        setDoc(doc(_db, 'units', key), JSON.parse(JSON.stringify(d)));
+      });
+    }
+  })
+  .catch(e => console.warn('Firebase error:', e))
+  .finally(() => {
+    window._fbReady = true;
+    // ซ่อน loading
+    const ov = document.getElementById('loadingOverlay');
+    if (ov) ov.style.display = 'none';
+    // รีเฟรช markers ด้วยข้อมูลใหม่
+    if (typeof rebuildMarkers === 'function') rebuildMarkers();
+  });
+</script>
+
+</body></html>`;
   const blob=new Blob([pdfHtml],{type:'text/html;charset=utf-8'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.target='_blank'; a.click();
   showToast('📄 เปิดแล้ว กด Ctrl+P');
 }
 </script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAc7_R3-9M5S3eNoJ7bzLfs4YGNFKi0yAU",
+  authDomain: "qa-map-e3f27.firebaseapp.com",
+  projectId: "qa-map-e3f27",
+  storageBucket: "qa-map-e3f27.firebasestorage.app",
+  messagingSenderId: "416522148616",
+  appId: "1:416522148616:web:86b0452bb837cf09d2eabd"
+};
+
+const _app = initializeApp(firebaseConfig);
+const _db  = getFirestore(_app);
+
+// expose ให้ main script ใช้ได้
+window._fbReady  = false;
+window._db       = _db;
+window._setDoc   = (ref, data) => setDoc(ref, data);
+window._docRef   = (name, id) => doc(_db, name, id);
+
+// โหลดข้อมูลจาก Firestore
+getDocs(collection(_db, 'units'))
+  .then(snap => {
+    if (!snap.empty) {
+      // มีข้อมูลใน Firestore → ใช้เลย
+      DATA.length = 0;
+      snap.forEach(d => DATA.push(d.data()));
+      console.log('✅ Firebase loaded:', DATA.length, 'items');
+    } else {
+      // Firestore ว่าง → อัปโหลดข้อมูลเริ่มต้น
+      console.log('📤 Uploading initial data...');
+      DATA.forEach(d => {
+        const key = d.units
+          ? 'multi_' + String(d.lat).replace(/[^0-9]/g,'') + String(d.lng).replace(/[^0-9]/g,'')
+          : (d.code||'x').replace(/[^a-zA-Z0-9_-]/g,'_');
+        setDoc(doc(_db, 'units', key), JSON.parse(JSON.stringify(d)));
+      });
+    }
+  })
+  .catch(e => console.warn('Firebase error:', e))
+  .finally(() => {
+    window._fbReady = true;
+    // ซ่อน loading
+    const ov = document.getElementById('loadingOverlay');
+    if (ov) ov.style.display = 'none';
+    // รีเฟรช markers ด้วยข้อมูลใหม่
+    if (typeof rebuildMarkers === 'function') rebuildMarkers();
+  });
+</script>
+
 </body>
 </html>
