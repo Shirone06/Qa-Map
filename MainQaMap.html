@@ -121,387 +121,386 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
 </head>
 <body>
 <div class="header">
-  <div class="header-icon">🗺️</div>
-  <div><div class="header-title">แผนที่หน่วยงาน QA</div><div class="header-sub">คลิกหมุดเพื่อดูรายละเอียด</div></div>
-  <div class="hbadge" id="totalBadge">— จุด</div>
+  <div class="header-icon">🗺️</div>
+  <div><div class="header-title">แผนที่หน่วยงาน QA</div><div class="header-sub">คลิกหมุดเพื่อดูรายละเอียด</div></div>
+  <div class="hbadge" id="totalBadge">— จุด</div>
 </div>
 <div class="toolbar">
-  <button class="qa-btn active" data-qa="all"     onclick="filterQA('all')">ทั้งหมด</button>
-  <button class="qa-btn"        data-qa="Qa1"     onclick="filterQA('Qa1')">พี่จุ๊ (Qa1)</button>
-  <button class="qa-btn"        data-qa="Qa2"     onclick="filterQA('Qa2')">พี่รุ่ง (Qa2)</button>
-  <button class="qa-btn"        data-qa="Qa3"     onclick="filterQA('Qa3')">พี่เปิ้ล (Qa3)</button>
-  <button class="qa-btn"        data-qa="Ecs"     onclick="filterQA('Ecs')">Ecs</button>
-  <button class="qa-btn"        data-qa="Qa4"     onclick="filterQA('Qa4')">พี่เอก (Qa4)</button>
-  <button class="qa-btn"        data-qa="Qa5"     onclick="filterQA('Qa5')">Qa5</button>
-  <button class="qa-btn"        data-qa="แรงงาน"  onclick="filterQA('แรงงาน')">แรงงาน</button>
-  <div class="divider"></div>
-  <button class="size-btn active" data-size="all" onclick="filterSize('all')">ทุกขนาด</button>
-  <button class="size-btn" data-size="S"  onclick="filterSize('S')">S <span style="font-size:10px;opacity:.7">1-5</span></button>
-  <button class="size-btn" data-size="M"  onclick="filterSize('M')">M <span style="font-size:10px;opacity:.7">6-15</span></button>
-  <button class="size-btn" data-size="L"  onclick="filterSize('L')">L <span style="font-size:10px;opacity:.7">16-30</span></button>
-  <button class="size-btn" data-size="XL" onclick="filterSize('XL')">XL <span style="font-size:10px;opacity:.7">31+</span></button>
-  <div class="divider"></div>
-  <div class="search-wrap" id="searchWrap">
-    <input type="text" id="searchInput" placeholder="ค้นหารหัส / ชื่อหน่วยงาน..." oninput="onSearch(this.value)" autocomplete="off">
-    <span class="search-icon">🔍</span>
-    <div class="search-results" id="searchResults"></div>
-  </div>
-  <button class="add-btn"       onclick="openAddModal()">＋ เพิ่ม</button>
-  <button class="edit-btn-tool" onclick="openMgmtModal()">✏️ แก้ไข / ลบ</button>
-  <button class="export-btn"    onclick="exportHTML()">⬇ Export</button>
-  <button class="pdf-btn"       onclick="exportPDF()">📄 PDF</button>
-  <div class="stat">แสดง <span id="cnt">—</span> หมุด &nbsp;|&nbsp; 🧹 <span id="staffCnt">—</span> คน</div>
+  <button class="qa-btn active" data-qa="all"     onclick="filterQA('all')">ทั้งหมด</button>
+  <button class="qa-btn"        data-qa="Qa1"     onclick="filterQA('Qa1')">พี่จุ๊ (Qa1)</button>
+  <button class="qa-btn"        data-qa="Qa2"     onclick="filterQA('Qa2')">พี่รุ่ง (Qa2)</button>
+  <button class="qa-btn"        data-qa="Qa3"     onclick="filterQA('Qa3')">พี่เปิ้ล (Qa3)</button>
+  <button class="qa-btn"        data-qa="Ecs"     onclick="filterQA('Ecs')">Ecs</button>
+  <button class="qa-btn"        data-qa="Qa4"     onclick="filterQA('Qa4')">พี่เอก (Qa4)</button>
+  <button class="qa-btn"        data-qa="Qa5"     onclick="filterQA('Qa5')">Qa5</button>
+  <button class="qa-btn"        data-qa="แรงงาน"  onclick="filterQA('แรงงาน')">แรงงาน</button>
+  <div class="divider"></div>
+  <button class="size-btn active" data-size="all" onclick="filterSize('all')">ทุกขนาด</button>
+  <button class="size-btn" data-size="S"  onclick="filterSize('S')">S <span style="font-size:10px;opacity:.7">1-5</span></button>
+  <button class="size-btn" data-size="M"  onclick="filterSize('M')">M <span style="font-size:10px;opacity:.7">6-15</span></button>
+  <button class="size-btn" data-size="L"  onclick="filterSize('L')">L <span style="font-size:10px;opacity:.7">16-30</span></button>
+  <button class="size-btn" data-size="XL" onclick="filterSize('XL')">XL <span style="font-size:10px;opacity:.7">31+</span></button>
+  <div class="divider"></div>
+  <div class="search-wrap" id="searchWrap">
+    <input type="text" id="searchInput" placeholder="ค้นหารหัส / ชื่อหน่วยงาน..." oninput="onSearch(this.value)" autocomplete="off">
+    <span class="search-icon">🔍</span>
+    <div class="search-results" id="searchResults"></div>
+  </div>
+  <button class="add-btn"       onclick="openAddModal()">＋ เพิ่ม</button>
+  <button class="edit-btn-tool" onclick="openMgmtModal()">✏️ แก้ไข / ลบ</button>
+  <button class="export-btn"    onclick="exportHTML()">⬇ Export</button>
+  <button class="pdf-btn"       onclick="exportPDF()">📄 PDF</button>
+  <div class="stat">แสดง <span id="cnt">—</span> หมุด  |  🧹 <span id="staffCnt">—</span> คน</div>
 </div>
 <div id="loadingOverlay" style="position:fixed;inset:0;background:#0f1623;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px"><div style="font-size:32px">🔥</div><div style="color:#4299e1;font-size:15px;font-family:Sarabun,sans-serif;font-weight:700">กำลังโหลดข้อมูล...</div></div>
 <div class="map-wrap">
-  <div id="map"></div>
-  <div class="legend">
-    <h4>QA ผู้รับผิดชอบ</h4>
-    <div class="leg-item"><div class="leg-dot" style="background:#d69e2e"></div>พี่จุ๊ (Qa1)</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#38a169"></div>พี่รุ่ง (Qa2)</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#3182ce"></div>พี่เปิ้ล (Qa3)</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#805ad5"></div>Ecs</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#dd6b20"></div>แรงงาน</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#e53e3e"></div>พี่เอก (Qa4)</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#d53f8c"></div>Qa5</div>
-  </div>
+  <div id="map"></div>
+  <div class="legend">
+    <h4>QA ผู้รับผิดชอบ</h4>
+    <div class="leg-item"><div class="leg-dot" style="background:#d69e2e"></div>พี่จุ๊ (Qa1)</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#38a169"></div>พี่รุ่ง (Qa2)</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#3182ce"></div>พี่เปิ้ล (Qa3)</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#805ad5"></div>Ecs</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#dd6b20"></div>แรงงาน</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#e53e3e"></div>พี่เอก (Qa4)</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#d53f8c"></div>Qa5</div>
+  </div>
 </div>
 
-<!-- Modal เพิ่ม -->
 <div class="modal-overlay" id="addModal" onclick="if(event.target===this)closeModal('addModal')">
-  <div class="modal">
-    <h2>➕ เพิ่มหน่วยงานใหม่</h2>
-    <div class="form-row"><label>รหัส *</label><input type="text" id="a_code" placeholder="เช่น C999"></div>
-    <div class="form-row"><label>ชื่อหน่วยงาน *</label><input type="text" id="a_name"></div>
-    <div class="form-row"><label>QA *</label>
-      <select id="a_qa"><option value="Qa1">พี่จุ๊ (Qa1)</option><option value="Qa2">พี่รุ่ง (Qa2)</option><option value="Qa3">พี่เปิ้ล (Qa3)</option><option value="Qa4">พี่เอก (Qa4)</option><option value="Qa5">Qa5</option><option value="Ecs">Ecs</option><option value="แรงงาน">แรงงาน</option></select></div>
-    <div class="form-row"><label>จำนวนแม่บ้าน</label><input type="number" id="a_count" placeholder="0" min="0"></div>
-    <div class="form-row"><label>Latitude *</label><input type="text" id="a_lat" placeholder="13.756000"><div class="hint">ตัวเลขแรกหลัง @ ใน Google Maps URL</div></div>
-    <div class="form-row"><label>Longitude *</label><input type="text" id="a_lng" placeholder="100.548000"></div>
-    <div class="form-row"><label>ลิงก์ Google Maps</label><input type="text" id="a_link" placeholder="https://maps.app.goo.gl/..."></div>
-    <div class="form-row"><label>หัวหน้างาน</label><input type="text" id="a_supervisor"></div>
-    <div class="form-row"><label>เบอร์หัวหน้างาน</label><input type="text" id="a_supervisorPhone" placeholder="0812345678"></div>
-    <div class="form-row"><label>ชื่อลูกค้า</label><input type="text" id="a_clientName"></div>
-    <div class="form-row"><label>เบอร์ลูกค้า</label><input type="text" id="a_clientPhone" placeholder="0812345678"></div>
-    <div class="form-row"><label>หมายเหตุ</label><input type="text" id="a_note"></div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeModal('addModal')">ยกเลิก</button>
-      <button class="btn-primary" onclick="submitAdd()">✅ เพิ่มหมุด</button>
-    </div>
-  </div>
+  <div class="modal">
+    <h2>➕ เพิ่มหน่วยงานใหม่</h2>
+    <div class="form-row"><label>รหัส *</label><input type="text" id="a_code" placeholder="เช่น C999"></div>
+    <div class="form-row"><label>ชื่อหน่วยงาน *</label><input type="text" id="a_name"></div>
+    <div class="form-row"><label>QA *</label>
+      <select id="a_qa"><option value="Qa1">พี่จุ๊ (Qa1)</option><option value="Qa2">พี่รุ่ง (Qa2)</option><option value="Qa3">พี่เปิ้ล (Qa3)</option><option value="Qa4">พี่เอก (Qa4)</option><option value="Qa5">Qa5</option><option value="Ecs">Ecs</option><option value="แรงงาน">แรงงาน</option></select></div>
+    <div class="form-row"><label>จำนวนแม่บ้าน</label><input type="number" id="a_count" placeholder="0" min="0"></div>
+    <div class="form-row"><label>Latitude *</label><input type="text" id="a_lat" placeholder="13.756000"><div class="hint">ตัวเลขแรกหลัง @ ใน Google Maps URL</div></div>
+    <div class="form-row"><label>Longitude *</label><input type="text" id="a_lng" placeholder="100.548000"></div>
+    <div class="form-row"><label>ลิงก์ Google Maps</label><input type="text" id="a_link" placeholder="https://maps.app.goo.gl/..."></div>
+    <div class="form-row"><label>หัวหน้างาน</label><input type="text" id="a_supervisor"></div>
+    <div class="form-row"><label>เบอร์หัวหน้างาน</label><input type="text" id="a_supervisorPhone" placeholder="0812345678"></div>
+    <div class="form-row"><label>ชื่อลูกค้า</label><input type="text" id="a_clientName"></div>
+    <div class="form-row"><label>เบอร์ลูกค้า</label><input type="text" id="a_clientPhone" placeholder="0812345678"></div>
+    <div class="form-row"><label>หมายเหตุ</label><input type="text" id="a_note"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('addModal')">ยกเลิก</button>
+      <button class="btn-primary" onclick="submitAdd()">✅ เพิ่มหมุด</button>
+    </div>
+  </div>
 </div>
 
-<!-- Modal จัดการ -->
 <div class="modal-overlay" id="mgmtModal" onclick="if(event.target===this)closeModal('mgmtModal')">
-  <div class="modal">
-    <h2>✏️ แก้ไข / ลบ</h2>
-    <input class="mgmt-search" id="mgmtSearch" type="text" placeholder="🔍 ค้นหา..." oninput="renderMgmtList(this.value)">
-    <div class="mgmt-list" id="mgmtList"></div>
-    <div class="modal-actions"><button class="btn-cancel" onclick="closeModal('mgmtModal')">ปิด</button></div>
-  </div>
+  <div class="modal">
+    <h2>✏️ แก้ไข / ลบ</h2>
+    <input class="mgmt-search" id="mgmtSearch" type="text" placeholder="🔍 ค้นหา..." oninput="renderMgmtList(this.value)">
+    <div class="mgmt-list" id="mgmtList"></div>
+    <div class="modal-actions"><button class="btn-cancel" onclick="closeModal('mgmtModal')">ปิด</button></div>
+  </div>
 </div>
 
-<!-- Modal แก้ไขรายละเอียด -->
 <div class="modal-overlay" id="editDetailModal" onclick="if(event.target===this)closeModal('editDetailModal')">
-  <div class="modal">
-    <h2>✏️ แก้ไขหน่วยงาน</h2>
-    <input type="hidden" id="e_mi"><input type="hidden" id="e_ui">
-    <div class="form-row"><label>รหัส</label><input type="text" id="e_code"></div>
-    <div class="form-row"><label>ชื่อหน่วยงาน</label><input type="text" id="e_name"></div>
-    <div class="form-row"><label>QA</label>
-      <select id="e_qa"><option value="Qa1">พี่จุ๊ (Qa1)</option><option value="Qa2">พี่รุ่ง (Qa2)</option><option value="Qa3">พี่เปิ้ล (Qa3)</option><option value="Qa4">พี่เอก (Qa4)</option><option value="Qa5">Qa5</option><option value="Ecs">Ecs</option><option value="แรงงาน">แรงงาน</option></select></div>
-    <div class="form-row"><label>จำนวนแม่บ้าน</label><input type="number" id="e_count" min="0"></div>
-    <div class="form-row"><label>Latitude</label><input type="text" id="e_lat"><div class="hint">⚠️ แก้จะย้ายหมุด</div></div>
-    <div class="form-row"><label>Longitude</label><input type="text" id="e_lng"></div>
-    <div class="form-row"><label>ลิงก์ Google Maps</label><input type="text" id="e_link"></div>
-    <div class="form-row"><label>หัวหน้างาน</label><input type="text" id="e_supervisor"></div>
-    <div class="form-row"><label>เบอร์หัวหน้างาน</label><input type="text" id="e_supervisorPhone"></div>
-    <div class="form-row"><label>ชื่อลูกค้า</label><input type="text" id="e_clientName"></div>
-    <div class="form-row"><label>เบอร์ลูกค้า</label><input type="text" id="e_clientPhone"></div>
-    <div class="form-row"><label>หมายเหตุ</label><input type="text" id="e_note"></div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeModal('editDetailModal');openMgmtModal()">ยกเลิก</button>
-      <button class="btn-primary" onclick="submitEdit()">💾 บันทึก</button>
-    </div>
-  </div>
+  <div class="modal">
+    <h2>✏️ แก้ไขหน่วยงาน</h2>
+    <input type="hidden" id="e_mi"><input type="hidden" id="e_ui">
+    <div class="form-row"><label>รหัส</label><input type="text" id="e_code"></div>
+    <div class="form-row"><label>ชื่อหน่วยงาน</label><input type="text" id="e_name"></div>
+    <div class="form-row"><label>QA</label>
+      <select id="e_qa"><option value="Qa1">พี่จุ๊ (Qa1)</option><option value="Qa2">พี่รุ่ง (Qa2)</option><option value="Qa3">พี่เปิ้ล (Qa3)</option><option value="Qa4">พี่เอก (Qa4)</option><option value="Qa5">Qa5</option><option value="Ecs">Ecs</option><option value="แรงงาน">แรงงาน</option></select></div>
+    <div class="form-row"><label>จำนวนแม่บ้าน</label><input type="number" id="e_count" min="0"></div>
+    <div class="form-row"><label>Latitude</label><input type="text" id="e_lat"><div class="hint">⚠️ แก้จะย้ายหมุด</div></div>
+    <div class="form-row"><label>Longitude</label><input type="text" id="e_lng"></div>
+    <div class="form-row"><label>ลิงก์ Google Maps</label><input type="text" id="e_link"></div>
+    <div class="form-row"><label>หัวหน้างาน</label><input type="text" id="e_supervisor"></div>
+    <div class="form-row"><label>เบอร์หัวหน้างาน</label><input type="text" id="e_supervisorPhone"></div>
+    <div class="form-row"><label>ชื่อลูกค้า</label><input type="text" id="e_clientName"></div>
+    <div class="form-row"><label>เบอร์ลูกค้า</label><input type="text" id="e_clientPhone"></div>
+    <div class="form-row"><label>หมายเหตุ</label><input type="text" id="e_note"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('editDetailModal');openMgmtModal()">ยกเลิก</button>
+      <button class="btn-primary" onclick="submitEdit()">💾 บันทึก</button>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
 <div class="save-indicator" id="saveInd">💾 บันทึกแล้ว</div>
 
 <script>
-const QA_COLOR   = {Qa1:"#d69e2e",Qa2:"#38a169",Qa3:"#3182ce",Ecs:"#805ad5","แรงงาน":"#dd6b20",Qa4:"#e53e3e",Qa5:"#d53f8c"};
+const QA_COLOR   = {Qa1:"#d69e2e",Qa2:"#38a169",Qa3:"#3182ce",Ecs:"#805ad5","แรงงาน":"#dd6b20",Qa4:"#e53e3e",Qa5:"#d53f8c"};
 const QA_CODE_BG = {Qa1:"#fefcbf",Qa2:"#f0fff4",Qa3:"#ebf8ff",Ecs:"#faf5ff","แรงงาน":"#fffaf0",Qa4:"#fff5f5",Qa5:"#fff0f6"};
 
 // ── DATA ──────────────────────────────────────────────────
+const searchIndex = [];
+const markers = [];
 const DATA = [
-  { qa:"Qa1", code:"C001", count:4, lat:13.758596246360337, lng:100.575001176783, link:"https://maps.app.goo.gl/TzGwxmDmtvQ1XDseA",
-    name:"กิจการร่วมค้า ซีเคเอสที (ช.การช่าง ประตู 4 สายสีส้ม)", clientName:"คุณเหมียว", clientPhone:"0956696644" },
-  { qa:"Qa4", code:"C005", count:24, lat:14.006006749756407, lng:100.61420387681342, link:"https://maps.app.goo.gl/ffCGWtGoYAuwNWpE8",
-    name:"บริษัท ขนส่ง จำกัด (บขส.รังสิต)" },
-  { qa:"Qa4", code:"D001", count:8, lat:13.7590935, lng:100.4925301, link:"https://maps.app.goo.gl/ENokHfu4u43wVWpz9",
-    name:"โรงละครสังคีต", supervisor:"คุณสาว", supervisorPhone:"0814699352", clientName:"คุณพเยาว์", clientPhone:"0819420855" },
-  { qa:"Qa1", code:"C014-1", count:3, lat:13.73794540337418, lng:100.51716744684983, link:"https://maps.app.goo.gl/mtKzX2etgr84NYiT8",
-    name:"สถานนีmrt หัวลำโพง", supervisor:"คุณสมศรี", supervisorPhone:"08076115611", clientName:"คุณหมู", clientPhone:"0863545400" },
-  { qa:"Qa1", code:"C014-2", count:3, lat:13.7326319, lng:100.5300041, link:"https://maps.app.goo.gl/Hg3fMwFADjDoMaaC9",
-    name:"สถานนีmrt สามย่าน" },
-  { qa:"Qa1", code:"C014-3", count:6, lat:13.7294827, lng:100.5365355, link:"https://maps.app.goo.gl/wcwcxJVu4jvKU54h7",
-    name:"สถานนีmrt สีลม", supervisor:"คุณจ๋า", supervisorPhone:"0820067252", clientName:"คุณหมู", clientPhone:"0863545400" },
-  { qa:"Qa1", code:"C014-4", count:3, lat:13.7259453, lng:100.5457133, link:"https://maps.app.goo.gl/aQL82pM8HkLcp1VK8",
-    name:"สถานนีmrt ลุมพินี" },
-  { qa:"Qa1", code:"C064", count:3, lat:13.74350363325576, lng:100.5457531932624, link:"https://maps.app.goo.gl/g1HLsVERFLuEyMvc6",
-    name:"สำนักกฎหมายสากล ธีรคุปต์" },
-  {
-    lat:13.7225076, lng:100.5539685,
-    units:[
-    { qa:"Qa1", code:"C014-5", count:3, name:"สถานนีmrt คลองเตย", link:"https://maps.app.goo.gl/CbMgkBVRmThhmnCz6" },
-    { qa:"Qa1", code:"C041-1", count:2, name:"BMN คลองเตย", link:"https://maps.app.goo.gl/CbMgkBVRmThhmnCz6" }
-    ]
-  },
-  {
-    lat:13.7233551, lng:100.5601019,
-    units:[
-    { qa:"Qa1", code:"C014-6", count:3, name:"สถานนีmrt ศูนย์ประชุม", link:"https://maps.app.goo.gl/EAir4h4zD7DudTqb6", supervisor:"คุณตุ๊ก", supervisorPhone:"0972148043", clientName:"คุณหมู", clientPhone:"0863545400" },
-    { qa:"Qa1", code:"C041-2", count:2, name:"BMN ศูนย์ประชุม", link:"https://maps.app.goo.gl/EAir4h4zD7DudTqb6" }
-    ]
-  },
-  {
-    lat:13.738787, lng:100.561512,
-    units:[
-    { qa:"Qa1", code:"C014-7", count:6, name:"สถานนีmrt สุขุมวิท", link:"https://maps.app.goo.gl/RaYSXQzV3nsXCDhX6" },
-    { qa:"Qa1", code:"C041-3", count:2, name:"BMN สุขุมวิท", link:"https://maps.app.goo.gl/RaYSXQzV3nsXCDhX6" }
-    ]
-  },
-  {
-    lat:13.7489851, lng:100.5630383,
-    units:[
-    { qa:"Qa1", code:"C014-8", count:4, name:"สถานนีmrt เพชรบุรี", link:"https://maps.app.goo.gl/AV6KYj4e1go8JNxz5" },
-    { qa:"Qa1", code:"C041-4", count:2, name:"BMN เพชรบุรี", link:"https://maps.app.goo.gl/AV6KYj4e1go8JNxz5" }
-    ]
-  },
-  {
-    lat:13.7575029, lng:100.5651682,
-    units:[
-    { qa:"Qa1", code:"C014-9", count:4, name:"สถานนีmrt พระราม 9", link:"https://maps.app.goo.gl/HjRoamAMVGq979ns5" },
-    { qa:"Qa1", code:"C041-5", count:2, name:"BMN พระราม 9", link:"https://maps.app.goo.gl/HjRoamAMVGq979ns5" }
-    ]
-  },
-  { qa:"Qa1", code:"C041-6", count:1, lat:13.8144021, lng:100.5601023, link:"https://maps.app.goo.gl/7gj3SnW71YHZLXzM8",
-    name:"BMN พหล" },
-  { qa:"Qa1", code:"C041-7", count:3, lat:13.8026496, lng:100.5537242, link:"https://maps.app.goo.gl/F9BwgFUjpoWT5gqr8",
-    name:"BMN จตุจักร" },
-  { qa:"Qa1", code:"C041-8", count:3, lat:13.7983768, lng:100.5476637, link:"https://maps.app.goo.gl/2ryhkrBF8ssLfHoMA",
-    name:"BMN กำแพง" },
-  { qa:"Qa1", code:"C041-9", count:2, lat:13.7664146, lng:100.5702738, link:"https://maps.app.goo.gl/FhFQ3gCNotpRMX177",
-    name:"BMN ศุนย์วัฒนธรรม" },
-  { qa:"Qa1", code:"C042", count:4, lat:13.7891437, lng:100.5652549, link:"https://maps.app.goo.gl/PXL7cTpn3LZt4zWLA",
-    name:"บริษัท แบงคอก เมโทร เน็ทเวิร์คส์ จำกัด: BMN-สำนักงานใหญ่", supervisor:"คุณสมัย", supervisorPhone:"0625795014", clientName:"คุณเเหม่ม", clientPhone:"0880225723" },
-  { qa:"Qa2", code:"C055", count:3, lat:13.7766561, lng:100.6643565, link:"https://maps.app.goo.gl/rdQSSKich7i7W1U38",
-    name:"Subaru สาขาเสรีไทย", supervisor:"คุณนวลจันทร์", supervisorPhone:"0987619745", clientName:"คุณป็อบ", clientPhone:"0863341322" },
-  { qa:"Qa1", code:"C062", count:2, lat:13.719603, lng:100.5017498, link:"https://maps.app.goo.gl/BrzXZrq73JwuWRUt7",
-    name:"โวเจมส์", clientName:"คุณสุรี", clientPhone:"020263520" },
-  { qa:"Qa4", code:"C067", count:2, lat:13.768280028355157, lng:100.5145447574034, link:"https://maps.app.goo.gl/vBfaGGsXheYxgsGb6",
-    name:"เสือป่า 609", clientName:"คุณสงคราม", clientPhone:"0900901957" },
-  { qa:"Qa4", code:"C068", count:23, lat:13.751902144151693, lng:100.49268589443786, link:"https://maps.app.goo.gl/L1XEc8y3uKUVJJPr9",
-    name:"พระบรมมหาราชวัง บริเวณที่ 3 (วัดพระแก้ว)", supervisor:"คุณออย", supervisorPhone:"0909525746", clientName:"คุณสุภณัฐ", clientPhone:"0822012111" },
-  { qa:"Qa4", code:"C070", count:8, lat:13.7615239, lng:100.4927143, link:"https://maps.app.goo.gl/EbpFVs9nrtuCYjK9A",
-    name:"องค์กรยูนิเซฟเอเชียตะวันออกและแปซิฟิค (EAPRO)", supervisor:"คุณเดือน", supervisorPhone:"0650262005", clientName:"คุณเปิ้ล", clientPhone:"0969356353" },
-  { qa:"Qa2", code:"C089", count:8, lat:13.700121100000006, lng:100.58776977352487, link:"https://maps.app.goo.gl/6BX9ZTuPXHeoXKZa7",
-    name:"บริษัท ปตท.น้ำมันและการค้าปลีก จำกัด (มหาชน) คลังพระโขนง (ปตท พระโขนง)" },
-  {
-    lat:13.7388905, lng:100.588773,
-    units:[
-    { qa:"Qa2", code:"C011", count:5, name:"ซินเท็คคอนสตรัคชั่น (มหาชน)", link:"https://maps.app.goo.gl/DK2JvM6YD1aeGnvG7", supervisor:"คุณจิ่ม", supervisorPhone:"0807717416" }
-    ]
-  },
-  { qa:"Qa4", code:"C090", count:56, lat:13.772964754970323, lng:100.51136077935556, link:"https://maps.app.goo.gl/pYRPRULUpTrUrxXn9",
-    name:"พระที่นั่งอัมพรสถาน", supervisor:"คุณบัวสอน", supervisorPhone:"0650262005", clientName:"คุณนุ้ย", clientPhone:"0870598689" },
-  { qa:"Qa4", code:"C096", count:5, lat:13.768139222842235, lng:100.5222058507741, link:"https://maps.app.goo.gl/ZxByK7xTqDP24gfXA",
-    name:"โรงเรียนสวนจิตรลดา", clientName:"ครูสวนจิตรลดา", clientPhone:"0892187117" },
-  { qa:"Qa1", code:"C104", count:2, lat:13.761236111201898, lng:100.58130276771514, link:"https://maps.app.goo.gl/bBNDgZGr9T3Kfgt67",
-    name:"ช.การช่าง สายสีน้ำเงิน", clientName:"คุณต้อย", clientPhone:"0958356222" },
-  { qa:"Qa1", code:"C111", count:4, lat:13.759130923111906, lng:100.57522869522944, link:"https://maps.app.goo.gl/Ji5gHgBGxgx6xq5NA",
-    name:"ช.การช่าง สายสีส้มตะวันตก", clientName:"คุณหวาน", clientPhone:"0992410105" },
-  { qa:"Qa1", code:"C133", count:7, lat:13.761585, lng:100.5370939, link:"https://maps.app.goo.gl/FsnntwduTu4sekT69",
-    name:"บริษัท เอกมหากิจ จำกัด สาขาเซ็นจูรี่ เดอะมูฟวีพลาซ่า อนุสาวรีย์ชัย", clientName:"คุณหนึ่ง", clientPhone:"0990896882" },
-  { qa:"Qa2", code:"C145", count:1, lat:13.7656905, lng:100.6197587, link:"https://maps.app.goo.gl/35vq1Gdg7niMaSYh6",
-    name:"บริษัท แคนอินโนเวชั่น จำกัด", clientName:"คุณเเตน", clientPhone:"0804408055", note:"หมู่บ้านเนอร์วาน่า ราม53" },
-  { qa:"Qa2", code:"C148", count:1, lat:13.819773, lng:100.6541607, link:"https://maps.app.goo.gl/qhUuaUwuxoqGznwX6",
-    name:"PHUMA CLINIC (นวมินทร์)" },
-  { qa:"Qa1", code:"C149", count:1, lat:13.7571376, lng:100.5612574, link:"https://maps.app.goo.gl/ukFyLFSc4KKbKggE9",
-    name:"บริษัท ที.ไอ.ไอ จำกัด" },
-  { qa:"Qa2", code:"C007", count:4, lat:13.575763, lng:100.485553, link:"https://maps.app.goo.gl/ncJx41STaSt7ASCd9",
-    name:"คลินท์แพค" },
-  { qa:"Qa2", code:"C012", count:2, lat:13.6945014, lng:100.6481526, link:"https://maps.app.goo.gl/r9gVtnz8d1a6uvxQ6",
-    name:"ดองกิ ซีคอนศรินครินทร์", supervisor:"คุณออง", supervisorPhone:"0929579934" },
-  { qa:"Qa2", code:"C013", count:2, lat:13.764831416727102, lng:100.78684844443437, link:"https://maps.app.goo.gl/9b6TcfJ14PSuGMGa6",
-    name:"ตันจง ซูบารู ออโตโมทิฟ (ประเทศไทย) (TCSAT)", supervisor:"คุณนุ้ย", supervisorPhone:"0983062354" },
-  {
-    lat:13.725556, lng:100.547969,
-    units:[
-    { qa:"Qa1", code:"C101", count:3, name:"ภัตตาคารจันทร์เพ็ญ", link:"https://maps.app.goo.gl/ZY8dKEC8r2focnPa8" }
-    ]
-  },
-  { qa:"Qa4", code:"C026", count:6, lat:13.7773288, lng:100.4974923, link:"https://maps.app.goo.gl/9eCdV6bNzwuQa1F37",
-    name:"นิติบุคคลอาคารชุด ทิวริเวอร์เพลส" },
-  { qa:"Qa1", code:"C028", count:4, lat:13.7490138, lng:100.5302764, link:"https://maps.app.goo.gl/ojJqMcscxb8hrNhV9",
-    name:"นิติบุคคลอาคารชุด ปทุมวันเพลส", supervisor:"คุณปิ้น", supervisorPhone:"0946366403" },
-  { qa:"Qa2", code:"C030", count:12, lat:13.6957885, lng:100.4943526, link:"https://maps.app.goo.gl/Q9hvBTAveDuDywEJ6",
-    name:"ศุภาลัย คาซา ริวา" },
-  { qa:"Qa4", code:"C033", count:5, lat:13.996014, lng:100.5763515, link:"https://maps.app.goo.gl/YEnPqkrdZYTGj8xq8",
-    name:"นิสสันดีเซล (ประเทศไทย) จำกัด (ฟูโซ่ ทรัค)" },
-  { qa:"Qa1", code:"C035", count:3, lat:13.7544944, lng:100.5243204, link:"https://maps.app.goo.gl/KGzy8fML4PCHjTcP6",
-    name:"บริษัท ดีจีนพัฒนา จำกัด" },
-  {
-    lat:13.7165262, lng:100.5856913,
-    units:[
-    { qa:"Qa2", code:"C037", count:2, name:"บริษัท บิ๊กซี ซูเปอร์เซ็นเตอร์ จำกัด (มหาชน) (แคนทีน)", link:"https://maps.app.goo.gl/9Snwnq2XiognV6TQA", supervisor:"คุณไพร", supervisorPhone:"0990294434" },
-    { qa:"Qa2", code:"C038", count:1, name:"บริษัท บีเจซี สเปเชียลตี้ส์ จำกัด (SPD Lab)", link:"https://maps.app.goo.gl/9Snwnq2XiognV6TQA", supervisor:"คุณชา", supervisorPhone:"0955949968" },
-    { qa:"Qa2", code:"C039", count:20, name:"บริษัท เบอร์ลี่ยุคเกอร์ จำกัด (มหาชน) BJC อาคาร A,B", link:"https://maps.app.goo.gl/9Snwnq2XiognV6TQA", supervisor:"คุณชา", supervisorPhone:"0955949968" },
-    { qa:"Qa2", code:"C040", count:12, name:"บริษัท เบอร์ลี่ยุคเกอร์ จำกัด (มหาชน) BJC อาคาร C,D", link:"https://maps.app.goo.gl/9Snwnq2XiognV6TQA", supervisor:"คุณชา", supervisorPhone:"0955949968" }
-    ]
-  },
-  { qa:"Qa2", code:"C054", count:1, lat:13.814158881574375, lng:100.76067105198172, link:"https://maps.app.goo.gl/K8EeAtMkVTxaAyf19",
-    name:"ซูบารู มีนบุรี", supervisor:"คุณหอมไกล", supervisorPhone:"0644968425" },
-  { qa:"Qa4", code:"C061", count:6, lat:13.7473957, lng:100.5129373, link:"https://maps.app.goo.gl/MwBpGSLquhzutLSN7",
-    name:"วัดเทพศิรินทราวาส ราชวรวิหาร", supervisor:"คุณเเสงเทียน", supervisorPhone:"0941938161" },
-  { qa:"Qa2", code:"C063", count:7, lat:13.7144852, lng:100.5817707, link:"https://maps.app.goo.gl/zPvBqp8v4hNPFWv59",
-    name:"บริษัท ไวท์กรุ๊ป จำกัด (มหาชน) (BJC ชั้น 1-2)", supervisor:"คุณจี๊ด", supervisorPhone:"0946688628" },
-  { qa:"Qa2", code:"C084", count:2, lat:13.7147558, lng:100.5845214, link:"https://maps.app.goo.gl/vQfJQ2ioGo1jrkfz8",
-    name:"บริษัท ตลาดครอบครัว จำกัด", supervisor:"คุณไพร", supervisorPhone:"0990294434" },
-  { qa:"Qa2", code:"C086", count:1, lat:13.6634817, lng:100.6139296, link:"https://maps.app.goo.gl/6tp1SwYGGhu9mHW48",
-    name:"โมเม้นทีฟ เพอร์ฟอร์แมน มีเทอร์เรียล", supervisor:"คุณจิต", supervisorPhone:"0946688628" },
-  { qa:"Qa2", code:"C092", count:5, lat:13.7329968, lng:100.5602702, link:"https://maps.app.goo.gl/FwATWq5Nn3Yq91nTA",
-    name:"บริษัท เอส ซี เอ็ม แอล ดีเวลลอปเม้นท์ จำกัด (สปา)" },
-  { qa:"Qa2", code:"C107", count:2, lat:13.7309475, lng:100.5858163, link:"https://maps.app.goo.gl/7HFjmC4gu8hjUXkb8",
-    name:"ดองกิ เดอะมอลล์ ทองหล่อ" },
-  { qa:"Qa2", code:"C108", count:2, lat:13.7530396, lng:100.6107788, link:"https://maps.app.goo.gl/xzvL6yfFM4DnvVP69",
-    name:"บริษัท เซ็ปเป้ จำกัด (มหาชน)", supervisor:"คุณน้อย", supervisorPhone:"0983350869" },
-  { qa:"Qa4", code:"C110", count:17, lat:13.8875988, lng:100.4906941, link:"https://maps.app.goo.gl/1Jgj8b9iwMkakb9B6",
-    name:"สถาบันพัฒนาภาษี" },
-  { qa:"Qa2", code:"C112", count:40, lat:13.7400641, lng:100.5359772, link:"https://maps.app.goo.gl/uDgbMTrxRLHtTjgA7",
-    name:"สมาคมราชกรีฑาสโมสร" },
-  { qa:"Qa2", code:"C113", count:24, lat:13.7321805, lng:100.5490822, link:"https://maps.app.goo.gl/hXX2751fNHUQddDdA",
-    name:"สมาคมราชกรีฑาสโมสรโปโลคลับ" },
-  { qa:"Qa2", code:"C116", count:2, lat:13.731749711848233, lng:100.54942019730285, link:"https://maps.app.goo.gl/AwZES4SPwB1CyUuN7",
-    name:"บริษัท สีฟ้า กรุ๊ป จำกัด" },
-  { qa:"Qa2", code:"C119", count:5, lat:13.6292677, lng:100.7484076, link:"https://maps.app.goo.gl/XQST6fA4S44k7Uix9",
-    name:"บริษัท โมเดอร์นฟอร์มกรุ๊ป จำกัด (มหาชน)" },
-  { qa:"Qa4", code:"C131", count:2, lat:13.8759677, lng:100.4125077, link:"https://maps.app.goo.gl/9aPu8AFDGd5qDwbFA",
-    name:"ดองกิ (สาขาเซ็นทรัลเวสต์เกต)" },
-  { qa:"Qa2", code:"C132", count:1, lat:13.736963, lng:100.5601206, link:"https://maps.app.goo.gl/yoRWkTGYTkHJDvsm9",
-    name:"บริษัท เจริญทรัพย์กำลัง 3 จำกัด (สาขาโอโก)", supervisor:"คุณคัม", supervisorPhone:"0613044605" },
-  { qa:"Qa2", code:"C136", count:1, lat:13.7739012, lng:100.6152618, link:"https://maps.app.goo.gl/1HPFLh1m7tV8JLnW8",
-    name:"บริษัท โอทูอี ซัพพลาย จำกัด" },
-  { qa:"Qa2", code:"C147", count:1, lat:13.8402899, lng:100.6342654, link:"https://maps.app.goo.gl/h7E3ntgNNQEcJz9v7",
-    name:"บริษัท ไทยเบิร์นเนอร์ อินดัสเตรียล ฮีด จำกัด" },
-  {
-    lat:13.8235785, lng:100.5376374,
-    units:[
-    { qa:"Ecs", code:"E001-1", count:14, name:"ธกส ประชาชื่น", link:"https://maps.app.goo.gl/pbLDMqnD6Vy5mLqE8" },
-    { qa:"แรงงาน", code:"L009", count:0, name:"ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร (ธุรการ)", link:"" }
-    ]
-  },
-  {
-    lat:13.7979852, lng:100.5496478,
-    units:[
-    { qa:"Ecs", code:"E001-2", count:3, name:"ธกส จตุจักร", link:"https://maps.app.goo.gl/1unRdCy5CDC1foPY9" },
-    { qa:"แรงงาน", code:"L009", count:0, name:"ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร (ธุรการ)", link:"" }
-    ]
-  },
-  {
-    lat:13.8429403, lng:100.5780752,
-    units:[
-    { qa:"Ecs", code:"E001-3", count:65, name:"ธกส บางเขน", link:"https://maps.app.goo.gl/NdnnrWk5TppnLkZG6" },
-    { qa:"แรงงาน", code:"L009", count:0, name:"ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร (ธุรการ)", link:"" }
-    ]
-  },
-  {
-    lat:13.7614605, lng:100.5139331,
-    units:[
-    { qa:"Ecs", code:"E001-4", count:1, name:"ธกส นางเลิ้ง", link:"https://maps.app.goo.gl/N3xWPS4XTPM2aXwh7" },
-    { qa:"แรงงาน", code:"L009", count:0, name:"ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร (ธุรการ)", link:"" }
-    ]
-  },
-  { qa:"Ecs", code:"E003-1", count:6, lat:13.8781376, lng:100.4746409, link:"https://maps.app.goo.gl/ebebvDLTRDAFAWhK9",
-    name:"นิติบุคคลอาคารชุด เมโทร ริเวอร์ฟร้อนท์" },
-  { qa:"แรงงาน", code:"L001", count:28, lat:13.7494559, lng:100.5577794, link:"https://maps.app.goo.gl/8wvgoWvnupbLwJb39",
-    name:"การท่องเที่ยวแห่งประเทศไทย (จัดเลี้ยง)" },
-  {
-    lat:13.7224392, lng:100.5292066,
-    units:[
-    { qa:"แรงงาน", code:"L005", count:10, name:"อุเบะ เคมิคอลส์ (พนักงานขับรถยนต์+แมสฯ)", link:"https://maps.app.goo.gl/SH7X5DYma7eLVSp36" },
-    { qa:"แรงงาน", code:"C072", count:1, name:"อุเบะ เคมิคอลส์ + แม่บ้าน", link:"https://maps.app.goo.gl/SH7X5DYma7eLVSp36" }
-    ]
-  },
-  { qa:"แรงงาน", code:"L011", count:10, lat:13.7690446, lng:100.5059628, link:"https://maps.app.goo.gl/JZAJPqZqMTQ636fv9",
-    name:"สำนักงานพระคลังข้างที่ (งานจัดเลี้ยง)" },
-  { qa:"แรงงาน", code:"L012", count:1, lat:12.6897604, lng:101.1424187, link:"https://maps.app.goo.gl/d8QS6AJMLz15XEE3A",
-    name:"บริษัท บีเอสที เอเนอรส์ อิลาส โตเมอร์ จำกัด" },
-  { qa:"Qa3", code:"C024", count:7, lat:13.807282610744481, lng:100.55837965163998, link:"https://maps.app.goo.gl/YMtSECAWcXkj5FM96",
-    name:"นิติบุคคลอาคารชุด ซิม วิภา-ลาดพร้าว" },
-  { qa:"Qa3", code:"C044", count:18, lat:13.870459, lng:100.5675277, link:"https://maps.app.goo.gl/gartmxo9p8X4gPuG7",
-    name:"ผลิตไฟฟ้า จำกัด" },
-  { qa:"Qa3", code:"C052", count:3, lat:13.8195648, lng:100.5572067, link:"https://maps.app.goo.gl/oEKM59dqXY7XWBDw8",
-    name:"บริษัท ฟานัคไทย จำกัด" },
-  { qa:"Qa1", code:"C081", count:4, lat:13.7289142, lng:100.5368907, link:"https://maps.app.goo.gl/NpsyUjEZKnm2REvV6",
-    name:"โอเชียน เน็ตเวิร์ค เอ็กซ์เพรส (ประเทศไทย)" },
-  { qa:"Qa3", code:"C082", count:8, lat:13.7771715, lng:100.5441209, link:"https://maps.app.goo.gl/yxZtHQRHdtrKH1819",
-    name:"AI อารีเพลส" },
-  { qa:"Qa3", code:"C115-2", count:3, lat:13.8616799, lng:100.5647754, link:"https://maps.app.goo.gl/pXUCUPoH9fHhtVEt9",
-    name:"สวนเปรมประชาวนารักษ์" },
-  { qa:"Qa1", code:"C137", count:1, lat:13.7379508, lng:100.5221095, link:"https://maps.app.goo.gl/uGkFPgcwnBLVkYNt5",
-    name:"เอไอออเนนจ์ (บรรทัดทอง)" },
-  { qa:"Qa3", code:"C140", count:14, lat:13.783703, lng:100.5464308, link:"https://maps.app.goo.gl/3xvkcpntJ2WBEPab6",
-    name:"อาคารชินวัตร ทาวเวอร์ 1" },
-  { qa:"Qa3", code:"C141", count:13, lat:13.7866403, lng:100.546533, link:"https://maps.app.goo.gl/ptbV8L5dwML7XJmG7",
-    name:"อาคารชินวัตร ทาวเวอร์ 2" },
-  { qa:"Qa3", code:"C142", count:6, lat:13.8233479, lng:100.5594536, link:"https://maps.app.goo.gl/KRHoHSrGtULZLctc7",
-    name:"อาคารชินวัตร ทาวเวอร์ 3 (Conference)" },
-  { qa:"Qa3", code:"C143", count:8, lat:13.783894, lng:100.546429, link:"https://maps.app.goo.gl/LNKVu7gkequtymCfA",
-    name:"อาคาร SC Tower" },
-  { qa:"Qa3", code:"C144", count:1, lat:13.8201423, lng:100.5633066, link:"https://maps.app.goo.gl/W1HrsZYQ59LiF1s89",
-    name:"บริษัท สยาลวดเหล็กอุตสาหกรรม จำกัด" },
-  { qa:"Qa3", code:"C146", count:1, lat:13.7834568, lng:100.5464472, link:"https://maps.app.goo.gl/2cA7mAUh9qcwAEGf8",
-    name:"บริษัท เอสซี แอสเสท คอร์ปอเรชั่น จำกัด อาคาร TTC" },
-  { qa:"Qa2", code:"C151", count:36, lat:13.622490966227733, lng:100.74194896336994, link:"https://maps.app.goo.gl/KTTigGeyyFqqhSCS9",
-    name:"บริษัท ไทยซัมมิท โอโตพาร์ท อินดัสตรี" },
-  { qa:"Qa2", code:"C152", count:8, lat:13.599375036129413, lng:100.77541591733858, link:"https://maps.app.goo.gl/KXAF5baCA4KvbvHg8",
-    name:"บริษัท ไทยชนาธร อุตสาหกรรม จำกัด (TCT)" },
-  { qa:"Qa2", code:"C153", count:6, lat:13.587602953116138, lng:100.77839071570618, link:"https://maps.app.goo.gl/MLcbpLLNphcTv8YNA",
-    name:"บริษัท ทีเอส อินเตอร์ซีทส์ จำกัด (TSIS)" },
-  { qa:"Qa2", code:"C154", count:8, lat:13.6071716, lng:101.0112805, link:"https://maps.app.goo.gl/qdzQLVxSvwTaQFPM9",
-    name:"บริษัท ไทยซัมมิท บ้านโพธิ์ จำกัด (TSBP)" },
-  { qa:"Qa2", code:"R137", count:1, lat:13.7214266, lng:100.5293398, link:"https://maps.app.goo.gl/MuR9rhcSyZanktjx8",
-    name:"บางกอกโคเจนเนอเรชั่น BCC" },
-  { qa:"Qa4", code:"C094", count:0, lat:13.803211423653934, lng:100.61423396442771, link:"https://maps.app.goo.gl/XBrPvPDgxnmzurNr7",
-    name:"บริษัท เซนทรัลพัฒนา จำกัด (มหาชน) (อีสต์วิลล์)" },
-  { qa:"Qa1", code:"002", count:4, lat:13.757912610275454, lng:100.57946399130718, link:"https://maps.app.goo.gl/8y6n4RWyTtSbSTXy6",
-    name:"กิจการร่วมค้า ซีเคเอสที-พีแอล (ออฟฟิศ รถไฟฟ้า สายสีม่วง)", clientName:"คุณเหมียว", clientPhone:"0956696644" },
-  { qa:"Qa3", code:"c134", count:0, lat:13.779911457513604, lng:100.5438549420721, link:"",
-    name:"เดอะ ไวส์ เบครูม" },
-  {
-    lat:13.81775627984006, lng:100.55741892574656,
-    units:[
-    { qa:"Qa3", code:"C139", count:1, name:"บริษัท เอนเนอร์ยี่ คอมเพล็กซ์ จำกัด (LNG)", link:"https://maps.app.goo.gl/dSPc3R66K52R2E5F8" },
-    { qa:"Qa3", code:"R139", count:1, name:"โกลบอล กรีน เคมิคอล (GGC)", link:"https://maps.app.goo.gl/9VVS3RhwaGTa94aLA" },
-    { qa:"Qa3", code:"R138", count:1, name:"พีทีที โกลบอล เคมิคอล (GC)", link:"https://maps.app.goo.gl/9VVS3RhwaGTa94aLA" },
-    { qa:"Qa3", code:"C010", count:1, name:"บริษัท จีซี โลจิสติกส์ โซลูชั่นส์ จำกัด (GCL)", link:"https://maps.app.goo.gl/PoGVcjinNYFktja96" },
-    { qa:"Qa3", code:"C049", count:9, name:"พีทีที ดิจิตอล โซลูชั่น", link:"https://maps.app.goo.gl/aJLqpfkTPnJyNTAv8" },
-    { qa:"Qa3", code:"C115", count:1, name:"ปตท.สำนักงานใหญ่ (แม่บ้าน+ห้องประชุม)", link:"https://maps.app.goo.gl/UVVWd5XSof1ifAjt5" },
-    { qa:"Qa3", code:"C008", count:1, name:"KGC อาคูราเล่", link:"https://maps.app.goo.gl/hMg1XhzHyAmFhpmH6" }
-    ]
-  },
-  {
-    lat:13.807296209613463, lng:100.55938443641236,
-    units:[
-    { qa:"Qa3", code:"C091", count:1, name:"อรุณพลัส", link:"https://maps.app.goo.gl/aQL82pM8HkLcp1VK8" },
-    { qa:"Qa3", code:"C150", count:1, name:"บริษัท อีวี มี พลัส จำกัด (สำนักงานใหญ่)", link:"https://maps.app.goo.gl/aQL82pM8HkLcp1VK8" },
-    { qa:"Qa3", code:"C102", count:1, name:"เอไอออเนกซ์", link:"https://maps.app.goo.gl/aQL82pM8HkLcp1VK8" },
-    { qa:"Qa3", code:"C004", count:1, name:"โกลบอล รีนิวเอเบิล เพาเวอร์ (GRPO)", link:"https://maps.app.goo.gl/YMtSECAWcXkj5FM96" },
-    { qa:"Qa3", code:"C003", count:1, name:"โกลบอลเพาเวอร์ซินเนอร์ยี่ (GPSC)", link:"https://maps.app.goo.gl/YMtSECAWcXkj5FM96" }
-    ]
-  }
+  { qa:"Qa1", code:"C001", count:4, lat:13.758596246360337, lng:100.575001176783, link:"https://maps.app.goo.gl/TzGwxmDmtvQ1XDseA",
+    name:"กิจการร่วมค้า ซีเคเอสที (ช.การช่าง ประตู 4 สายสีส้ม)", clientName:"คุณเหมียว", clientPhone:"0956696644" },
+  { qa:"Qa4", code:"C005", count:24, lat:14.006006749756407, lng:100.61420387681342, link:"https://maps.app.goo.gl/ffCGWtGoYAuwNWpE8",
+    name:"บริษัท ขนส่ง จำกัด (บขส.รังสิต)" },
+  { qa:"Qa4", code:"D001", count:8, lat:13.7590935, lng:100.4925301, link:"https://maps.app.goo.gl/ENokHfu4u43wVWpz9",
+    name:"โรงละครสังคีต", supervisor:"คุณสาว", supervisorPhone:"0814699352", clientName:"คุณพเยาว์", clientPhone:"0819420855" },
+  { qa:"Qa1", code:"C014-1", count:3, lat:13.73794540337418, lng:100.51716744684983, link:"https://maps.app.goo.gl/mtKzX2etgr84NYiT8",
+    name:"สถานนีmrt หัวลำโพง", supervisor:"คุณสมศรี", supervisorPhone:"08076115611", clientName:"คุณหมู", clientPhone:"0863545400" },
+  { qa:"Qa1", code:"C014-2", count:3, lat:13.7326319, lng:100.5300041, link:"https://maps.app.goo.gl/Hg3fMwFADjDoMaaC9",
+    name:"สถานนีmrt สามย่าน" },
+  { qa:"Qa1", code:"C014-3", count:6, lat:13.7294827, lng:100.5365355, link:"https://maps.app.goo.gl/wcwcxJVu4jvKU54h7",
+    name:"สถานนีmrt สีลม", supervisor:"คุณจ๋า", supervisorPhone:"0820067252", clientName:"คุณหมู", clientPhone:"0863545400" },
+  { qa:"Qa1", code:"C014-4", count:3, lat:13.7259453, lng:100.5457133, link:"https://maps.app.goo.gl/aQL82pM8HkLcp1VK8",
+    name:"สถานนีmrt ลุมพินี" },
+  { qa:"Qa1", code:"C064", count:3, lat:13.74350363325576, lng:100.5457531932624, link:"https://maps.app.goo.gl/g1HLsVERFLuEyMvc6",
+    name:"สำนักกฎหมายสากล ธีรคุปต์" },
+  {
+    lat:13.7225076, lng:100.5539685,
+    units:[
+    { qa:"Qa1", code:"C014-5", count:3, name:"สถานนีmrt คลองเตย", link:"https://maps.app.goo.gl/CbMgkBVRmThhmnCz6" },
+    { qa:"Qa1", code:"C041-1", count:2, name:"BMN คลองเตย", link:"https://maps.app.goo.gl/CbMgkBVRmThhmnCz6" }
+    ]
+  },
+  {
+    lat:13.7233551, lng:100.5601019,
+    units:[
+    { qa:"Qa1", code:"C014-6", count:3, name:"สถานนีmrt ศูนย์ประชุม", link:"https://maps.app.goo.gl/EAir4h4zD7DudTqb6", supervisor:"คุณตุ๊ก", supervisorPhone:"0972148043", clientName:"คุณหมู", clientPhone:"0863545400" },
+    { qa:"Qa1", code:"C041-2", count:2, name:"BMN ศูนย์ประชุม", link:"https://maps.app.goo.gl/EAir4h4zD7DudTqb6" }
+    ]
+  },
+  {
+    lat:13.738787, lng:100.561512,
+    units:[
+    { qa:"Qa1", code:"C014-7", count:6, name:"สถานนีmrt สุขุมวิท", link:"https://maps.app.goo.gl/RaYSXQzV3nsXCDhX6" },
+    { qa:"Qa1", code:"C041-3", count:2, name:"BMN สุขุมวิท", link:"https://maps.app.goo.gl/RaYSXQzV3nsXCDhX6" }
+    ]
+  },
+  {
+    lat:13.7489851, lng:100.5630383,
+    units:[
+    { qa:"Qa1", code:"C014-8", count:4, name:"สถานนีmrt เพชรบุรี", link:"https://maps.app.goo.gl/AV6KYj4e1go8JNxz5" },
+    { qa:"Qa1", code:"C041-4", count:2, name:"BMN เพชรบุรี", link:"https://maps.app.goo.gl/AV6KYj4e1go8JNxz5" }
+    ]
+  },
+  {
+    lat:13.7575029, lng:100.5651682,
+    units:[
+    { qa:"Qa1", code:"C014-9", count:4, name:"สถานนีmrt พระราม 9", link:"https://maps.app.goo.gl/HjRoamAMVGq979ns5" },
+    { qa:"Qa1", code:"C041-5", count:2, name:"BMN พระราม 9", link:"https://maps.app.goo.gl/HjRoamAMVGq979ns5" }
+    ]
+  },
+  { qa:"Qa1", code:"C041-6", count:1, lat:13.8144021, lng:100.5601023, link:"https://maps.app.goo.gl/7gj3SnW71YHZLXzM8",
+    name:"BMN พหล" },
+  { qa:"Qa1", code:"C041-7", count:3, lat:13.8026496, lng:100.5537242, link:"https://maps.app.goo.gl/F9BwgFUjpoWT5gqr8",
+    name:"BMN จตุจักร" },
+  { qa:"Qa1", code:"C041-8", count:3, lat:13.7983768, lng:100.5476637, link:"https://maps.app.goo.gl/2ryhkrBF8ssLfHoMA",
+    name:"BMN กำแพง" },
+  { qa:"Qa1", code:"C041-9", count:2, lat:13.7664146, lng:100.5702738, link:"https://maps.app.goo.gl/FhFQ3gCNotpRMX177",
+    name:"BMN ศุนย์วัฒนธรรม" },
+  { qa:"Qa1", code:"C042", count:4, lat:13.7891437, lng:100.5652549, link:"https://maps.app.goo.gl/PXL7cTpn3LZt4zWLA",
+    name:"บริษัท แบงคอก เมโทร เน็ทเวิร์คส์ จำกัด: BMN-สำนักงานใหญ่", supervisor:"คุณสมัย", supervisorPhone:"0625795014", clientName:"คุณเเหม่ม", clientPhone:"0880225723" },
+  { qa:"Qa2", code:"C055", count:3, lat:13.7766561, lng:100.6643565, link:"https://maps.app.goo.gl/rdQSSKich7i7W1U38",
+    name:"Subaru สาขาเสรีไทย", supervisor:"คุณนวลจันทร์", supervisorPhone:"0987619745", clientName:"คุณป็อบ", clientPhone:"0863341322" },
+  { qa:"Qa1", code:"C062", count:2, lat:13.719603, lng:100.5017498, link:"https://maps.app.goo.gl/BrzXZrq73JwuWRUt7",
+    name:"โวเจมส์", clientName:"คุณสุรี", clientPhone:"020263520" },
+  { qa:"Qa4", code:"C067", count:2, lat:13.768280028355157, lng:100.5145447574034, link:"https://maps.app.goo.gl/vBfaGGsXheYxgsGb6",
+    name:"เสือป่า 609", clientName:"คุณสงคราม", clientPhone:"0900901957" },
+  { qa:"Qa4", code:"C068", count:23, lat:13.751902144151693, lng:100.49268589443786, link:"https://maps.app.goo.gl/L1XEc8y3uKUVJJPr9",
+    name:"พระบรมมหาราชวัง บริเวณที่ 3 (วัดพระแก้ว)", supervisor:"คุณออย", supervisorPhone:"0909525746", clientName:"คุณสุภณัฐ", clientPhone:"0822012111" },
+  { qa:"Qa4", code:"C070", count:8, lat:13.7615239, lng:100.4927143, link:"https://maps.app.goo.gl/EbpFVs9nrtuCYjK9A",
+    name:"องค์กรยูนิเซฟเอเชียตะวันออกและแปซิฟิค (EAPRO)", supervisor:"คุณเดือน", supervisorPhone:"0650262005", clientName:"คุณเปิ้ล", clientPhone:"0969356353" },
+  { qa:"Qa2", code:"C089", count:8, lat:13.700121100000006, lng:100.58776977352487, link:"https://maps.app.goo.gl/6BX9ZTuPXHeoXKZa7",
+    name:"บริษัท ปตท.น้ำมันและการค้าปลีก จำกัด (มหาชน) คลังพระโขนง (ปตท พระโขนง)" },
+  {
+    lat:13.7388905, lng:100.588773,
+    units:[
+    { qa:"Qa2", code:"C011", count:5, name:"ซินเท็คคอนสตรัคชั่น (มหาชน)", link:"https://maps.app.goo.gl/DK2JvM6YD1aeGnvG7", supervisor:"คุณจิ่ม", supervisorPhone:"0807717416" }
+    ]
+  },
+  { qa:"Qa4", code:"C090", count:56, lat:13.772964754970323, lng:100.51136077935556, link:"https://maps.app.goo.gl/pYRPRULUpTrUrxXn9",
+    name:"พระที่นั่งอัมพรสถาน", supervisor:"คุณบัวสอน", supervisorPhone:"0650262005", clientName:"คุณนุ้ย", clientPhone:"0870598689" },
+  { qa:"Qa4", code:"C096", count:5, lat:13.768139222842235, lng:100.5222058507741, link:"https://maps.app.goo.gl/ZxByK7xTqDP24gfXA",
+    name:"โรงเรียนสวนจิตรลดา", clientName:"ครูสวนจิตรลดา", clientPhone:"0892187117" },
+  { qa:"Qa1", code:"C104", count:2, lat:13.761236111201898, lng:100.58130276771514, link:"https://maps.app.goo.gl/bBNDgZGr9T3Kfgt67",
+    name:"ช.การช่าง สายสีน้ำเงิน", clientName:"คุณต้อย", clientPhone:"0958356222" },
+  { qa:"Qa1", code:"C111", count:4, lat:13.759130923111906, lng:100.57522869522944, link:"https://maps.app.goo.gl/Ji5gHgBGxgx6xq5NA",
+    name:"ช.การช่าง สายสีส้มตะวันตก", clientName:"คุณหวาน", clientPhone:"0992410105" },
+  { qa:"Qa1", code:"C133", count:7, lat:13.761585, lng:100.5370939, link:"https://maps.app.goo.gl/FsnntwduTu4sekT69",
+    name:"บริษัท เอกมหากิจ จำกัด สาขาเซ็นจูรี่ เดอะมูฟวีพลาซ่า อนุสาวรีย์ชัย", clientName:"คุณหนึ่ง", clientPhone:"0990896882" },
+  { qa:"Qa2", code:"C145", count:1, lat:13.7656905, lng:100.6197587, link:"https://maps.app.goo.gl/35vq1Gdg7niMaSYh6",
+    name:"บริษัท แคนอินโนเวชั่น จำกัด", clientName:"คุณเเตน", clientPhone:"0804408055", note:"หมู่บ้านเนอร์วาน่า ราม53" },
+  { qa:"Qa2", code:"C148", count:1, lat:13.819773, lng:100.6541607, link:"https://maps.app.goo.gl/qhUuaUwuxoqGznwX6",
+    name:"PHUMA CLINIC (นวมินทร์)" },
+  { qa:"Qa1", code:"C149", count:1, lat:13.7571376, lng:100.5612574, link:"https://maps.app.goo.gl/ukFyLFSc4KKbKggE9",
+    name:"บริษัท ที.ไอ.ไอ จำกัด" },
+  { qa:"Qa2", code:"C007", count:4, lat:13.575763, lng:100.485553, link:"https://maps.app.goo.gl/ncJx41STaSt7ASCd9",
+    name:"คลินท์แพค" },
+  { qa:"Qa2", code:"C012", count:2, lat:13.6945014, lng:100.6481526, link:"https://maps.app.goo.gl/r9gVtnz8d1a6uvxQ6",
+    name:"ดองกิ ซีคอนศรินครินทร์", supervisor:"คุณออง", supervisorPhone:"0929579934" },
+  { qa:"Qa2", code:"C013", count:2, lat:13.764831416727102, lng:100.78684844443437, link:"https://maps.app.goo.gl/9b6TcfJ14PSuGMGa6",
+    name:"ตันจง ซูบารู ออโตโมทิฟ (ประเทศไทย) (TCSAT)", supervisor:"คุณนุ้ย", supervisorPhone:"0983062354" },
+  {
+    lat:13.725556, lng:100.547969,
+    units:[
+    { qa:"Qa1", code:"C101", count:3, name:"ภัตตาคารจันทร์เพ็ญ", link:"https://maps.app.goo.gl/ZY8dKEC8r2focnPa8" }
+    ]
+  },
+  { qa:"Qa4", code:"C026", count:6, lat:13.7773288, lng:100.4974923, link:"https://maps.app.goo.gl/9eCdV6bNzwuQa1F37",
+    name:"นิติบุคคลอาคารชุด ทิวริเวอร์เพลส" },
+  { qa:"Qa1", code:"C028", count:4, lat:13.7490138, lng:100.5302764, link:"https://maps.app.goo.gl/ojJqMcscxb8hrNhV9",
+    name:"นิติบุคคลอาคารชุด ปทุมวันเพลส", supervisor:"คุณปิ้น", supervisorPhone:"0946366403" },
+  { qa:"Qa2", code:"C030", count:12, lat:13.6957885, lng:100.4943526, link:"https://maps.app.goo.gl/Q9hvBTAveDuDywEJ6",
+    name:"ศุภาลัย คาซา ริวา" },
+  { qa:"Qa4", code:"C033", count:5, lat:13.996014, lng:100.5763515, link:"https://maps.app.goo.gl/YEnPqkrdZYTGj8xq8",
+    name:"นิสสันดีเซล (ประเทศไทย) จำกัด (ฟูโซ่ ทรัค)" },
+  { qa:"Qa1", code:"C035", count:3, lat:13.7544944, lng:100.5243204, link:"https://maps.app.goo.gl/KGzy8fML4PCHjTcP6",
+    name:"บริษัท ดีจีนพัฒนา จำกัด" },
+  {
+    lat:13.7165262, lng:100.5856913,
+    units:[
+    { qa:"Qa2", code:"C037", count:2, name:"บริษัท บิ๊กซี ซูเปอร์เซ็นเตอร์ จำกัด (มหาชน) (แคนทีน)", link:"https://maps.app.goo.gl/9Snwnq2XiognV6TQA", supervisor:"คุณไพร", supervisorPhone:"0990294434" },
+    { qa:"Qa2", code:"C038", count:1, name:"บริษัท บีเจซี สเปเชียลตี้ส์ จำกัด (SPD Lab)", link:"https://maps.app.goo.gl/9Snwnq2XiognV6TQA", supervisor:"คุณชา", supervisorPhone:"0955949968" },
+    { qa:"Qa2", code:"C039", count:20, name:"บริษัท เบอร์ลี่ยุคเกอร์ จำกัด (มหาชน) BJC อาคาร A,B", link:"https://maps.app.goo.gl/9Snwnq2XiognV6TQA", supervisor:"คุณชา", supervisorPhone:"0955949968" },
+    { qa:"Qa2", code:"C040", count:12, name:"บริษัท เบอร์ลี่ยุคเกอร์ จำกัด (มหาชน) BJC อาคาร C,D", link:"https://maps.app.goo.gl/9Snwnq2XiognV6TQA", supervisor:"คุณชา", supervisorPhone:"0955949968" }
+    ]
+  },
+  { qa:"Qa2", code:"C054", count:1, lat:13.814158881574375, lng:100.76067105198172, link:"https://maps.app.goo.gl/K8EeAtMkVTxaAyf19",
+    name:"ซูบารู มีนบุรี", supervisor:"คุณหอมไกล", supervisorPhone:"0644968425" },
+  { qa:"Qa4", code:"C061", count:6, lat:13.7473957, lng:100.5129373, link:"https://maps.app.goo.gl/MwBpGSLquhzutLSN7",
+    name:"วัดเทพศิรินทราวาส ราชวรวิหาร", supervisor:"คุณเเสงเทียน", supervisorPhone:"0941938161" },
+  { qa:"Qa2", code:"C063", count:7, lat:13.7144852, lng:100.5817707, link:"https://maps.app.goo.gl/zPvBqp8v4hNPFWv59",
+    name:"บริษัท ไวท์กรุ๊ป จำกัด (มหาชน) (BJC ชั้น 1-2)", supervisor:"คุณจี๊ด", supervisorPhone:"0946688628" },
+  { qa:"Qa2", code:"C084", count:2, lat:13.7147558, lng:100.5845214, link:"https://maps.app.goo.gl/vQfJQ2ioGo1jrkfz8",
+    name:"บริษัท ตลาดครอบครัว จำกัด", supervisor:"คุณไพร", supervisorPhone:"0990294434" },
+  { qa:"Qa2", code:"C086", count:1, lat:13.6634817, lng:100.6139296, link:"https://maps.app.goo.gl/6tp1SwYGGhu9mHW48",
+    name:"โมเม้นทีฟ เพอร์ฟอร์แมน มีเทอร์เรียล", supervisor:"คุณจิต", supervisorPhone:"0946688628" },
+  { qa:"Qa2", code:"C092", count:5, lat:13.7329968, lng:100.5602702, link:"https://maps.app.goo.gl/FwATWq5Nn3Yq91nTA",
+    name:"บริษัท เอส ซี เอ็ม แอล ดีเวลลอปเม้นท์ จำกัด (สปา)" },
+  { qa:"Qa2", code:"C107", count:2, lat:13.7309475, lng:100.5858163, link:"https://maps.app.goo.gl/7HFjmC4gu8hjUXkb8",
+    name:"ดองกิ เดอะมอลล์ ทองหล่อ" },
+  { qa:"Qa2", code:"C108", count:2, lat:13.7530396, lng:100.6107788, link:"https://maps.app.goo.gl/xzvL6yfFM4DnvVP69",
+    name:"บริษัท เซ็ปเป้ จำกัด (มหาชน)", supervisor:"คุณน้อย", supervisorPhone:"0983350869" },
+  { qa:"Qa4", code:"C110", count:17, lat:13.8875988, lng:100.4906941, link:"https://maps.app.goo.gl/1Jgj8b9iwMkakb9B6",
+    name:"สถาบันพัฒนาภาษี" },
+  { qa:"Qa2", code:"C112", count:40, lat:13.7400641, lng:100.5359772, link:"https://maps.app.goo.gl/uDgbMTrxRLHtTjgA7",
+    name:"สมาคมราชกรีฑาสโมสร" },
+  { qa:"Qa2", code:"C113", count:24, lat:13.7321805, lng:100.5490822, link:"https://maps.app.goo.gl/hXX2751fNHUQddDdA",
+    name:"สมาคมราชกรีฑาสโมสรโปโลคลับ" },
+  { qa:"Qa2", code:"C116", count:2, lat:13.731749711848233, lng:100.54942019730285, link:"https://maps.app.goo.gl/AwZES4SPwB1CyUuN7",
+    name:"บริษัท สีฟ้า กรุ๊ป จำกัด" },
+  { qa:"Qa2", code:"C119", count:5, lat:13.6292677, lng:100.7484076, link:"https://maps.app.goo.gl/XQST6fA4S44k7Uix9",
+    name:"บริษัท โมเดอร์นฟอร์มกรุ๊ป จำกัด (มหาชน)" },
+  { qa:"Qa4", code:"C131", count:2, lat:13.8759677, lng:100.4125077, link:"https://maps.app.goo.gl/9aPu8AFDGd5qDwbFA",
+    name:"ดองกิ (สาขาเซ็นทรัลเวสต์เกต)" },
+  { qa:"Qa2", code:"C132", count:1, lat:13.736963, lng:100.5601206, link:"https://maps.app.goo.gl/yoRWkTGYTkHJDvsm9",
+    name:"บริษัท เจริญทรัพย์กำลัง 3 จำกัด (สาขาโอโก)", supervisor:"คุณคัม", supervisorPhone:"0613044605" },
+  { qa:"Qa2", code:"C136", count:1, lat:13.7739012, lng:100.6152618, link:"https://maps.app.goo.gl/1HPFLh1m7tV8JLnW8",
+    name:"บริษัท โอทูอี ซัพพลาย จำกัด" },
+  { qa:"Qa2", code:"C147", count:1, lat:13.8402899, lng:100.6342654, link:"https://maps.app.goo.gl/h7E3ntgNNQEcJz9v7",
+    name:"บริษัท ไทยเบิร์นเนอร์ อินดัสเตรียล ฮีด จำกัด" },
+  {
+    lat:13.8235785, lng:100.5376374,
+    units:[
+    { qa:"Ecs", code:"E001-1", count:14, name:"ธกส ประชาชื่น", link:"https://maps.app.goo.gl/pbLDMqnD6Vy5mLqE8" },
+    { qa:"แรงงาน", code:"L009", count:0, name:"ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร (ธุรการ)", link:"" }
+    ]
+  },
+  {
+    lat:13.7979852, lng:100.5496478,
+    units:[
+    { qa:"Ecs", code:"E001-2", count:3, name:"ธกส จตุจักร", link:"https://maps.app.goo.gl/1unRdCy5CDC1foPY9" },
+    { qa:"แรงงาน", code:"L009", count:0, name:"ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร (ธุรการ)", link:"" }
+    ]
+  },
+  {
+    lat:13.8429403, lng:100.5780752,
+    units:[
+    { qa:"Ecs", code:"E001-3", count:65, name:"ธกส บางเขน", link:"https://maps.app.goo.gl/NdnnrWk5TppnLkZG6" },
+    { qa:"แรงงาน", code:"L009", count:0, name:"ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร (ธุรการ)", link:"" }
+    ]
+  },
+  {
+    lat:13.7614605, lng:100.5139331,
+    units:[
+    { qa:"Ecs", code:"E001-4", count:1, name:"ธกส นางเลิ้ง", link:"https://maps.app.goo.gl/N3xWPS4XTPM2aXwh7" },
+    { qa:"แรงงาน", code:"L009", count:0, name:"ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร (ธุรการ)", link:"" }
+    ]
+  },
+  { qa:"Ecs", code:"E003-1", count:6, lat:13.8781376, lng:100.4746409, link:"https://maps.app.goo.gl/ebebvDLTRDAFAWhK9",
+    name:"นิติบุคคลอาคารชุด เมโทร ริเวอร์ฟร้อนท์" },
+  { qa:"แรงงาน", code:"L001", count:28, lat:13.7494559, lng:100.5577794, link:"https://maps.app.goo.gl/8wvgoWvnupbLwJb39",
+    name:"การท่องเที่ยวแห่งประเทศไทย (จัดเลี้ยง)" },
+  {
+    lat:13.7224392, lng:100.5292066,
+    units:[
+    { qa:"แรงงาน", code:"L005", count:10, name:"อุเบะ เคมิคอลส์ (พนักงานขับรถยนต์+แมสฯ)", link:"https://maps.app.goo.gl/SH7X5DYma7eLVSp36" },
+    { qa:"แรงงาน", code:"C072", count:1, name:"อุเบะ เคมิคอลส์ + แม่บ้าน", link:"https://maps.app.goo.gl/SH7X5DYma7eLVSp36" }
+    ]
+  },
+  { qa:"แรงงาน", code:"L011", count:10, lat:13.7690446, lng:100.5059628, link:"https://maps.app.goo.gl/JZAJPqZqMTQ636fv9",
+    name:"สำนักงานพระคลังข้างที่ (งานจัดเลี้ยง)" },
+  { qa:"แรงงาน", code:"L012", count:1, lat:12.6897604, lng:101.1424187, link:"https://maps.app.goo.gl/d8QS6AJMLz15XEE3A",
+    name:"บริษัท บีเอสที เอเนอรส์ อิลาส โตเมอร์ จำกัด" },
+  { qa:"Qa3", code:"C024", count:7, lat:13.807282610744481, lng:100.55837965163998, link:"https://maps.app.goo.gl/YMtSECAWcXkj5FM96",
+    name:"นิติบุคคลอาคารชุด ซิม วิภา-ลาดพร้าว" },
+  { qa:"Qa3", code:"C044", count:18, lat:13.870459, lng:100.5675277, link:"https://maps.app.goo.gl/gartmxo9p8X4gPuG7",
+    name:"ผลิตไฟฟ้า จำกัด" },
+  { qa:"Qa3", code:"C052", count:3, lat:13.8195648, lng:100.5572067, link:"https://maps.app.goo.gl/oEKM59dqXY7XWBDw8",
+    name:"บริษัท ฟานัคไทย จำกัด" },
+  { qa:"Qa1", code:"C081", count:4, lat:13.7289142, lng:100.5368907, link:"https://maps.app.goo.gl/NpsyUjEZKnm2REvV6",
+    name:"โอเชียน เน็ตเวิร์ค เอ็กซ์เพรส (ประเทศไทย)" },
+  { qa:"Qa3", code:"C082", count:8, lat:13.7771715, lng:100.5441209, link:"https://maps.app.goo.gl/yxZtHQRHdtrKH1819",
+    name:"AI อารีเพลส" },
+  { qa:"Qa3", code:"C115-2", count:3, lat:13.8616799, lng:100.5647754, link:"https://maps.app.goo.gl/pXUCUPoH9fHhtVEt9",
+    name:"สวนเปรมประชาวนารักษ์" },
+  { qa:"Qa1", code:"C137", count:1, lat:13.7379508, lng:100.5221095, link:"https://maps.app.goo.gl/uGkFPgcwnBLVkYNt5",
+    name:"เอไอออเนนจ์ (บรรทัดทอง)" },
+  { qa:"Qa3", code:"C140", count:14, lat:13.783703, lng:100.5464308, link:"https://maps.app.goo.gl/3xvkcpntJ2WBEPab6",
+    name:"อาคารชินวัตร ทาวเวอร์ 1" },
+  { qa:"Qa3", code:"C141", count:13, lat:13.7866403, lng:100.546533, link:"https://maps.app.goo.gl/ptbV8L5dwML7XJmG7",
+    name:"อาคารชินวัตร ทาวเวอร์ 2" },
+  { qa:"Qa3", code:"C142", count:6, lat:13.8233479, lng:100.5594536, link:"https://maps.app.goo.gl/KRHoHSrGtULZLctc7",
+    name:"อาคารชินวัตร ทาวเวอร์ 3 (Conference)" },
+  { qa:"Qa3", code:"C143", count:8, lat:13.783894, lng:100.546429, link:"https://maps.app.goo.gl/LNKVu7gkequtymCfA",
+    name:"อาคาร SC Tower" },
+  { qa:"Qa3", code:"C144", count:1, lat:13.8201423, lng:100.5633066, link:"https://maps.app.goo.gl/W1HrsZYQ59LiF1s89",
+    name:"บริษัท สยาลวดเหล็กอุตสาหกรรม จำกัด" },
+  { qa:"Qa3", code:"C146", count:1, lat:13.7834568, lng:100.5464472, link:"https://maps.app.goo.gl/2cA7mAUh9qcwAEGf8",
+    name:"บริษัท เอสซี แอสเสท คอร์ปอเรชั่น จำกัด อาคาร TTC" },
+  { qa:"Qa2", code:"C151", count:36, lat:13.622490966227733, lng:100.74194896336994, link:"https://maps.app.goo.gl/KTTigGeyyFqqhSCS9",
+    name:"บริษัท ไทยซัมมิท โอโตพาร์ท อินดัสตรี" },
+  { qa:"Qa2", code:"C152", count:8, lat:13.599375036129413, lng:100.77541591733858, link:"https://maps.app.goo.gl/KXAF5baCA4KvbvHg8",
+    name:"บริษัท ไทยชนาธร อุตสาหกรรม จำกัด (TCT)" },
+  { qa:"Qa2", code:"C153", count:6, lat:13.587602953116138, lng:100.77839071570618, link:"https://maps.app.goo.gl/MLcbpLLNphcTv8YNA",
+    name:"บริษัท ทีเอส อินเตอร์ซีทส์ จำกัด (TSIS)" },
+  { qa:"Qa2", code:"C154", count:8, lat:13.6071716, lng:101.0112805, link:"https://maps.app.goo.gl/qdzQLVxSvwTaQFPM9",
+    name:"บริษัท ไทยซัมมิท บ้านโพธิ์ จำกัด (TSBP)" },
+  { qa:"Qa2", code:"R137", count:1, lat:13.7214266, lng:100.5293398, link:"https://maps.app.goo.gl/MuR9rhcSyZanktjx8",
+    name:"บางกอกโคเจนเนอเรชั่น BCC" },
+  { qa:"Qa4", code:"C094", count:0, lat:13.803211423653934, lng:100.61423396442771, link:"https://maps.app.goo.gl/XBrPvPDgxnmzurNr7",
+    name:"บริษัท เซนทรัลพัฒนา จำกัด (มหาชน) (อีสต์วิลล์)" },
+  { qa:"Qa1", code:"002", count:4, lat:13.757912610275454, lng:100.57946399130718, link:"https://maps.app.goo.gl/8y6n4RWyTtSbSTXy6",
+    name:"กิจการร่วมค้า ซีเคเอสที-พีแอล (ออฟฟิศ รถไฟฟ้า สายสีม่วง)", clientName:"คุณเหมียว", clientPhone:"0956696644" },
+  { qa:"Qa3", code:"c134", count:0, lat:13.779911457513604, lng:100.5438549420721, link:"",
+    name:"เดอะ ไวส์ เบครูม" },
+  {
+    lat:13.81775627984006, lng:100.55741892574656,
+    units:[
+    { qa:"Qa3", code:"C139", count:1, name:"บริษัท เอนเนอร์ยี่ คอมเพล็กซ์ จำกัด (LNG)", link:"https://maps.app.goo.gl/dSPc3R66K52R2E5F8" },
+    { qa:"Qa3", code:"R139", count:1, name:"โกลบอล กรีน เคมิคอล (GGC)", link:"https://maps.app.goo.gl/9VVS3RhwaGTa94aLA" },
+    { qa:"Qa3", code:"R138", count:1, name:"พีทีที โกลบอล เคมิคอล (GC)", link:"https://maps.app.goo.gl/9VVS3RhwaGTa94aLA" },
+    { qa:"Qa3", code:"C010", count:1, name:"บริษัท จีซี โลจิสติกส์ โซลูชั่นส์ จำกัด (GCL)", link:"https://maps.app.goo.gl/PoGVcjinNYFktja96" },
+    { qa:"Qa3", code:"C049", count:9, name:"พีทีที ดิจิตอล โซลูชั่น", link:"https://maps.app.goo.gl/aJLqpfkTPnJyNTAv8" },
+    { qa:"Qa3", code:"C115", count:1, name:"ปตท.สำนักงานใหญ่ (แม่บ้าน+ห้องประชุม)", link:"https://maps.app.goo.gl/UVVWd5XSof1ifAjt5" },
+    { qa:"Qa3", code:"C008", count:1, name:"KGC อาคูราเล่", link:"https://maps.app.goo.gl/hMg1XhzHyAmFhpmH6" }
+    ]
+  },
+  {
+    lat:13.807296209613463, lng:100.55938443641236,
+    units:[
+    { qa:"Qa3", code:"C091", count:1, name:"อรุณพลัส", link:"https://maps.app.goo.gl/aQL82pM8HkLcp1VK8" },
+    { qa:"Qa3", code:"C150", count:1, name:"บริษัท อีวี มี พลัส จำกัด (สำนักงานใหญ่)", link:"https://maps.app.goo.gl/aQL82pM8HkLcp1VK8" },
+    { qa:"Qa3", code:"C102", count:1, name:"เอไอออเนกซ์", link:"https://maps.app.goo.gl/aQL82pM8HkLcp1VK8" },
+    { qa:"Qa3", code:"C004", count:1, name:"โกลบอล รีนิวเอเบิล เพาเวอร์ (GRPO)", link:"https://maps.app.goo.gl/YMtSECAWcXkj5FM96" },
+    { qa:"Qa3", code:"C003", count:1, name:"โกลบอลเพาเวอร์ซินเนอร์ยี่ (GPSC)", link:"https://maps.app.goo.gl/YMtSECAWcXkj5FM96" }
+    ]
+  }
 ];
 
 // ═══════════════════════════════════════════════
@@ -510,19 +509,19 @@ const DATA = [
 const STORAGE_KEY = 'qa_map_v4_' + encodeURIComponent(window.location.pathname);
 
 function saveData() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA)); } catch(e) {}
-  if (window._fbReady && window._setDoc && window._docRef) {
-    DATA.forEach(d => {
-      const key = d.units
-        ? 'multi_' + String(d.lat).replace(/[^0-9]/g,'') + String(d.lng).replace(/[^0-9]/g,'')
-        : (d.code||'x').replace(/[^a-zA-Z0-9_-]/g,'_');
-      window._setDoc(window._docRef('units', key), JSON.parse(JSON.stringify(d)))
-        .catch(e => console.warn('save error', e));
-    });
-  }
-  const ind = document.getElementById('saveInd');
-  ind.classList.add('show');
-  setTimeout(() => ind.classList.remove('show'), 1500);
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA)); } catch(e) {}
+  if (window._fbReady && window._setDoc && window._docRef) {
+    DATA.forEach(d => {
+      const key = d.units
+        ? 'multi_' + String(d.lat).replace(/[^0-9]/g,'') + String(d.lng).replace(/[^0-9]/g,'')
+        : (d.code||'x').replace(/[^a-zA-Z0-9_-]/g,'_');
+      window._setDoc(window._docRef('units', key), JSON.parse(JSON.stringify(d)))
+        .catch(e => console.warn('save error', e));
+    });
+  }
+  const ind = document.getElementById('saveInd');
+  ind.classList.add('show');
+  setTimeout(() => ind.classList.remove('show'), 1500);
 }
 
 // ── Map init ──────────────────────────────────────────────
@@ -530,76 +529,74 @@ const map = L.map('map').setView([13.76, 100.5], 11);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
 
 function getSizeFromCount(count) {
-  const n = count || 0;
-  if (n <= 5)  return 'S';
-  if (n <= 15) return 'M';
-  if (n <= 30) return 'L';
-  return 'XL';
+  const n = count || 0;
+  if (n <= 5)  return 'S';
+  if (n <= 15) return 'M';
+  if (n <= 30) return 'L';
+  return 'XL';
 }
 
 function makeIcon(color, size) {
-  const label = size || '';
-  const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 36" width="24" height="36">'
-    + '<path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 24 12 24s12-15 12-24C24 5.4 18.6 0 12 0z" fill="' + color + '" stroke="rgba(0,0,0,0.3)" stroke-width="1"/>'
-    + '<circle cx="12" cy="12" r="6" fill="white" opacity="0.9"/>'
-    + (label ? '<text x="12" y="16" text-anchor="middle" font-size="7" font-weight="bold" font-family="Arial" fill="' + color + '">' + label + '</text>' : '')
-    + '</svg>';
-  return L.divIcon({className:'',html:svg,iconSize:[24,36],iconAnchor:[12,36],popupAnchor:[0,-36]});
+  const label = size || '';
+  const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 36" width="24" height="36">'
+    + '<path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 24 12 24s12-15 12-24C24 5.4 18.6 0 12 0z" fill="' + color + '" stroke="rgba(0,0,0,0.3)" stroke-width="1"/>'
+    + '<circle cx="12" cy="12" r="6" fill="white" opacity="0.9"/>'
+    + (label ? '<text x="12" y="16" text-anchor="middle" font-size="7" font-weight="bold" font-family="Arial" fill="' + color + '">' + label + '</text>' : '')
+    + '</svg>';
+  return L.divIcon({className:'',html:svg,iconSize:[24,36],iconAnchor:[12,36],popupAnchor:[0,-36]});
 }
 
 function makeIconForData(d) {
-  let count = 0;
-  if (d.units) d.units.forEach(u => count += (u.count||0));
-  else count = d.count || 0;
-  const color = QA_COLOR[d.units ? d.units[0].qa : d.qa] || '#666';
-  const size  = getSizeFromCount(count);
-  return makeIcon(color, size);
+  let count = 0;
+  if (d.units) d.units.forEach(u => count += (u.count||0));
+  else count = d.count || 0;
+  const color = QA_COLOR[d.units ? d.units[0].qa : d.qa] || '#666';
+  const size  = getSizeFromCount(count);
+  return makeIcon(color, size);
 }
 
 function renderUnit(u, showCoords) {
-  const bg = QA_CODE_BG[u.qa] || '#f0f0f0';
-  return '<div class="pop-unit">'
-    + '<span class="pop-code" style="background:' + bg + ';color:#2d3748">' + (u.code||'') + '</span>'
-    + '<div class="pop-name">' + (u.name||'') + '</div>'
-    + '<div class="pop-row">👤 <strong>' + (u.qa||'') + '</strong></div>'
-    + '<div class="pop-row">🧹 แม่บ้าน <strong>' + (u.count||0) + ' คน</strong><span class="size-badge size-' + getSizeFromCount(u.count) + '">' + getSizeFromCount(u.count) + '</span></div>'
-    + (u.supervisor ? '<div class="pop-row">👷 หัวหน้า <strong>' + u.supervisor + '</strong>' + (u.supervisorPhone ? ' <a href="tel:' + u.supervisorPhone + '">' + u.supervisorPhone + '</a>' : '') + '</div>' : '')
-    + (u.clientName ? '<div class="pop-row">🏢 ลูกค้า <strong>' + u.clientName + '</strong>' + (u.clientPhone ? ' <a href="tel:' + u.clientPhone + '">' + u.clientPhone + '</a>' : '') + '</div>' : '')
-    + (u.note ? '<div class="pop-row">📝 <em>' + u.note + '</em></div>' : '')
-    + (showCoords ? '<div class="pop-coords">📌 ' + (u.lat||'') + ', ' + (u.lng||'') + '</div>' : '')
-    + (u.link ? '<a class="pop-link" href="' + u.link + '" target="_blank">📍 Google Maps</a>' : '')
-    + '</div>';
+  const bg = QA_CODE_BG[u.qa] || '#f0f0f0';
+  return '<div class="pop-unit">'
+    + '<span class="pop-code" style="background:' + bg + ';color:#2d3748">' + (u.code||'') + '</span>'
+    + '<div class="pop-name">' + (u.name||'') + '</div>'
+    + '<div class="pop-row">👤 <strong>' + (u.qa||'') + '</strong></div>'
+    + '<div class="pop-row">🧹 แม่บ้าน <strong>' + (u.count||0) + ' คน</strong><span class="size-badge size-' + getSizeFromCount(u.count) + '">' + getSizeFromCount(u.count) + '</span></div>'
+    + (u.supervisor ? '<div class="pop-row">👷 หัวหน้า <strong>' + u.supervisor + '</strong>' + (u.supervisorPhone ? ' <a href="tel:' + u.supervisorPhone + '">' + u.supervisorPhone + '</a>' : '') + '</div>' : '')
+    + (u.clientName ? '<div class="pop-row">🏢 ลูกค้า <strong>' + u.clientName + '</strong>' + (u.clientPhone ? ' <a href="tel:' + u.clientPhone + '">' + u.clientPhone + '</a>' : '') + '</div>' : '')
+    + (u.note ? '<div class="pop-row">📝 <em>' + u.note + '</em></div>' : '')
+    + (showCoords ? '<div class="pop-coords">📌 ' + (u.lat||'') + ', ' + (u.lng||'') + '</div>' : '')
+    + (u.link ? '<a class="pop-link" href="' + u.link + '" target="_blank">📍 Google Maps</a>' : '')
+    + '</div>';
 }
 
-const markers = [];
-
 function buildMarkers() {
-  // ลบ marker เก่าออกก่อน
-  markers.forEach(m => { try { map.removeLayer(m); } catch(e){} });
-  markers.length = 0;
+  // ลบ marker เก่าออกก่อน
+  markers.forEach(m => { try { map.removeLayer(m); } catch(e){} });
+  markers.length = 0;
 
-  DATA.forEach(d => {
-    let m;
-    if (d.units) {
-      m = L.marker([d.lat, d.lng], {icon: makeIconForData(d)});
-      m.bindPopup('<div class="my-popup"><div class="pop-location">📍 ' + d.units.length + ' หน่วยงานในพิกัดนี้</div>' + d.units.map(u=>renderUnit(u,false)).join('') + '</div>', {maxWidth:320});
-      m._qaList = d.units.map(u => u.qa);
-    } else {
-      m = L.marker([d.lat, d.lng], {icon: makeIconForData(d)});
-      m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},d), true) + '</div>', {maxWidth:300});
-      m._qaList = [d.qa];
-    }
-    m._raw = d;
-    let _cnt = 0;
-    if (d.units) d.units.forEach(u => _cnt += (u.count||0)); else _cnt = d.count||0;
-    m._size = getSizeFromCount(_cnt);
-    m.addTo(map);
-    markers.push(m);
-  });
+  DATA.forEach(d => {
+    let m;
+    if (d.units) {
+      m = L.marker([d.lat, d.lng], {icon: makeIconForData(d)});
+      m.bindPopup('<div class="my-popup"><div class="pop-location">📍 ' + d.units.length + ' หน่วยงานในพิกัดนี้</div>' + d.units.map(u=>renderUnit(u,false)).join('') + '</div>', {maxWidth:320});
+      m._qaList = d.units.map(u => u.qa);
+    } else {
+      m = L.marker([d.lat, d.lng], {icon: makeIconForData(d)});
+      m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},d), true) + '</div>', {maxWidth:300});
+      m._qaList = [d.qa];
+    }
+    m._raw = d;
+    let _cnt = 0;
+    if (d.units) d.units.forEach(u => _cnt += (u.count||0)); else _cnt = d.count||0;
+    m._size = getSizeFromCount(_cnt);
+    m.addTo(map);
+    markers.push(m);
+  });
 
-  document.getElementById('totalBadge').textContent = markers.length + ' จุด';
-  rebuildSearchIndex();
-  updateCount();
+  document.getElementById('totalBadge').textContent = markers.length + ' จุด';
+  rebuildSearchIndex();
+  updateCount();
 }
 
 // สร้าง markers ครั้งแรก
@@ -609,499 +606,497 @@ buildMarkers();
 window.rebuildMarkers = buildMarkers;
 
 // ── Filter ────────────────────────────────────────────────
-let activeQAs  = new Set(['all']);
+let activeQAs  = new Set(['all']);
 let activeSizes = new Set(['all']);
 
 function filterSize(size) {
-  if (size === 'all') {
-    activeSizes = new Set(['all']);
-  } else {
-    activeSizes.delete('all');
-    if (activeSizes.has(size)) { activeSizes.delete(size); if (!activeSizes.size) activeSizes = new Set(['all']); }
-    else activeSizes.add(size);
-  }
-  document.querySelectorAll('.size-btn').forEach(b => {
-    if (b.dataset.size === 'all') b.classList.toggle('active', activeSizes.has('all'));
-    else b.classList.toggle('active', !activeSizes.has('all') && activeSizes.has(b.dataset.size));
-  });
-  markers.forEach(m => {
-    const qaOk   = activeQAs.has('all') || m._qaList.some(q => activeQAs.has(q));
-    const sizeOk = activeSizes.has('all') || activeSizes.has(m._size);
-    qaOk && sizeOk ? m.addTo(map) : map.removeLayer(m);
-  });
-  updateCount();
+  if (size === 'all') {
+    activeSizes = new Set(['all']);
+  } else {
+    activeSizes.delete('all');
+    if (activeSizes.has(size)) { activeSizes.delete(size); if (!activeSizes.size) activeSizes = new Set(['all']); }
+    else activeSizes.add(size);
+  }
+  document.querySelectorAll('.size-btn').forEach(b => {
+    if (b.dataset.size === 'all') b.classList.toggle('active', activeSizes.has('all'));
+    else b.classList.toggle('active', !activeSizes.has('all') && activeSizes.has(b.dataset.size));
+  });
+  markers.forEach(m => {
+    const qaOk   = activeQAs.has('all') || m._qaList.some(q => activeQAs.has(q));
+    const sizeOk = activeSizes.has('all') || activeSizes.has(m._size);
+    qaOk && sizeOk ? m.addTo(map) : map.removeLayer(m);
+  });
+  updateCount();
 }
 
 function filterQA(qa) {
-  if (qa === 'all') {
-    activeQAs = new Set(['all']);
-  } else {
-    activeQAs.delete('all');
-    if (activeQAs.has(qa)) { activeQAs.delete(qa); if (!activeQAs.size) activeQAs = new Set(['all']); }
-    else activeQAs.add(qa);
-  }
-  document.querySelectorAll('.qa-btn').forEach(b => {
-    if (b.dataset.qa === 'all') b.classList.toggle('active', activeQAs.has('all'));
-    else b.classList.toggle('active', !activeQAs.has('all') && activeQAs.has(b.dataset.qa));
-  });
-  markers.forEach(m => {
-    const qaOk   = activeQAs.has('all') || m._qaList.some(q => activeQAs.has(q));
-    const sizeOk = activeSizes.has('all') || activeSizes.has(m._size);
-    qaOk && sizeOk ? m.addTo(map) : map.removeLayer(m);
-  });
-  const fqa = activeQAs.has('all') || activeQAs.size > 1 ? 'all' : [...activeQAs][0];
-  refreshPopups(fqa);
-  updateCount();
+  if (qa === 'all') {
+    activeQAs = new Set(['all']);
+  } else {
+    activeQAs.delete('all');
+    if (activeQAs.has(qa)) { activeQAs.delete(qa); if (!activeQAs.size) activeQAs = new Set(['all']); }
+    else activeQAs.add(qa);
+  }
+  document.querySelectorAll('.qa-btn').forEach(b => {
+    if (b.dataset.qa === 'all') b.classList.toggle('active', activeQAs.has('all'));
+    else b.classList.toggle('active', !activeQAs.has('all') && activeQAs.has(b.dataset.qa));
+  });
+  markers.forEach(m => {
+    const qaOk   = activeQAs.has('all') || m._qaList.some(q => activeQAs.has(q));
+    const sizeOk = activeSizes.has('all') || activeSizes.has(m._size);
+    qaOk && sizeOk ? m.addTo(map) : map.removeLayer(m);
+  });
+  const fqa = activeQAs.has('all') || activeQAs.size > 1 ? 'all' : [...activeQAs][0];
+  refreshPopups(fqa);
+  updateCount();
 }
 
 function refreshPopups(qa) {
-  markers.forEach(m => {
-    const d = m._raw;
-    if (d.units) {
-      const vis = qa === 'all' ? d.units : d.units.filter(u => u.qa === qa);
-      const pop = vis.length > 1
-        ? '<div class="my-popup"><div class="pop-location">📍 ' + vis.length + ' หน่วยงานในพิกัดนี้</div>' + vis.map(u=>renderUnit(u,false)).join('') + '</div>'
-        : '<div class="my-popup">' + renderUnit(vis[0]||d.units[0], false) + '</div>';
-      m.bindPopup(pop, {maxWidth:320});
-      m.setIcon(makeIconForData(d));
-    } else {
-      m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},d), true) + '</div>', {maxWidth:300});
-      m.setIcon(makeIconForData(d));
-    }
-  });
+  markers.forEach(m => {
+    const d = m._raw;
+    if (d.units) {
+      const vis = qa === 'all' ? d.units : d.units.filter(u => u.qa === qa);
+      const pop = vis.length > 1
+        ? '<div class="my-popup"><div class="pop-location">📍 ' + vis.length + ' หน่วยงานในพิกัดนี้</div>' + vis.map(u=>renderUnit(u,false)).join('') + '</div>'
+        : '<div class="my-popup">' + renderUnit(vis[0]||d.units[0], false) + '</div>';
+      m.bindPopup(pop, {maxWidth:320});
+      m.setIcon(makeIconForData(d));
+    } else {
+      m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},d), true) + '</div>', {maxWidth:300});
+      m.setIcon(makeIconForData(d));
+    }
+  });
 }
 
 function updateCount() {
-  const vis = markers.filter(m => map.hasLayer(m));
-  document.getElementById('cnt').textContent = vis.length;
-  let total = 0;
-  vis.forEach(m => {
-    const d = m._raw;
-    if (d.units) d.units.forEach(u => { if (activeQAs.has('all')||activeQAs.has(u.qa)) total += (u.count||0); });
-    else total += (d.count||0);
-  });
-  document.getElementById('staffCnt').textContent = total.toLocaleString();
+  const vis = markers.filter(m => map.hasLayer(m));
+  document.getElementById('cnt').textContent = vis.length;
+  let total = 0;
+  vis.forEach(m => {
+    const d = m._raw;
+    if (d.units) d.units.forEach(u => { if (activeQAs.has('all')||activeQAs.has(u.qa)) total += (u.count||0); });
+    else total += (d.count||0);
+  });
+  document.getElementById('staffCnt').textContent = total.toLocaleString();
 }
 
 // ── Search ────────────────────────────────────────────────
-const searchIndex = [];
 function rebuildSearchIndex() {
-  searchIndex.length = 0;
-  markers.forEach((m,mi) => {
-    const d = m._raw;
-    if (d.units) d.units.forEach(u => searchIndex.push({code:u.code,name:u.name,qa:u.qa,mi}));
-    else searchIndex.push({code:d.code,name:d.name,qa:d.qa,mi});
-  });
+  searchIndex.length = 0;
+  markers.forEach((m,mi) => {
+    const d = m._raw;
+    if (d.units) d.units.forEach(u => searchIndex.push({code:u.code,name:u.name,qa:u.qa,mi}));
+    else searchIndex.push({code:d.code,name:d.name,qa:d.qa,mi});
+  });
 }
 
 function onSearch(val) {
-  const box = document.getElementById('searchResults');
-  if (!val.trim()) { box.innerHTML=''; box.style.display='none'; return; }
-  const q = val.toLowerCase();
-  const hits = searchIndex.filter(s => (s.code||'').toLowerCase().includes(q)||(s.name||'').toLowerCase().includes(q)).slice(0,10);
-  if (!hits.length) { box.innerHTML='<div class="search-item" style="color:#718096">ไม่พบ</div>'; box.style.display='block'; return; }
-  box.innerHTML = hits.map(s =>
-    '<div class="search-item" onclick="jumpTo(' + s.mi + ')">'
-    + '<div class="si-code" style="color:' + (QA_COLOR[s.qa]||'#999') + '">' + (s.code||'') + '</div>'
-    + '<div class="si-name">' + (s.name||'') + '</div>'
-    + '</div>'
-  ).join('');
-  box.style.display = 'block';
+  const box = document.getElementById('searchResults');
+  if (!val.trim()) { box.innerHTML=''; box.style.display='none'; return; }
+  const q = val.toLowerCase();
+  const hits = searchIndex.filter(s => (s.code||'').toLowerCase().includes(q)||(s.name||'').toLowerCase().includes(q)).slice(0,10);
+  if (!hits.length) { box.innerHTML='<div class="search-item" style="color:#718096">ไม่พบ</div>'; box.style.display='block'; return; }
+  box.innerHTML = hits.map(s =>
+    '<div class="search-item" onclick="jumpTo(' + s.mi + ')">'
+    + '<div class="si-code" style="color:' + (QA_COLOR[s.qa]||'#999') + '">' + (s.code||'') + '</div>'
+    + '<div class="si-name">' + (s.name||'') + '</div>'
+    + '</div>'
+  ).join('');
+  box.style.display = 'block';
 }
 
 function jumpTo(mi) {
-  document.getElementById('searchResults').style.display='none';
-  document.getElementById('searchInput').value='';
-  const m = markers[mi];
-  if (!map.hasLayer(m)) filterQA('all');
-  map.setView(m.getLatLng(), 16, {animate:true});
-  setTimeout(() => m.openPopup(), 400);
+  document.getElementById('searchResults').style.display='none';
+  document.getElementById('searchInput').value='';
+  const m = markers[mi];
+  if (!map.hasLayer(m)) filterQA('all');
+  map.setView(m.getLatLng(), 16, {animate:true});
+  setTimeout(() => m.openPopup(), 400);
 }
 
 document.addEventListener('click', e => {
-  if (!document.getElementById('searchWrap').contains(e.target))
-    document.getElementById('searchResults').style.display='none';
+  if (!document.getElementById('searchWrap').contains(e.target))
+    document.getElementById('searchResults').style.display='none';
 });
 
 // ── Modal ─────────────────────────────────────────────────
-function openAddModal()  { document.getElementById('addModal').classList.add('open'); }
+function openAddModal()  { document.getElementById('addModal').classList.add('open'); }
 function openMgmtModal() { document.getElementById('mgmtSearch').value=''; renderMgmtList(''); document.getElementById('mgmtModal').classList.add('open'); }
-function closeModal(id)  { document.getElementById(id).classList.remove('open'); }
-function showToast(msg)  { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
+function closeModal(id)  { document.getElementById(id).classList.remove('open'); }
+function showToast(msg)  { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
 
 function getExtra(p) {
-  const g = id => (document.getElementById(id)||{value:''}).value.trim();
-  return { supervisor:g(p+'_supervisor'), supervisorPhone:g(p+'_supervisorPhone'), clientName:g(p+'_clientName'), clientPhone:g(p+'_clientPhone'), note:g(p+'_note') };
+  const g = id => (document.getElementById(id)||{value:''}).value.trim();
+  return { supervisor:g(p+'_supervisor'), supervisorPhone:g(p+'_supervisorPhone'), clientName:g(p+'_clientName'), clientPhone:g(p+'_clientPhone'), note:g(p+'_note') };
 }
 function setExtra(p, u) {
-  document.getElementById(p+'_supervisor').value      = u.supervisor||'';
-  document.getElementById(p+'_supervisorPhone').value = u.supervisorPhone||'';
-  document.getElementById(p+'_clientName').value      = u.clientName||'';
-  document.getElementById(p+'_clientPhone').value     = u.clientPhone||'';
-  document.getElementById(p+'_note').value            = u.note||'';
+  document.getElementById(p+'_supervisor').value      = u.supervisor||'';
+  document.getElementById(p+'_supervisorPhone').value = u.supervisorPhone||'';
+  document.getElementById(p+'_clientName').value      = u.clientName||'';
+  document.getElementById(p+'_clientPhone').value     = u.clientPhone||'';
+  document.getElementById(p+'_note').value            = u.note||'';
 }
 function clearExtra(p) {
-  ['supervisor','supervisorPhone','clientName','clientPhone','note'].forEach(k => document.getElementById(p+'_'+k).value='');
+  ['supervisor','supervisorPhone','clientName','clientPhone','note'].forEach(k => document.getElementById(p+'_'+k).value='');
 }
 
 // ── เพิ่ม ─────────────────────────────────────────────────
 function submitAdd() {
-  const code  = document.getElementById('a_code').value.trim();
-  const name  = document.getElementById('a_name').value.trim();
-  const qa    = document.getElementById('a_qa').value;
-  const count = parseInt(document.getElementById('a_count').value)||0;
-  const lat   = parseFloat(document.getElementById('a_lat').value);
-  const lng   = parseFloat(document.getElementById('a_lng').value);
-  const link  = document.getElementById('a_link').value.trim();
-  if (!code||!name||isNaN(lat)||isNaN(lng)) { showToast('⚠️ กรอก รหัส ชื่อ Lat Lng ให้ครบ'); return; }
-  const entry = Object.assign({qa,code,name,count,lat,lng,link}, getExtra('a'));
-  DATA.push(entry);
-  const m = L.marker([lat,lng],{icon:makeIconForData(entry)});
-  m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},entry), true) + '</div>',{maxWidth:300});
-  m._raw=entry; m._qaList=[qa]; m._size=getSizeFromCount(entry.count); m.addTo(map); markers.push(m);
-  rebuildSearchIndex();
-  updateCount();
-  document.getElementById('totalBadge').textContent = markers.length+' จุด';
-  ['a_code','a_name','a_count','a_lat','a_lng','a_link'].forEach(id=>document.getElementById(id).value='');
-  clearExtra('a');
-  closeModal('addModal');
-  map.setView([lat,lng],15,{animate:true}); setTimeout(()=>m.openPopup(),400);
-  saveData();
-  showToast('✅ เพิ่ม '+code+' แล้ว!');
+  const code  = document.getElementById('a_code').value.trim();
+  const name  = document.getElementById('a_name').value.trim();
+  const qa    = document.getElementById('a_qa').value;
+  const count = parseInt(document.getElementById('a_count').value)||0;
+  const lat   = parseFloat(document.getElementById('a_lat').value);
+  const lng   = parseFloat(document.getElementById('a_lng').value);
+  const link  = document.getElementById('a_link').value.trim();
+  if (!code||!name||isNaN(lat)||isNaN(lng)) { showToast('⚠️ กรอก รหัส ชื่อ Lat Lng ให้ครบ'); return; }
+  const entry = Object.assign({qa,code,name,count,lat,lng,link}, getExtra('a'));
+  DATA.push(entry);
+  const m = L.marker([lat,lng],{icon:makeIconForData(entry)});
+  m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},entry), true) + '</div>',{maxWidth:300});
+  m._raw=entry; m._qaList=[qa]; m._size=getSizeFromCount(entry.count); m.addTo(map); markers.push(m);
+  rebuildSearchIndex();
+  updateCount();
+  document.getElementById('totalBadge').textContent = markers.length+' จุด';
+  ['a_code','a_name','a_count','a_lat','a_lng','a_link'].forEach(id=>document.getElementById(id).value='');
+  clearExtra('a');
+  closeModal('addModal');
+  map.setView([lat,lng],15,{animate:true}); setTimeout(()=>m.openPopup(),400);
+  saveData();
+  showToast('✅ เพิ่ม '+code+' แล้ว!');
 }
 
 // ── แก้ไข/ลบ ─────────────────────────────────────────────
 // ── lookup helpers (ใช้ code แทน index เพื่อป้องกัน index ผิดหลัง Firebase reload) ──
 function findUnitByCode(code) {
-  for (let mi = 0; mi < markers.length; mi++) {
-    const d = markers[mi]._raw;
-    if (d.units) {
-      for (let ui = 0; ui < d.units.length; ui++) {
-        if (d.units[ui].code === code) return { mi, ui, m: markers[mi], d, u: d.units[ui] };
-      }
-    } else {
-      if (d.code === code) return { mi, ui: -1, m: markers[mi], d, u: d };
-    }
-  }
-  return null;
+  for (let mi = 0; mi < markers.length; mi++) {
+    const d = markers[mi]._raw;
+    if (d.units) {
+      for (let ui = 0; ui < d.units.length; ui++) {
+        if (d.units[ui].code === code) return { mi, ui, m: markers[mi], d, u: d.units[ui] };
+      }
+    } else {
+      if (d.code === code) return { mi, ui: -1, m: markers[mi], d, u: d };
+    }
+  }
+  return null;
 }
 
 function renderMgmtList(q) {
-  q = q.toLowerCase().trim();
-  const items = [];
-  markers.forEach((m) => {
-    const d = m._raw;
-    if (d.units) d.units.forEach(u => items.push({ code:u.code, name:u.name, qa:u.qa }));
-    else items.push({ code:d.code, name:d.name, qa:d.qa });
-  });
-  const filtered = q ? items.filter(i=>(i.code||'').toLowerCase().includes(q)||(i.name||'').toLowerCase().includes(q)) : items;
-  const container = document.getElementById('mgmtList');
-  if (!filtered.length) { container.innerHTML='<div style="padding:14px;color:#718096;text-align:center">ไม่พบข้อมูล</div>'; return; }
-  container.innerHTML = filtered.map(i => {
-    const c = QA_COLOR[i.qa]||'#999';
-    const safeCode = (i.code||'').replace(/'/g,"\\'");
-    return '<div class="mgmt-item">'
-      + '<div class="mgmt-info">'
-      + '<div class="mgmt-code" style="color:' + c + '">' + (i.code||'') + '</div>'
-      + '<div class="mgmt-name">' + (i.name||'') + '</div>'
-      + '<div class="mgmt-qa">' + (i.qa||'') + '</div>'
-      + '</div>'
-      + '<div class="mgmt-actions">'
-      + '<button class="btn-edit-sm" onclick="openEditDetail(\'' + safeCode + '\')">✏️</button>'
-      + '<button class="btn-del-sm"  onclick="deleteUnit(\'' + safeCode + '\')">🗑</button>'
-      + '</div>'
-      + '</div>';
-  }).join('');
+  q = q.toLowerCase().trim();
+  const items = [];
+  markers.forEach((m) => {
+    const d = m._raw;
+    if (d.units) d.units.forEach(u => items.push({ code:u.code, name:u.name, qa:u.qa }));
+    else items.push({ code:d.code, name:d.name, qa:d.qa });
+  });
+  const filtered = q ? items.filter(i=>(i.code||'').toLowerCase().includes(q)||(i.name||'').toLowerCase().includes(q)) : items;
+  const container = document.getElementById('mgmtList');
+  if (!filtered.length) { container.innerHTML='<div style="padding:14px;color:#718096;text-align:center">ไม่พบข้อมูล</div>'; return; }
+  container.innerHTML = filtered.map(i => {
+    const c = QA_COLOR[i.qa]||'#999';
+    const safeCode = (i.code||'').replace(/'/g,"\\'");
+    return '<div class="mgmt-item">'
+      + '<div class="mgmt-info">'
+      + '<div class="mgmt-code" style="color:' + c + '">' + (i.code||'') + '</div>'
+      + '<div class="mgmt-name">' + (i.name||'') + '</div>'
+      + '<div class="mgmt-qa">' + (i.qa||'') + '</div>'
+      + '</div>'
+      + '<div class="mgmt-actions">'
+      + '<button class="btn-edit-sm" onclick="openEditDetail(\'' + safeCode + '\')">✏️</button>'
+      + '<button class="btn-del-sm"  onclick="deleteUnit(\'' + safeCode + '\')">🗑</button>'
+      + '</div>'
+      + '</div>';
+  }).join('');
 }
 
 function openEditDetail(code) {
-  const found = findUnitByCode(code);
-  if (!found) { showToast('⚠️ ไม่พบข้อมูล code: ' + code); return; }
-  const { mi, ui, d, u } = found;
-  document.getElementById('e_mi').value = mi;
-  document.getElementById('e_ui').value = ui;
-  // เก็บ code ต้นฉบับไว้ใน hidden field เผื่อใช้ fallback
-  document.getElementById('e_mi').dataset.origCode = code;
-  document.getElementById('e_code').value  = u.code  || '';
-  document.getElementById('e_name').value  = u.name  || '';
-  document.getElementById('e_qa').value    = u.qa    || 'Qa1';
-  document.getElementById('e_count').value = u.count || 0;
-  document.getElementById('e_lat').value   = u.lat   || d.lat || '';
-  document.getElementById('e_lng').value   = u.lng   || d.lng || '';
-  document.getElementById('e_link').value  = u.link  || '';
-  setExtra('e', u);
-  closeModal('mgmtModal');
-  const modal = document.getElementById('editDetailModal');
-  modal.classList.add('open');
-  // scroll modal content ขึ้นบนสุด
-  setTimeout(() => { const m = modal.querySelector('.modal'); if(m) m.scrollTop = 0; }, 50);
+  const found = findUnitByCode(code);
+  if (!found) { showToast('⚠️ ไม่พบข้อมูล code: ' + code); return; }
+  const { mi, ui, d, u } = found;
+  document.getElementById('e_mi').value = mi;
+  document.getElementById('e_ui').value = ui;
+  // เก็บ code ต้นฉบับไว้ใน hidden field เผื่อใช้ fallback
+  document.getElementById('e_mi').dataset.origCode = code;
+  document.getElementById('e_code').value  = u.code  || '';
+  document.getElementById('e_name').value  = u.name  || '';
+  document.getElementById('e_qa').value    = u.qa    || 'Qa1';
+  document.getElementById('e_count').value = u.count || 0;
+  document.getElementById('e_lat').value   = u.lat   || d.lat || '';
+  document.getElementById('e_lng').value   = u.lng   || d.lng || '';
+  document.getElementById('e_link').value  = u.link  || '';
+  setExtra('e', u);
+  closeModal('mgmtModal');
+  const modal = document.getElementById('editDetailModal');
+  modal.classList.add('open');
+  // scroll modal content ขึ้นบนสุด
+  setTimeout(() => { const m = modal.querySelector('.modal'); if(m) m.scrollTop = 0; }, 50);
 }
 
 function submitEdit() {
-  // ลอง lookup ด้วย code ต้นฉบับก่อน (กันกรณี Firebase reload ทำให้ index เปลี่ยน)
-  const origCode = document.getElementById('e_mi').dataset.origCode || '';
-  let mi  = parseInt(document.getElementById('e_mi').value);
-  let ui  = parseInt(document.getElementById('e_ui').value);
+  // ลอง lookup ด้วย code ต้นฉบับก่อน (กันกรณี Firebase reload ทำให้ index เปลี่ยน)
+  const origCode = document.getElementById('e_mi').dataset.origCode || '';
+  let mi  = parseInt(document.getElementById('e_mi').value);
+  let ui  = parseInt(document.getElementById('e_ui').value);
 
-  if (origCode) {
-    const found = findUnitByCode(origCode);
-    if (found) { mi = found.mi; ui = found.ui; }
-  }
+  if (origCode) {
+    const found = findUnitByCode(origCode);
+    if (found) { mi = found.mi; ui = found.ui; }
+  }
 
-  const code  = document.getElementById('e_code').value.trim();
-  const name  = document.getElementById('e_name').value.trim();
-  const qa    = document.getElementById('e_qa').value;
-  const count = parseInt(document.getElementById('e_count').value) || 0;
-  const lat   = parseFloat(document.getElementById('e_lat').value);
-  const lng   = parseFloat(document.getElementById('e_lng').value);
-  const link  = document.getElementById('e_link').value.trim();
-  const extra = getExtra('e');
+  const code  = document.getElementById('e_code').value.trim();
+  const name  = document.getElementById('e_name').value.trim();
+  const qa    = document.getElementById('e_qa').value;
+  const count = parseInt(document.getElementById('e_count').value) || 0;
+  const lat   = parseFloat(document.getElementById('e_lat').value);
+  const lng   = parseFloat(document.getElementById('e_lng').value);
+  const link  = document.getElementById('e_link').value.trim();
+  const extra = getExtra('e');
 
-  // validation พร้อมบอก field ที่ผิด
-  if (!code) { showToast('⚠️ กรุณากรอก รหัส'); document.getElementById('e_code').focus(); return; }
-  if (!name) { showToast('⚠️ กรุณากรอก ชื่อหน่วยงาน'); document.getElementById('e_name').focus(); return; }
-  if (isNaN(lat)) { showToast('⚠️ Latitude ไม่ถูกต้อง'); document.getElementById('e_lat').focus(); return; }
-  if (isNaN(lng)) { showToast('⚠️ Longitude ไม่ถูกต้อง'); document.getElementById('e_lng').focus(); return; }
+  // validation พร้อมบอก field ที่ผิด
+  if (!code) { showToast('⚠️ กรุณากรอก รหัส'); document.getElementById('e_code').focus(); return; }
+  if (!name) { showToast('⚠️ กรุณากรอก ชื่อหน่วยงาน'); document.getElementById('e_name').focus(); return; }
+  if (isNaN(lat)) { showToast('⚠️ Latitude ไม่ถูกต้อง'); document.getElementById('e_lat').focus(); return; }
+  if (isNaN(lng)) { showToast('⚠️ Longitude ไม่ถูกต้อง'); document.getElementById('e_lng').focus(); return; }
 
-  if (isNaN(mi) || mi < 0 || mi >= markers.length) { showToast('⚠️ ไม่พบ marker กรุณาปิดแล้วเปิดใหม่'); return; }
+  if (isNaN(mi) || mi < 0 || mi >= markers.length) { showToast('⚠️ ไม่พบ marker กรุณาปิดแล้วเปิดใหม่'); return; }
 
-  const m = markers[mi]; const d = m._raw;
-  if (ui === -1) {
-    Object.assign(d, {code, name, qa, count, lat, lng, link}, extra);
-    m.setLatLng([lat,lng]); m.setIcon(makeIconForData(d)); m._qaList=[qa]; m._size=getSizeFromCount(d.count);
-    m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},d), true) + '</div>', {maxWidth:300});
-  } else {
-    Object.assign(d.units[ui], {code, name, qa, count, link}, extra);
-    d.lat=lat; d.lng=lng; m.setLatLng([lat,lng]);
-    m.setIcon(makeIconForData(d)); m._qaList=d.units.map(u=>u.qa);
-    const pop = d.units.length > 1
-      ? '<div class="my-popup"><div class="pop-location">📍 ' + d.units.length + ' หน่วยงาน</div>' + d.units.map(u=>renderUnit(u,false)).join('') + '</div>'
-      : '<div class="my-popup">' + renderUnit(d.units[0], false) + '</div>';
-    m.bindPopup(pop, {maxWidth:320});
-  }
-  rebuildSearchIndex();
-  closeModal('editDetailModal');
-  map.setView([lat,lng], 15, {animate:true});
-  setTimeout(() => m.openPopup(), 400);
-  saveData();
-  showToast('💾 บันทึกแล้ว!');
+  const m = markers[mi]; const d = m._raw;
+  if (ui === -1) {
+    Object.assign(d, {code, name, qa, count, lat, lng, link}, extra);
+    m.setLatLng([lat,lng]); m.setIcon(makeIconForData(d)); m._qaList=[qa]; m._size=getSizeFromCount(d.count);
+    m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},d), true) + '</div>', {maxWidth:300});
+  } else {
+    Object.assign(d.units[ui], {code, name, qa, count, link}, extra);
+    d.lat=lat; d.lng=lng; m.setLatLng([lat,lng]);
+    m.setIcon(makeIconForData(d)); m._qaList=d.units.map(u=>u.qa);
+    const pop = d.units.length > 1
+      ? '<div class="my-popup"><div class="pop-location">📍 ' + d.units.length + ' หน่วยงาน</div>' + d.units.map(u=>renderUnit(u,false)).join('') + '</div>'
+      : '<div class="my-popup">' + renderUnit(d.units[0], false) + '</div>';
+    m.bindPopup(pop, {maxWidth:320});
+  }
+  rebuildSearchIndex();
+  closeModal('editDetailModal');
+  map.setView([lat,lng], 15, {animate:true});
+  setTimeout(() => m.openPopup(), 400);
+  saveData();
+  showToast('💾 บันทึกแล้ว!');
 }
 
 function deleteUnit(code) {
-  const found = findUnitByCode(code);
-  if (!found) { showToast('⚠️ ไม่พบ: ' + code); return; }
-  const { mi, ui, m, d } = found;
-  if (ui === -1) {
-    map.removeLayer(m); markers.splice(mi, 1); DATA.splice(DATA.indexOf(d), 1);
-  } else {
-    d.units.splice(ui, 1);
-    if (!d.units.length) {
-      map.removeLayer(m); markers.splice(mi, 1); DATA.splice(DATA.indexOf(d), 1);
-    } else if (d.units.length === 1) {
-      const u = d.units[0]; Object.assign(d, u); delete d.units;
-      m.setIcon(makeIconForData(d)); m._qaList=[d.qa]; m._size=getSizeFromCount(d.count);
-      m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},d), true) + '</div>', {maxWidth:300});
-    } else {
-      m.setIcon(makeIconForData(d)); m._qaList=d.units.map(u=>u.qa);
-      m.bindPopup('<div class="my-popup"><div class="pop-location">📍 ' + d.units.length + ' หน่วยงาน</div>' + d.units.map(u=>renderUnit(u,false)).join('') + '</div>', {maxWidth:320});
-    }
-  }
-  rebuildSearchIndex(); updateCount();
-  document.getElementById('totalBadge').textContent = markers.length + ' จุด';
-  renderMgmtList(document.getElementById('mgmtSearch').value);
-  saveData();
-  showToast('🗑 ลบ ' + code + ' แล้ว');
+  const found = findUnitByCode(code);
+  if (!found) { showToast('⚠️ ไม่พบ: ' + code); return; }
+  const { mi, ui, m, d } = found;
+  if (ui === -1) {
+    map.removeLayer(m); markers.splice(mi, 1); DATA.splice(DATA.indexOf(d), 1);
+  } else {
+    d.units.splice(ui, 1);
+    if (!d.units.length) {
+      map.removeLayer(m); markers.splice(mi, 1); DATA.splice(DATA.indexOf(d), 1);
+    } else if (d.units.length === 1) {
+      const u = d.units[0]; Object.assign(d, u); delete d.units;
+      m.setIcon(makeIconForData(d)); m._qaList=[d.qa]; m._size=getSizeFromCount(d.count);
+      m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},d), true) + '</div>', {maxWidth:300});
+    } else {
+      m.setIcon(makeIconForData(d)); m._qaList=d.units.map(u=>u.qa);
+      m.bindPopup('<div class="my-popup"><div class="pop-location">📍 ' + d.units.length + ' หน่วยงาน</div>' + d.units.map(u=>renderUnit(u,false)).join('') + '</div>', {maxWidth:320});
+    }
+  }
+  rebuildSearchIndex(); updateCount();
+  document.getElementById('totalBadge').textContent = markers.length + ' จุด';
+  renderMgmtList(document.getElementById('mgmtSearch').value);
+  saveData();
+  showToast('🗑 ลบ ' + code + ' แล้ว');
 }
 
 // ── Export HTML ───────────────────────────────────────────
 function esc(s) { return (s||'').replace(/\\/g,'\\\\').replace(/"/g,'\\"'); }
 
 function serializeData() {
-  return 'const DATA = [\n' + DATA.map(d => {
-    if (d.units) {
-      const ul = d.units.map(u => {
-        let s = '    { qa:"' + u.qa + '", code:"' + esc(u.code) + '", count:' + (u.count||0) + ', name:"' + esc(u.name) + '", link:"' + esc(u.link) + '"';
-        if(u.supervisor)      s+=', supervisor:"' + esc(u.supervisor) + '"';
-        if(u.supervisorPhone) s+=', supervisorPhone:"' + esc(u.supervisorPhone) + '"';
-        if(u.clientName)      s+=', clientName:"' + esc(u.clientName) + '"';
-        if(u.clientPhone)     s+=', clientPhone:"' + esc(u.clientPhone) + '"';
-        if(u.note)            s+=', note:"' + esc(u.note) + '"';
-        return s+' }';
-      }).join(',\n');
-      return '  {\n    lat:' + d.lat + ', lng:' + d.lng + ',\n    units:[\n' + ul + '\n    ]\n  }';
-    }
-    let s = '  { qa:"' + d.qa + '", code:"' + esc(d.code) + '", count:' + (d.count||0) + ', lat:' + d.lat + ', lng:' + d.lng + ', link:"' + esc(d.link) + '",\n    name:"' + esc(d.name) + '"';
-    if(d.supervisor)      s+=', supervisor:"' + esc(d.supervisor) + '"';
-    if(d.supervisorPhone) s+=', supervisorPhone:"' + esc(d.supervisorPhone) + '"';
-    if(d.clientName)      s+=', clientName:"' + esc(d.clientName) + '"';
-    if(d.clientPhone)     s+=', clientPhone:"' + esc(d.clientPhone) + '"';
-    if(d.note)            s+=', note:"' + esc(d.note) + '"';
-    return s+' }';
-  }).join(',\n') + '\n];';
+  return 'const DATA = [\n' + DATA.map(d => {
+    if (d.units) {
+      const ul = d.units.map(u => {
+        let s = '    { qa:"' + u.qa + '", code:"' + esc(u.code) + '", count:' + (u.count||0) + ', name:"' + esc(u.name) + '", link:"' + esc(u.link) + '"';
+        if(u.supervisor)      s+=', supervisor:"' + esc(u.supervisor) + '"';
+        if(u.supervisorPhone) s+=', supervisorPhone:"' + esc(u.supervisorPhone) + '"';
+        if(u.clientName)      s+=', clientName:"' + esc(u.clientName) + '"';
+        if(u.clientPhone)     s+=', clientPhone:"' + esc(u.clientPhone) + '"';
+        if(u.note)            s+=', note:"' + esc(u.note) + '"';
+        return s+' }';
+      }).join(',\n');
+      return '  {\n    lat:' + d.lat + ', lng:' + d.lng + ',\n    units:[\n' + ul + '\n    ]\n  }';
+    }
+    let s = '  { qa:"' + d.qa + '", code:"' + esc(d.code) + '", count:' + (d.count||0) + ', lat:' + d.lat + ', lng:' + d.lng + ', link:"' + esc(d.link) + '",\n    name:"' + esc(d.name) + '"';
+    if(d.supervisor)      s+=', supervisor:"' + esc(d.supervisor) + '"';
+    if(d.supervisorPhone) s+=', supervisorPhone:"' + esc(d.supervisorPhone) + '"';
+    if(d.clientName)      s+=', clientName:"' + esc(d.clientName) + '"';
+    if(d.clientPhone)     s+=', clientPhone:"' + esc(d.clientPhone) + '"';
+    if(d.note)            s+=', note:"' + esc(d.note) + '"';
+    return s+' }';
+  }).join(',\n') + '\n];';
 }
 
 function exportHTML() {
-  const newData = serializeData();
-  fetch(window.location.href)
-    .then(r => { if(!r.ok) throw new Error('fetch failed'); return r.text(); })
-    .then(original => {
-      const start = original.indexOf('const DATA = [');
-      const end   = original.indexOf('\n];', start) + 3;
-      if (start < 0) throw new Error('no DATA');
-      const output = original.slice(0, start) + newData + original.slice(end);
-      downloadFile(output, 'qa-map-updated.html');
-      showToast('⬇ Export สำเร็จ!');
-    })
-    .catch(err => {
-      console.error(err);
-      showToast('⚠️ ต้องเปิดผ่าน localhost เพื่อ Export (ไม่ใช่ file://)');
-    });
+  const newData = serializeData();
+  fetch(window.location.href)
+    .then(r => { if(!r.ok) throw new Error('fetch failed'); return r.text(); })
+    .then(original => {
+      const start = original.indexOf('const DATA = [');
+      const end   = original.indexOf('\n];', start) + 3;
+      if (start < 0) throw new Error('no DATA');
+      const output = original.slice(0, start) + newData + original.slice(end);
+      downloadFile(output, 'qa-map-updated.html');
+      showToast('⬇ Export สำเร็จ!');
+    })
+    .catch(err => {
+      console.error(err);
+      showToast('⚠️ ต้องเปิดผ่าน localhost เพื่อ Export (ไม่ใช่ file://)');
+    });
 }
 
 function downloadFile(content, filename) {
-  const blob = new Blob([content], {type:'text/html;charset=utf-8'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  const blob = new Blob([content], {type:'text/html;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 
 // ── Export PDF ────────────────────────────────────────────
 function exportPDF() {
-  const rows=[];
-  markers.forEach(m => {
-    if (!map.hasLayer(m)) return;
-    const d = m._raw;
-    if (d.units) d.units.forEach(u => { if(activeQAs.has('all')||activeQAs.has(u.qa)) rows.push({code:u.code,name:u.name||'',qa:u.qa,count:u.count||0,supervisor:u.supervisor||'',supervisorPhone:u.supervisorPhone||'',clientName:u.clientName||'',clientPhone:u.clientPhone||'',note:u.note||''}); });
-    else rows.push({code:d.code,name:d.name||'',qa:d.qa,count:d.count||0,supervisor:d.supervisor||'',supervisorPhone:d.supervisorPhone||'',clientName:d.clientName||'',clientPhone:d.clientPhone||'',note:d.note||''});
-  });
-  if (!rows.length) { showToast('⚠️ ไม่มีข้อมูล'); return; }
-  rows.sort((a,b)=>a.qa.localeCompare(b.qa)||a.code.localeCompare(b.code));
-  const qaLabelMap = {Qa1:'พี่จุ๊ (Qa1)',Qa2:'พี่รุ่ง (Qa2)',Qa3:'พี่เปิ้ล (Qa3)',Qa4:'พี่เอก (Qa4)'};
-  const qaLabel = activeQAs.has('all') ? 'ทั้งหมด' : [...activeQAs].map(q=>qaLabelMap[q]||q).join(', ');
-  const total = rows.reduce((s,r)=>s+r.count,0);
-  const today = new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'});
-  const qaShort = {Qa1:"พี่จุ๊",Qa2:"พี่รุ่ง",Qa3:"พี่เปิ้ล",Qa4:"พี่เอก"};
-  const trs = rows.map((r,i) => {
-    const c = QA_COLOR[r.qa]||'#666';
-    return '<tr><td style="text-align:center;color:#718096">' + (i+1) + '</td>'
-      + '<td style="font-family:monospace;font-weight:700">' + (r.code||'') + '</td>'
-      + '<td>' + (r.name||'') + '</td>'
-      + '<td style="text-align:center"><span style="background:' + c + '20;color:' + c + ';padding:1px 8px;border-radius:20px;font-size:10px;font-weight:700">' + (qaShort[r.qa]||r.qa) + '</span></td>'
-      + '<td style="text-align:center">' + r.count + '</td>'
-      + '<td>' + (r.supervisor||'') + '</td>'
-      + '<td>' + (r.supervisorPhone||'') + '</td>'
-      + '<td>' + (r.clientName||'') + '</td>'
-      + '<td>' + (r.clientPhone||'') + '</td>'
-      + '<td style="color:#718096">' + (r.note||'') + '</td></tr>';
-  }).join('');
+  const rows=[];
+  markers.forEach(m => {
+    if (!map.hasLayer(m)) return;
+    const d = m._raw;
+    if (d.units) d.units.forEach(u => { if(activeQAs.has('all')||activeQAs.has(u.qa)) rows.push({code:u.code,name:u.name||'',qa:u.qa,count:u.count||0,supervisor:u.supervisor||'',supervisorPhone:u.supervisorPhone||'',clientName:u.clientName||'',clientPhone:u.clientPhone||'',note:u.note||''}); });
+    else rows.push({code:d.code,name:d.name||'',qa:d.qa,count:d.count||0,supervisor:d.supervisor||'',supervisorPhone:d.supervisorPhone||'',clientName:d.clientName||'',clientPhone:d.clientPhone||'',note:d.note||''});
+  });
+  if (!rows.length) { showToast('⚠️ ไม่มีข้อมูล'); return; }
+  rows.sort((a,b)=>a.qa.localeCompare(b.qa)||a.code.localeCompare(b.code));
+  const qaLabelMap = {Qa1:'พี่จุ๊ (Qa1)',Qa2:'พี่รุ่ง (Qa2)',Qa3:'พี่เปิ้ล (Qa3)',Qa4:'พี่เอก (Qa4)'};
+  const qaLabel = activeQAs.has('all') ? 'ทั้งหมด' : [...activeQAs].map(q=>qaLabelMap[q]||q).join(', ');
+  const total = rows.reduce((s,r)=>s+r.count,0);
+  const today = new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'});
+  const qaShort = {Qa1:"พี่จุ๊",Qa2:"พี่รุ่ง",Qa3:"พี่เปิ้ล",Qa4:"พี่เอก"};
+  const trs = rows.map((r,i) => {
+    const c = QA_COLOR[r.qa]||'#666';
+    return '<tr><td style="text-align:center;color:#718096">' + (i+1) + '</td>'
+      + '<td style="font-family:monospace;font-weight:700">' + (r.code||'') + '</td>'
+      + '<td>' + (r.name||'') + '</td>'
+      + '<td style="text-align:center"><span style="background:' + c + '20;color:' + c + ';padding:1px 8px;border-radius:20px;font-size:10px;font-weight:700">' + (qaShort[r.qa]||r.qa) + '</span></td>'
+      + '<td style="text-align:center">' + r.count + '</td>'
+      + '<td>' + (r.supervisor||'') + '</td>'
+      + '<td>' + (r.supervisorPhone||'') + '</td>'
+      + '<td>' + (r.clientName||'') + '</td>'
+      + '<td>' + (r.clientPhone||'') + '</td>'
+      + '<td style="color:#718096">' + (r.note||'') + '</td></tr>';
+  }).join('');
 
-  // สร้าง PDF HTML โดยไม่มี template literal ซ้อน และไม่มี closing script tag ใน string
-  const pdfParts = [
-    '<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><title>รายงาน QA</title>',
-    '<style>@import url(\'https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap\');',
-    '*{margin:0;padding:0;box-sizing:border-box}body{font-family:\'Sarabun\',sans-serif;font-size:11px;color:#2d3748;padding:20px}',
-    '.header{border-bottom:3px solid #2b6cb0;padding-bottom:10px;margin-bottom:12px}',
-    '.header h1{font-size:16px;font-weight:700;color:#1a365d}.header .sub{font-size:10px;color:#718096;margin-top:2px}',
-    '.summary{display:flex;gap:10px;margin-bottom:12px}.sbox{background:#f7fafc;border:1px solid #e2e8f0;border-radius:6px;padding:6px 14px}',
-    '.sbox .lbl{font-size:10px;color:#718096}.sbox .val{font-size:14px;font-weight:700;color:#2b6cb0}',
-    'table{width:100%;border-collapse:collapse}thead tr{background:#2b6cb0;color:white}',
-    'thead th{padding:6px 8px;text-align:left;font-size:10px;font-weight:700}',
-    'tbody tr:nth-child(even){background:#f7fafc}tbody td{padding:5px 8px;border-bottom:1px solid #e2e8f0;font-size:10px;vertical-align:top}',
-    '.footer{margin-top:10px;text-align:right;font-size:9px;color:#a0aec0}',
-    '@media print{body{padding:10px}thead{display:table-header-group}tr{page-break-inside:avoid}}',
-    '</style></head><body>',
-    '<div class="header"><h1>📋 รายงานหน่วยงาน QA</h1><div class="sub">QA: ' + qaLabel + ' | ' + today + '</div></div>',
-    '<div class="summary">',
-    '<div class="sbox"><div class="lbl">หน่วยงาน</div><div class="val">' + rows.length + ' แห่ง</div></div>',
-    '<div class="sbox"><div class="lbl">🧹 แม่บ้านรวม</div><div class="val">' + total.toLocaleString() + ' คน</div></div>',
-    '</div>',
-    '<table><thead><tr>',
-    '<th style="width:28px">#</th><th style="width:65px">รหัส</th><th>ชื่อหน่วยงาน</th>',
-    '<th style="width:50px">QA</th><th style="width:55px">แม่บ้าน</th>',
-    '<th style="width:90px">หัวหน้างาน</th><th style="width:85px">เบอร์หัวหน้า</th>',
-    '<th style="width:90px">ลูกค้า</th><th style="width:85px">เบอร์ลูกค้า</th><th>หมายเหตุ</th>',
-    '</tr></thead><tbody>' + trs + '</tbody></table>',
-    '<div class="footer">แผนที่หน่วยงาน QA | ' + today + '</div>',
-    '<scr' + 'ipt>window.onload=function(){window.print();}</' + 'script>',
-    '</body></html>'
-  ];
-  const pdfHtml = pdfParts.join('');
+  // สร้าง PDF HTML โดยไม่มี template literal ซ้อน และไม่มี closing script tag ใน string
+  const pdfParts = [
+    '<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><title>รายงาน QA</title>',
+    '<style>@import url(\'https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap\');',
+    '*{margin:0;padding:0;box-sizing:border-box}body{font-family:\'Sarabun\',sans-serif;font-size:11px;color:#2d3748;padding:20px}',
+    '.header{border-bottom:3px solid #2b6cb0;padding-bottom:10px;margin-bottom:12px}',
+    '.header h1{font-size:16px;font-weight:700;color:#1a365d}.header .sub{font-size:10px;color:#718096;margin-top:2px}',
+    '.summary{display:flex;gap:10px;margin-bottom:12px}.sbox{background:#f7fafc;border:1px solid #e2e8f0;border-radius:6px;padding:6px 14px}',
+    '.sbox .lbl{font-size:10px;color:#718096}.sbox .val{font-size:14px;font-weight:700;color:#2b6cb0}',
+    'table{width:100%;border-collapse:collapse}thead tr{background:#2b6cb0;color:white}',
+    'thead th{padding:6px 8px;text-align:left;font-size:10px;font-weight:700}',
+    'tbody tr:nth-child(even){background:#f7fafc}tbody td{padding:5px 8px;border-bottom:1px solid #e2e8f0;font-size:10px;vertical-align:top}',
+    '.footer{margin-top:10px;text-align:right;font-size:9px;color:#a0aec0}',
+    '@media print{body{padding:10px}thead{display:table-header-group}tr{page-break-inside:avoid}}',
+    '</style></head><body>',
+    '<div class="header"><h1>📋 รายงานหน่วยงาน QA</h1><div class="sub">QA: ' + qaLabel + ' | ' + today + '</div></div>',
+    '<div class="summary">',
+    '<div class="sbox"><div class="lbl">หน่วยงาน</div><div class="val">' + rows.length + ' แห่ง</div></div>',
+    '<div class="sbox"><div class="lbl">🧹 แม่บ้านรวม</div><div class="val">' + total.toLocaleString() + ' คน</div></div>',
+    '</div>',
+    '<table><thead><tr>',
+    '<th style="width:28px">#</th><th style="width:65px">รหัส</th><th>ชื่อหน่วยงาน</th>',
+    '<th style="width:50px">QA</th><th style="width:55px">แม่บ้าน</th>',
+    '<th style="width:90px">หัวหน้างาน</th><th style="width:85px">เบอร์หัวหน้า</th>',
+    '<th style="width:90px">ลูกค้า</th><th style="width:85px">เบอร์ลูกค้า</th><th>หมายเหตุ</th>',
+    '</tr></thead><tbody>' + trs + '</tbody></table>',
+    '<div class="footer">แผนที่หน่วยงาน QA | ' + today + '</div>',
+    '<scr' + 'ipt>window.onload=function(){window.print();}</' + 'script>',
+    '</body></html>'
+  ];
+  const pdfHtml = pdfParts.join('');
 
-  const blob = new Blob([pdfHtml], {type:'text/html;charset=utf-8'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.target = '_blank';
-  a.click();
-  showToast('📄 เปิดแล้ว กด Ctrl+P');
+  const blob = new Blob([pdfHtml], {type:'text/html;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.target = '_blank';
+  a.click();
+  showToast('📄 เปิดแล้ว กด Ctrl+P');
 }
 </script>
 
-<!-- Firebase: โหลดหลัง main script เพื่อให้ DATA และ buildMarkers พร้อมก่อน -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAc7_R3-9M5S3eNoJ7bzLfs4YGNFKi0yAU",
-  authDomain: "qa-map-e3f27.firebaseapp.com",
-  projectId: "qa-map-e3f27",
-  storageBucket: "qa-map-e3f27.firebasestorage.app",
-  messagingSenderId: "416522148616",
-  appId: "1:416522148616:web:86b0452bb837cf09d2eabd"
+  apiKey: "AIzaSyAc7_R3-9M5S3eNoJ7bzLfs4YGNFKi0yAU",
+  authDomain: "qa-map-e3f27.firebaseapp.com",
+  projectId: "qa-map-e3f27",
+  storageBucket: "qa-map-e3f27.firebasestorage.app",
+  messagingSenderId: "416522148616",
+  appId: "1:416522148616:web:86b0452bb837cf09d2eabd"
 };
 
 window._fbReady = false;
-window._setDoc  = null;
-window._docRef  = null;
+window._setDoc  = null;
+window._docRef  = null;
 
 let _app, _db;
 try {
-  _app = initializeApp(firebaseConfig);
-  _db  = getFirestore(_app);
-  window._setDoc = (ref, data) => setDoc(ref, data);
-  window._docRef = (name, id)  => doc(_db, name, id);
+  _app = initializeApp(firebaseConfig);
+  _db  = getFirestore(_app);
+  window._setDoc = (ref, data) => setDoc(ref, data);
+  window._docRef = (name, id)  => doc(_db, name, id);
 } catch(e) {
-  console.warn('Firebase init failed:', e);
+  console.warn('Firebase init failed:', e);
 }
 
 // ซ่อน loading ก่อนไม่ว่า Firebase จะสำเร็จหรือไม่
 function hideLoading() {
-  const ov = document.getElementById('loadingOverlay');
-  if (ov) ov.style.display = 'none';
+  const ov = document.getElementById('loadingOverlay');
+  if (ov) ov.style.display = 'none';
 }
 
 if (_db) {
-  getDocs(collection(_db, 'units'))
-    .then(snap => {
-      if (!snap.empty) {
-        DATA.length = 0;
-        snap.forEach(d => DATA.push(d.data()));
-        console.log('✅ Firebase loaded:', DATA.length, 'items');
-        // รีบิลด์ markers ด้วยข้อมูลจาก Firebase
-        if (typeof window.rebuildMarkers === 'function') window.rebuildMarkers();
-      } else {
-        console.log('📤 Uploading initial data...');
-        DATA.forEach(d => {
-          const key = d.units
-            ? 'multi_' + String(d.lat).replace(/[^0-9]/g,'') + String(d.lng).replace(/[^0-9]/g,'')
-            : (d.code||'x').replace(/[^a-zA-Z0-9_-]/g,'_');
-          setDoc(doc(_db, 'units', key), JSON.parse(JSON.stringify(d)));
-        });
-      }
-    })
-    .catch(e => console.warn('Firebase error:', e))
-    .finally(() => {
-      window._fbReady = true;
-      hideLoading();
-    });
+  getDocs(collection(_db, 'units'))
+    .then(snap => {
+      if (!snap.empty) {
+        DATA.length = 0;
+        snap.forEach(d => DATA.push(d.data()));
+        console.log('✅ Firebase loaded:', DATA.length, 'items');
+        // รีบิลด์ markers ด้วยข้อมูลจาก Firebase
+        if (typeof window.rebuildMarkers === 'function') window.rebuildMarkers();
+      } else {
+        console.log('📤 Uploading initial data...');
+        DATA.forEach(d => {
+          const key = d.units
+            ? 'multi_' + String(d.lat).replace(/[^0-9]/g,'') + String(d.lng).replace(/[^0-9]/g,'')
+            : (d.code||'x').replace(/[^a-zA-Z0-9_-]/g,'_');
+          setDoc(doc(_db, 'units', key), JSON.parse(JSON.stringify(d)));
+        });
+      }
+    })
+    .catch(e => console.warn('Firebase error:', e))
+    .finally(() => {
+      window._fbReady = true;
+      hideLoading();
+    });
 } else {
-  // Firebase ไม่พร้อม ซ่อน loading ทันที
-  window._fbReady = true;
-  hideLoading();
+  // Firebase ไม่พร้อม ซ่อน loading ทันที
+  window._fbReady = true;
+  hideLoading();
 }
 </script>
 
