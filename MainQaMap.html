@@ -232,6 +232,7 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
 const QA_COLOR   = {Qa1:"#d69e2e",Qa2:"#38a169",Qa3:"#3182ce",Ecs:"#805ad5","แรงงาน":"#dd6b20",Qa4:"#e53e3e",Qa5:"#d53f8c"};
 const QA_CODE_BG = {Qa1:"#fefcbf",Qa2:"#f0fff4",Qa3:"#ebf8ff",Ecs:"#faf5ff","แรงงาน":"#fffaf0",Qa4:"#fff5f5",Qa5:"#fff0f6"};
 
+// ── DATA ──────────────────────────────────────────────────
 const DATA = [
   { qa:"Qa1", code:"C001", count:4, lat:13.758596246360337, lng:100.575001176783, link:"https://maps.app.goo.gl/TzGwxmDmtvQ1XDseA",
     name:"กิจการร่วมค้า ซีเคเอสที (ช.การช่าง ประตู 4 สายสีส้ม)", clientName:"คุณเหมียว", clientPhone:"0956696644" },
@@ -249,7 +250,6 @@ const DATA = [
     name:"สถานนีmrt ลุมพินี" },
   { qa:"Qa1", code:"C064", count:3, lat:13.74350363325576, lng:100.5457531932624, link:"https://maps.app.goo.gl/g1HLsVERFLuEyMvc6",
     name:"สำนักกฎหมายสากล ธีรคุปต์" },
-  
   {
     lat:13.7225076, lng:100.5539685,
     units:[
@@ -479,7 +479,7 @@ const DATA = [
     name:"กิจการร่วมค้า ซีเคเอสที-พีแอล (ออฟฟิศ รถไฟฟ้า สายสีม่วง)", clientName:"คุณเหมียว", clientPhone:"0956696644" },
   { qa:"Qa3", code:"c134", count:0, lat:13.779911457513604, lng:100.5438549420721, link:"",
     name:"เดอะ ไวส์ เบครูม" },
-{
+  {
     lat:13.81775627984006, lng:100.55741892574656,
     units:[
     { qa:"Qa3", code:"C139", count:1, name:"บริษัท เอนเนอร์ยี่ คอมเพล็กซ์ จำกัด (LNG)", link:"https://maps.app.goo.gl/dSPc3R66K52R2E5F8" },
@@ -498,23 +498,19 @@ const DATA = [
     { qa:"Qa3", code:"C150", count:1, name:"บริษัท อีวี มี พลัส จำกัด (สำนักงานใหญ่)", link:"https://maps.app.goo.gl/aQL82pM8HkLcp1VK8" },
     { qa:"Qa3", code:"C102", count:1, name:"เอไอออเนกซ์", link:"https://maps.app.goo.gl/aQL82pM8HkLcp1VK8" },
     { qa:"Qa3", code:"C004", count:1, name:"โกลบอล รีนิวเอเบิล เพาเวอร์ (GRPO)", link:"https://maps.app.goo.gl/YMtSECAWcXkj5FM96" },
-    { qa:"Qa3", code:"C003", count:1, name:"โกลบอลเพาเวอร์ซินเนอร์ยี่ (GPSC)", link:"https://maps.app.goo.gl/YMtSECAWcXkj5FM96" },
+    { qa:"Qa3", code:"C003", count:1, name:"โกลบอลเพาเวอร์ซินเนอร์ยี่ (GPSC)", link:"https://maps.app.goo.gl/YMtSECAWcXkj5FM96" }
     ]
-  },
-
-
+  }
 ];
 
 // ═══════════════════════════════════════════════
 // AUTO-SAVE: บันทึก DATA ทั้งหมดลง localStorage
-// เมื่อเปิดไฟล์ใหม่จะโหลดกลับมาอัตโนมัติ
 // ═══════════════════════════════════════════════
 const STORAGE_KEY = 'qa_map_v4_' + encodeURIComponent(window.location.pathname);
 
 function saveData() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA)); } catch(e) {}
-  // บันทึก Firestore
-  if (window._fbReady) {
+  if (window._fbReady && window._setDoc && window._docRef) {
     DATA.forEach(d => {
       const key = d.units
         ? 'multi_' + String(d.lat).replace(/[^0-9]/g,'') + String(d.lng).replace(/[^0-9]/g,'')
@@ -526,10 +522,6 @@ function saveData() {
   const ind = document.getElementById('saveInd');
   ind.classList.add('show');
   setTimeout(() => ind.classList.remove('show'), 1500);
-}
-
-function mergeFromStorage() {
-  // ไม่ทำอะไร — Firebase จัดการแล้วผ่าน script ท้ายไฟล์
 }
 
 // ── Map init ──────────────────────────────────────────────
@@ -546,11 +538,11 @@ function getSizeFromCount(count) {
 
 function makeIcon(color, size) {
   const label = size || '';
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 36" width="24" height="36">
-    <path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 24 12 24s12-15 12-24C24 5.4 18.6 0 12 0z" fill="${color}" stroke="rgba(0,0,0,0.3)" stroke-width="1"/>
-    <circle cx="12" cy="12" r="6" fill="white" opacity="0.9"/>
-    ${label ? `<text x="12" y="16" text-anchor="middle" font-size="7" font-weight="bold" font-family="Arial" fill="${color}">${label}</text>` : ''}
-  </svg>`;
+  const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 36" width="24" height="36">'
+    + '<path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 24 12 24s12-15 12-24C24 5.4 18.6 0 12 0z" fill="' + color + '" stroke="rgba(0,0,0,0.3)" stroke-width="1"/>'
+    + '<circle cx="12" cy="12" r="6" fill="white" opacity="0.9"/>'
+    + (label ? '<text x="12" y="16" text-anchor="middle" font-size="7" font-weight="bold" font-family="Arial" fill="' + color + '">' + label + '</text>' : '')
+    + '</svg>';
   return L.divIcon({className:'',html:svg,iconSize:[24,36],iconAnchor:[12,36],popupAnchor:[0,-36]});
 }
 
@@ -565,43 +557,55 @@ function makeIconForData(d) {
 
 function renderUnit(u, showCoords) {
   const bg = QA_CODE_BG[u.qa] || '#f0f0f0';
-  return `<div class="pop-unit">
-    <span class="pop-code" style="background:${bg};color:#2d3748">${u.code}</span>
-    <div class="pop-name">${u.name||''}</div>
-    <div class="pop-row">👤 <strong>${u.qa}</strong></div>
-    <div class="pop-row">🧹 แม่บ้าน <strong>${u.count||0} คน</strong><span class="size-badge size-${getSizeFromCount(u.count)}">${getSizeFromCount(u.count)}</span></div>
-    ${u.supervisor ? `<div class="pop-row">👷 หัวหน้า <strong>${u.supervisor}</strong>${u.supervisorPhone ? ` <a href="tel:${u.supervisorPhone}">${u.supervisorPhone}</a>` : ''}</div>` : ''}
-    ${u.clientName ? `<div class="pop-row">🏢 ลูกค้า <strong>${u.clientName}</strong>${u.clientPhone ? ` <a href="tel:${u.clientPhone}">${u.clientPhone}</a>` : ''}</div>` : ''}
-    ${u.note ? `<div class="pop-row">📝 <em>${u.note}</em></div>` : ''}
-    ${showCoords ? `<div class="pop-coords">📌 ${u.lat||''}, ${u.lng||''}</div>` : ''}
-    ${u.link ? `<a class="pop-link" href="${u.link}" target="_blank">📍 Google Maps</a>` : ''}
-  </div>`;
+  return '<div class="pop-unit">'
+    + '<span class="pop-code" style="background:' + bg + ';color:#2d3748">' + (u.code||'') + '</span>'
+    + '<div class="pop-name">' + (u.name||'') + '</div>'
+    + '<div class="pop-row">👤 <strong>' + (u.qa||'') + '</strong></div>'
+    + '<div class="pop-row">🧹 แม่บ้าน <strong>' + (u.count||0) + ' คน</strong><span class="size-badge size-' + getSizeFromCount(u.count) + '">' + getSizeFromCount(u.count) + '</span></div>'
+    + (u.supervisor ? '<div class="pop-row">👷 หัวหน้า <strong>' + u.supervisor + '</strong>' + (u.supervisorPhone ? ' <a href="tel:' + u.supervisorPhone + '">' + u.supervisorPhone + '</a>' : '') + '</div>' : '')
+    + (u.clientName ? '<div class="pop-row">🏢 ลูกค้า <strong>' + u.clientName + '</strong>' + (u.clientPhone ? ' <a href="tel:' + u.clientPhone + '">' + u.clientPhone + '</a>' : '') + '</div>' : '')
+    + (u.note ? '<div class="pop-row">📝 <em>' + u.note + '</em></div>' : '')
+    + (showCoords ? '<div class="pop-coords">📌 ' + (u.lat||'') + ', ' + (u.lng||'') + '</div>' : '')
+    + (u.link ? '<a class="pop-link" href="' + u.link + '" target="_blank">📍 Google Maps</a>' : '')
+    + '</div>';
 }
 
-// โหลด cache ก่อนสร้าง markers
-mergeFromStorage();
-
 const markers = [];
-DATA.forEach(d => {
-  let m;
-  if (d.units) {
-    m = L.marker([d.lat, d.lng], {icon: makeIconForData(d)});
-    m.bindPopup(`<div class="my-popup"><div class="pop-location">📍 ${d.units.length} หน่วยงานในพิกัดนี้</div>${d.units.map(u=>renderUnit(u,false)).join('')}</div>`, {maxWidth:320});
-    m._qaList = d.units.map(u => u.qa);
-  } else {
-    m = L.marker([d.lat, d.lng], {icon: makeIconForData(d)});
-    m.bindPopup(`<div class="my-popup">${renderUnit({...d}, true)}</div>`, {maxWidth:300});
-    m._qaList = [d.qa];
-  }
-  m._raw = d;
-  let _cnt = 0;
-  if (d.units) d.units.forEach(u => _cnt += (u.count||0)); else _cnt = d.count||0;
-  m._size = getSizeFromCount(_cnt);
-  m.addTo(map);
-  markers.push(m);
-});
 
-document.getElementById('totalBadge').textContent = markers.length + ' จุด';
+function buildMarkers() {
+  // ลบ marker เก่าออกก่อน
+  markers.forEach(m => { try { map.removeLayer(m); } catch(e){} });
+  markers.length = 0;
+
+  DATA.forEach(d => {
+    let m;
+    if (d.units) {
+      m = L.marker([d.lat, d.lng], {icon: makeIconForData(d)});
+      m.bindPopup('<div class="my-popup"><div class="pop-location">📍 ' + d.units.length + ' หน่วยงานในพิกัดนี้</div>' + d.units.map(u=>renderUnit(u,false)).join('') + '</div>', {maxWidth:320});
+      m._qaList = d.units.map(u => u.qa);
+    } else {
+      m = L.marker([d.lat, d.lng], {icon: makeIconForData(d)});
+      m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},d), true) + '</div>', {maxWidth:300});
+      m._qaList = [d.qa];
+    }
+    m._raw = d;
+    let _cnt = 0;
+    if (d.units) d.units.forEach(u => _cnt += (u.count||0)); else _cnt = d.count||0;
+    m._size = getSizeFromCount(_cnt);
+    m.addTo(map);
+    markers.push(m);
+  });
+
+  document.getElementById('totalBadge').textContent = markers.length + ' จุด';
+  rebuildSearchIndex();
+  updateCount();
+}
+
+// สร้าง markers ครั้งแรก
+buildMarkers();
+
+// expose ให้ Firebase ใช้ rebuildMarkers
+window.rebuildMarkers = buildMarkers;
 
 // ── Filter ────────────────────────────────────────────────
 let activeQAs  = new Set(['all']);
@@ -655,12 +659,12 @@ function refreshPopups(qa) {
     if (d.units) {
       const vis = qa === 'all' ? d.units : d.units.filter(u => u.qa === qa);
       const pop = vis.length > 1
-        ? `<div class="my-popup"><div class="pop-location">📍 ${vis.length} หน่วยงานในพิกัดนี้</div>${vis.map(u=>renderUnit(u,false)).join('')}</div>`
-        : `<div class="my-popup">${renderUnit(vis[0]||d.units[0], false)}</div>`;
+        ? '<div class="my-popup"><div class="pop-location">📍 ' + vis.length + ' หน่วยงานในพิกัดนี้</div>' + vis.map(u=>renderUnit(u,false)).join('') + '</div>'
+        : '<div class="my-popup">' + renderUnit(vis[0]||d.units[0], false) + '</div>';
       m.bindPopup(pop, {maxWidth:320});
       m.setIcon(makeIconForData(d));
     } else {
-      m.bindPopup(`<div class="my-popup">${renderUnit({...d},true)}</div>`, {maxWidth:300});
+      m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},d), true) + '</div>', {maxWidth:300});
       m.setIcon(makeIconForData(d));
     }
   });
@@ -677,7 +681,6 @@ function updateCount() {
   });
   document.getElementById('staffCnt').textContent = total.toLocaleString();
 }
-updateCount();
 
 // ── Search ────────────────────────────────────────────────
 const searchIndex = [];
@@ -689,7 +692,6 @@ function rebuildSearchIndex() {
     else searchIndex.push({code:d.code,name:d.name,qa:d.qa,mi});
   });
 }
-rebuildSearchIndex();
 
 function onSearch(val) {
   const box = document.getElementById('searchResults');
@@ -698,10 +700,10 @@ function onSearch(val) {
   const hits = searchIndex.filter(s => (s.code||'').toLowerCase().includes(q)||(s.name||'').toLowerCase().includes(q)).slice(0,10);
   if (!hits.length) { box.innerHTML='<div class="search-item" style="color:#718096">ไม่พบ</div>'; box.style.display='block'; return; }
   box.innerHTML = hits.map(s =>
-    `<div class="search-item" onclick="jumpTo(${s.mi})">
-      <div class="si-code" style="color:${QA_COLOR[s.qa]||'#999'}">${s.code}</div>
-      <div class="si-name">${s.name||''}</div>
-    </div>`
+    '<div class="search-item" onclick="jumpTo(' + s.mi + ')">'
+    + '<div class="si-code" style="color:' + (QA_COLOR[s.qa]||'#999') + '">' + (s.code||'') + '</div>'
+    + '<div class="si-name">' + (s.name||'') + '</div>'
+    + '</div>'
   ).join('');
   box.style.display = 'block';
 }
@@ -751,10 +753,10 @@ function submitAdd() {
   const lng   = parseFloat(document.getElementById('a_lng').value);
   const link  = document.getElementById('a_link').value.trim();
   if (!code||!name||isNaN(lat)||isNaN(lng)) { showToast('⚠️ กรอก รหัส ชื่อ Lat Lng ให้ครบ'); return; }
-  const entry = {qa,code,name,count,lat,lng,link,...getExtra('a')};
+  const entry = Object.assign({qa,code,name,count,lat,lng,link}, getExtra('a'));
   DATA.push(entry);
   const m = L.marker([lat,lng],{icon:makeIconForData(entry)});
-  m.bindPopup(`<div class="my-popup">${renderUnit({...entry},true)}</div>`,{maxWidth:300});
+  m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},entry), true) + '</div>',{maxWidth:300});
   m._raw=entry; m._qaList=[qa]; m._size=getSizeFromCount(entry.count); m.addTo(map); markers.push(m);
   rebuildSearchIndex();
   updateCount();
@@ -773,25 +775,25 @@ function renderMgmtList(q) {
   const items = [];
   markers.forEach((m,mi) => {
     const d = m._raw;
-    if (d.units) d.units.forEach((u,ui) => items.push({...u,mi,ui}));
-    else items.push({...d,mi,ui:-1});
+    if (d.units) d.units.forEach((u,ui) => items.push(Object.assign({},u,{mi,ui})));
+    else items.push(Object.assign({},d,{mi,ui:-1}));
   });
   const filtered = q ? items.filter(i=>(i.code||'').toLowerCase().includes(q)||(i.name||'').toLowerCase().includes(q)) : items;
   const container = document.getElementById('mgmtList');
   if (!filtered.length) { container.innerHTML='<div style="padding:14px;color:#718096;text-align:center">ไม่พบข้อมูล</div>'; return; }
   container.innerHTML = filtered.map(i => {
     const c = QA_COLOR[i.qa]||'#999';
-    return `<div class="mgmt-item">
-      <div class="mgmt-info">
-        <div class="mgmt-code" style="color:${c}">${i.code}</div>
-        <div class="mgmt-name">${i.name||''}</div>
-        <div class="mgmt-qa">${i.qa}</div>
-      </div>
-      <div class="mgmt-actions">
-        <button class="btn-edit-sm" onclick="openEditDetail(${i.mi},${i.ui})">✏️</button>
-        <button class="btn-del-sm"  onclick="deleteUnit(${i.mi},${i.ui})">🗑</button>
-      </div>
-    </div>`;
+    return '<div class="mgmt-item">'
+      + '<div class="mgmt-info">'
+      + '<div class="mgmt-code" style="color:' + c + '">' + (i.code||'') + '</div>'
+      + '<div class="mgmt-name">' + (i.name||'') + '</div>'
+      + '<div class="mgmt-qa">' + (i.qa||'') + '</div>'
+      + '</div>'
+      + '<div class="mgmt-actions">'
+      + '<button class="btn-edit-sm" onclick="openEditDetail(' + i.mi + ',' + i.ui + ')">✏️</button>'
+      + '<button class="btn-del-sm"  onclick="deleteUnit(' + i.mi + ',' + i.ui + ')">🗑</button>'
+      + '</div>'
+      + '</div>';
   }).join('');
 }
 
@@ -825,16 +827,16 @@ function submitEdit() {
   if (!code||!name||isNaN(lat)||isNaN(lng)) { showToast('⚠️ กรอกข้อมูลให้ครบ'); return; }
   const m=markers[mi]; const d=m._raw;
   if (ui===-1) {
-    Object.assign(d,{code,name,qa,count,lat,lng,link,...extra});
+    Object.assign(d,{code,name,qa,count,lat,lng,link},extra);
     m.setLatLng([lat,lng]); m.setIcon(makeIconForData(d)); m._qaList=[qa]; m._size=getSizeFromCount(d.count);
-    m.bindPopup(`<div class="my-popup">${renderUnit({...d},true)}</div>`,{maxWidth:300});
+    m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},d), true) + '</div>',{maxWidth:300});
   } else {
-    Object.assign(d.units[ui],{code,name,qa,count,link,...extra});
+    Object.assign(d.units[ui],{code,name,qa,count,link},extra);
     d.lat=lat; d.lng=lng; m.setLatLng([lat,lng]);
     m.setIcon(makeIconForData(d)); m._qaList=d.units.map(u=>u.qa);
     const pop = d.units.length>1
-      ? `<div class="my-popup"><div class="pop-location">📍 ${d.units.length} หน่วยงาน</div>${d.units.map(u=>renderUnit(u,false)).join('')}</div>`
-      : `<div class="my-popup">${renderUnit(d.units[0],false)}</div>`;
+      ? '<div class="my-popup"><div class="pop-location">📍 ' + d.units.length + ' หน่วยงาน</div>' + d.units.map(u=>renderUnit(u,false)).join('') + '</div>'
+      : '<div class="my-popup">' + renderUnit(d.units[0],false) + '</div>';
     m.bindPopup(pop,{maxWidth:320});
   }
   rebuildSearchIndex();
@@ -854,10 +856,10 @@ function deleteUnit(mi, ui) {
     else if (d.units.length===1) {
       const u=d.units[0]; Object.assign(d,u); delete d.units;
       m.setIcon(makeIconForData(d)); m._qaList=[d.qa]; m._size=getSizeFromCount(d.count);
-      m.bindPopup(`<div class="my-popup">${renderUnit({...d},true)}</div>`,{maxWidth:300});
+      m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},d), true) + '</div>',{maxWidth:300});
     } else {
       m.setIcon(makeIconForData(d)); m._qaList=d.units.map(u=>u.qa);
-      m.bindPopup(`<div class="my-popup"><div class="pop-location">📍 ${d.units.length} หน่วยงาน</div>${d.units.map(u=>renderUnit(u,false)).join('')}</div>`,{maxWidth:320});
+      m.bindPopup('<div class="my-popup"><div class="pop-location">📍 ' + d.units.length + ' หน่วยงาน</div>' + d.units.map(u=>renderUnit(u,false)).join('') + '</div>',{maxWidth:320});
     }
   }
   rebuildSearchIndex(); updateCount();
@@ -868,30 +870,28 @@ function deleteUnit(mi, ui) {
 }
 
 // ── Export HTML ───────────────────────────────────────────
-// วิธีนี้ใช้ fetch ดึง source ต้นฉบับ (ไม่ใช้ outerHTML ซึ่งทำให้พัง)
-// แล้วแทน DATA block ด้วยข้อมูลปัจจุบัน
 function esc(s) { return (s||'').replace(/\\/g,'\\\\').replace(/"/g,'\\"'); }
 
 function serializeData() {
   return 'const DATA = [\n' + DATA.map(d => {
     if (d.units) {
       const ul = d.units.map(u => {
-        let s = `    { qa:"${u.qa}", code:"${esc(u.code)}", count:${u.count||0}, name:"${esc(u.name)}", link:"${esc(u.link)}"`;
-        if(u.supervisor)      s+=`, supervisor:"${esc(u.supervisor)}"`;
-        if(u.supervisorPhone) s+=`, supervisorPhone:"${esc(u.supervisorPhone)}"`;
-        if(u.clientName)      s+=`, clientName:"${esc(u.clientName)}"`;
-        if(u.clientPhone)     s+=`, clientPhone:"${esc(u.clientPhone)}"`;
-        if(u.note)            s+=`, note:"${esc(u.note)}"`;
+        let s = '    { qa:"' + u.qa + '", code:"' + esc(u.code) + '", count:' + (u.count||0) + ', name:"' + esc(u.name) + '", link:"' + esc(u.link) + '"';
+        if(u.supervisor)      s+=', supervisor:"' + esc(u.supervisor) + '"';
+        if(u.supervisorPhone) s+=', supervisorPhone:"' + esc(u.supervisorPhone) + '"';
+        if(u.clientName)      s+=', clientName:"' + esc(u.clientName) + '"';
+        if(u.clientPhone)     s+=', clientPhone:"' + esc(u.clientPhone) + '"';
+        if(u.note)            s+=', note:"' + esc(u.note) + '"';
         return s+' }';
       }).join(',\n');
-      return `  {\n    lat:${d.lat}, lng:${d.lng},\n    units:[\n${ul}\n    ]\n  }`;
+      return '  {\n    lat:' + d.lat + ', lng:' + d.lng + ',\n    units:[\n' + ul + '\n    ]\n  }';
     }
-    let s = `  { qa:"${d.qa}", code:"${esc(d.code)}", count:${d.count||0}, lat:${d.lat}, lng:${d.lng}, link:"${esc(d.link)}",\n    name:"${esc(d.name)}"`;
-    if(d.supervisor)      s+=`, supervisor:"${esc(d.supervisor)}"`;
-    if(d.supervisorPhone) s+=`, supervisorPhone:"${esc(d.supervisorPhone)}"`;
-    if(d.clientName)      s+=`, clientName:"${esc(d.clientName)}"`;
-    if(d.clientPhone)     s+=`, clientPhone:"${esc(d.clientPhone)}"`;
-    if(d.note)            s+=`, note:"${esc(d.note)}"`;
+    let s = '  { qa:"' + d.qa + '", code:"' + esc(d.code) + '", count:' + (d.count||0) + ', lat:' + d.lat + ', lng:' + d.lng + ', link:"' + esc(d.link) + '",\n    name:"' + esc(d.name) + '"';
+    if(d.supervisor)      s+=', supervisor:"' + esc(d.supervisor) + '"';
+    if(d.supervisorPhone) s+=', supervisorPhone:"' + esc(d.supervisorPhone) + '"';
+    if(d.clientName)      s+=', clientName:"' + esc(d.clientName) + '"';
+    if(d.clientPhone)     s+=', clientPhone:"' + esc(d.clientPhone) + '"';
+    if(d.note)            s+=', note:"' + esc(d.note) + '"';
     return s+' }';
   }).join(',\n') + '\n];';
 }
@@ -936,73 +936,67 @@ function exportPDF() {
   });
   if (!rows.length) { showToast('⚠️ ไม่มีข้อมูล'); return; }
   rows.sort((a,b)=>a.qa.localeCompare(b.qa)||a.code.localeCompare(b.code));
-  const qaLabel=activeQAs.has('all')?'ทั้งหมด':[...activeQAs].map(q=>({Qa1:'พี่จุ๊ (Qa1)',Qa2:'พี่รุ่ง (Qa2)',Qa3:'พี่เปิ้ล (Qa3)',Qa4:'พี่เอก (Qa4)'}[q]||q)).join(', ');
-  const total=rows.reduce((s,r)=>s+r.count,0);
-  const today=new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'});
-  const trs=rows.map((r,i)=>{
-    const c=QA_COLOR[r.qa]||'#666';
-    return `<tr><td style="text-align:center;color:#718096">${i+1}</td><td style="font-family:monospace;font-weight:700">${r.code}</td><td>${r.name}</td><td style="text-align:center"><span style="background:${c}20;color:${c};padding:1px 8px;border-radius:20px;font-size:10px;font-weight:700">${({Qa1:"พี่จุ๊",Qa2:"พี่รุ่ง",Qa3:"พี่เปิ้ล",Qa4:"พี่เอก"}[r.qa]||r.qa)}</span></td><td style="text-align:center">${r.count}</td><td>${r.supervisor}</td><td>${r.supervisorPhone}</td><td>${r.clientName}</td><td>${r.clientPhone}</td><td style="color:#718096">${r.note}</td></tr>`;
+  const qaLabelMap = {Qa1:'พี่จุ๊ (Qa1)',Qa2:'พี่รุ่ง (Qa2)',Qa3:'พี่เปิ้ล (Qa3)',Qa4:'พี่เอก (Qa4)'};
+  const qaLabel = activeQAs.has('all') ? 'ทั้งหมด' : [...activeQAs].map(q=>qaLabelMap[q]||q).join(', ');
+  const total = rows.reduce((s,r)=>s+r.count,0);
+  const today = new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'});
+  const qaShort = {Qa1:"พี่จุ๊",Qa2:"พี่รุ่ง",Qa3:"พี่เปิ้ล",Qa4:"พี่เอก"};
+  const trs = rows.map((r,i) => {
+    const c = QA_COLOR[r.qa]||'#666';
+    return '<tr><td style="text-align:center;color:#718096">' + (i+1) + '</td>'
+      + '<td style="font-family:monospace;font-weight:700">' + (r.code||'') + '</td>'
+      + '<td>' + (r.name||'') + '</td>'
+      + '<td style="text-align:center"><span style="background:' + c + '20;color:' + c + ';padding:1px 8px;border-radius:20px;font-size:10px;font-weight:700">' + (qaShort[r.qa]||r.qa) + '</span></td>'
+      + '<td style="text-align:center">' + r.count + '</td>'
+      + '<td>' + (r.supervisor||'') + '</td>'
+      + '<td>' + (r.supervisorPhone||'') + '</td>'
+      + '<td>' + (r.clientName||'') + '</td>'
+      + '<td>' + (r.clientPhone||'') + '</td>'
+      + '<td style="color:#718096">' + (r.note||'') + '</td></tr>';
   }).join('');
-  const pdfHtml=`<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><title>รายงาน QA</title><style>@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap');*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Sarabun',sans-serif;font-size:11px;color:#2d3748;padding:20px}.header{border-bottom:3px solid #2b6cb0;padding-bottom:10px;margin-bottom:12px}.header h1{font-size:16px;font-weight:700;color:#1a365d}.header .sub{font-size:10px;color:#718096;margin-top:2px}.summary{display:flex;gap:10px;margin-bottom:12px}.sbox{background:#f7fafc;border:1px solid #e2e8f0;border-radius:6px;padding:6px 14px}.sbox .lbl{font-size:10px;color:#718096}.sbox .val{font-size:14px;font-weight:700;color:#2b6cb0}table{width:100%;border-collapse:collapse}thead tr{background:#2b6cb0;color:white}thead th{padding:6px 8px;text-align:left;font-size:10px;font-weight:700}tbody tr:nth-child(even){background:#f7fafc}tbody td{padding:5px 8px;border-bottom:1px solid #e2e8f0;font-size:10px;vertical-align:top}.footer{margin-top:10px;text-align:right;font-size:9px;color:#a0aec0}@media print{body{padding:10px}thead{display:table-header-group}tr{page-break-inside:avoid}}</style></head><body><div class="header"><h1>📋 รายงานหน่วยงาน QA</h1><div class="sub">QA: ${qaLabel} | ${today}</div></div><div class="summary"><div class="sbox"><div class="lbl">หน่วยงาน</div><div class="val">${rows.length} แห่ง</div></div><div class="sbox"><div class="lbl">🧹 แม่บ้านรวม</div><div class="val">${total.toLocaleString()} คน</div></div></div><table><thead><tr><th style="width:28px">#</th><th style="width:65px">รหัส</th><th>ชื่อหน่วยงาน</th><th style="width:50px">QA</th><th style="width:55px">แม่บ้าน</th><th style="width:90px">หัวหน้างาน</th><th style="width:85px">เบอร์หัวหน้า</th><th style="width:90px">ลูกค้า</th><th style="width:85px">เบอร์ลูกค้า</th><th>หมายเหตุ</th></tr></thead><tbody>${trs}</tbody></table><div class="footer">แผนที่หน่วยงาน QA | ${today}</div><script>window.onload=()=>window.print();<\/script>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAc7_R3-9M5S3eNoJ7bzLfs4YGNFKi0yAU",
-  authDomain: "qa-map-e3f27.firebaseapp.com",
-  projectId: "qa-map-e3f27",
-  storageBucket: "qa-map-e3f27.firebasestorage.app",
-  messagingSenderId: "416522148616",
-  appId: "1:416522148616:web:86b0452bb837cf09d2eabd"
-};
+  // สร้าง PDF HTML โดยไม่มี template literal ซ้อน และไม่มี closing script tag ใน string
+  const pdfParts = [
+    '<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><title>รายงาน QA</title>',
+    '<style>@import url(\'https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap\');',
+    '*{margin:0;padding:0;box-sizing:border-box}body{font-family:\'Sarabun\',sans-serif;font-size:11px;color:#2d3748;padding:20px}',
+    '.header{border-bottom:3px solid #2b6cb0;padding-bottom:10px;margin-bottom:12px}',
+    '.header h1{font-size:16px;font-weight:700;color:#1a365d}.header .sub{font-size:10px;color:#718096;margin-top:2px}',
+    '.summary{display:flex;gap:10px;margin-bottom:12px}.sbox{background:#f7fafc;border:1px solid #e2e8f0;border-radius:6px;padding:6px 14px}',
+    '.sbox .lbl{font-size:10px;color:#718096}.sbox .val{font-size:14px;font-weight:700;color:#2b6cb0}',
+    'table{width:100%;border-collapse:collapse}thead tr{background:#2b6cb0;color:white}',
+    'thead th{padding:6px 8px;text-align:left;font-size:10px;font-weight:700}',
+    'tbody tr:nth-child(even){background:#f7fafc}tbody td{padding:5px 8px;border-bottom:1px solid #e2e8f0;font-size:10px;vertical-align:top}',
+    '.footer{margin-top:10px;text-align:right;font-size:9px;color:#a0aec0}',
+    '@media print{body{padding:10px}thead{display:table-header-group}tr{page-break-inside:avoid}}',
+    '</style></head><body>',
+    '<div class="header"><h1>📋 รายงานหน่วยงาน QA</h1><div class="sub">QA: ' + qaLabel + ' | ' + today + '</div></div>',
+    '<div class="summary">',
+    '<div class="sbox"><div class="lbl">หน่วยงาน</div><div class="val">' + rows.length + ' แห่ง</div></div>',
+    '<div class="sbox"><div class="lbl">🧹 แม่บ้านรวม</div><div class="val">' + total.toLocaleString() + ' คน</div></div>',
+    '</div>',
+    '<table><thead><tr>',
+    '<th style="width:28px">#</th><th style="width:65px">รหัส</th><th>ชื่อหน่วยงาน</th>',
+    '<th style="width:50px">QA</th><th style="width:55px">แม่บ้าน</th>',
+    '<th style="width:90px">หัวหน้างาน</th><th style="width:85px">เบอร์หัวหน้า</th>',
+    '<th style="width:90px">ลูกค้า</th><th style="width:85px">เบอร์ลูกค้า</th><th>หมายเหตุ</th>',
+    '</tr></thead><tbody>' + trs + '</tbody></table>',
+    '<div class="footer">แผนที่หน่วยงาน QA | ' + today + '</div>',
+    '<scr' + 'ipt>window.onload=function(){window.print();}</' + 'script>',
+    '</body></html>'
+  ];
+  const pdfHtml = pdfParts.join('');
 
-const _app = initializeApp(firebaseConfig);
-const _db  = getFirestore(_app);
-
-// expose ให้ main script ใช้ได้
-window._fbReady  = false;
-window._db       = _db;
-window._setDoc   = (ref, data) => setDoc(ref, data);
-window._docRef   = (name, id) => doc(_db, name, id);
-
-// โหลดข้อมูลจาก Firestore
-getDocs(collection(_db, 'units'))
-  .then(snap => {
-    if (!snap.empty) {
-      // มีข้อมูลใน Firestore → ใช้เลย
-      DATA.length = 0;
-      snap.forEach(d => DATA.push(d.data()));
-      console.log('✅ Firebase loaded:', DATA.length, 'items');
-    } else {
-      // Firestore ว่าง → อัปโหลดข้อมูลเริ่มต้น
-      console.log('📤 Uploading initial data...');
-      DATA.forEach(d => {
-        const key = d.units
-          ? 'multi_' + String(d.lat).replace(/[^0-9]/g,'') + String(d.lng).replace(/[^0-9]/g,'')
-          : (d.code||'x').replace(/[^a-zA-Z0-9_-]/g,'_');
-        setDoc(doc(_db, 'units', key), JSON.parse(JSON.stringify(d)));
-      });
-    }
-  })
-  .catch(e => console.warn('Firebase error:', e))
-  .finally(() => {
-    window._fbReady = true;
-    // ซ่อน loading
-    const ov = document.getElementById('loadingOverlay');
-    if (ov) ov.style.display = 'none';
-    // รีเฟรช markers ด้วยข้อมูลใหม่
-    if (typeof rebuildMarkers === 'function') rebuildMarkers();
-  });
-</script>
-
-</body></html>`;
-  const blob=new Blob([pdfHtml],{type:'text/html;charset=utf-8'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.target='_blank'; a.click();
+  const blob = new Blob([pdfHtml], {type:'text/html;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.target = '_blank';
+  a.click();
   showToast('📄 เปิดแล้ว กด Ctrl+P');
 }
 </script>
 
+<!-- Firebase: โหลดหลัง main script เพื่อให้ DATA และ buildMarkers พร้อมก่อน -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -1016,43 +1010,55 @@ const firebaseConfig = {
   appId: "1:416522148616:web:86b0452bb837cf09d2eabd"
 };
 
-const _app = initializeApp(firebaseConfig);
-const _db  = getFirestore(_app);
+window._fbReady = false;
+window._setDoc  = null;
+window._docRef  = null;
 
-// expose ให้ main script ใช้ได้
-window._fbReady  = false;
-window._db       = _db;
-window._setDoc   = (ref, data) => setDoc(ref, data);
-window._docRef   = (name, id) => doc(_db, name, id);
+let _app, _db;
+try {
+  _app = initializeApp(firebaseConfig);
+  _db  = getFirestore(_app);
+  window._setDoc = (ref, data) => setDoc(ref, data);
+  window._docRef = (name, id)  => doc(_db, name, id);
+} catch(e) {
+  console.warn('Firebase init failed:', e);
+}
 
-// โหลดข้อมูลจาก Firestore
-getDocs(collection(_db, 'units'))
-  .then(snap => {
-    if (!snap.empty) {
-      // มีข้อมูลใน Firestore → ใช้เลย
-      DATA.length = 0;
-      snap.forEach(d => DATA.push(d.data()));
-      console.log('✅ Firebase loaded:', DATA.length, 'items');
-    } else {
-      // Firestore ว่าง → อัปโหลดข้อมูลเริ่มต้น
-      console.log('📤 Uploading initial data...');
-      DATA.forEach(d => {
-        const key = d.units
-          ? 'multi_' + String(d.lat).replace(/[^0-9]/g,'') + String(d.lng).replace(/[^0-9]/g,'')
-          : (d.code||'x').replace(/[^a-zA-Z0-9_-]/g,'_');
-        setDoc(doc(_db, 'units', key), JSON.parse(JSON.stringify(d)));
-      });
-    }
-  })
-  .catch(e => console.warn('Firebase error:', e))
-  .finally(() => {
-    window._fbReady = true;
-    // ซ่อน loading
-    const ov = document.getElementById('loadingOverlay');
-    if (ov) ov.style.display = 'none';
-    // รีเฟรช markers ด้วยข้อมูลใหม่
-    if (typeof rebuildMarkers === 'function') rebuildMarkers();
-  });
+// ซ่อน loading ก่อนไม่ว่า Firebase จะสำเร็จหรือไม่
+function hideLoading() {
+  const ov = document.getElementById('loadingOverlay');
+  if (ov) ov.style.display = 'none';
+}
+
+if (_db) {
+  getDocs(collection(_db, 'units'))
+    .then(snap => {
+      if (!snap.empty) {
+        DATA.length = 0;
+        snap.forEach(d => DATA.push(d.data()));
+        console.log('✅ Firebase loaded:', DATA.length, 'items');
+        // รีบิลด์ markers ด้วยข้อมูลจาก Firebase
+        if (typeof window.rebuildMarkers === 'function') window.rebuildMarkers();
+      } else {
+        console.log('📤 Uploading initial data...');
+        DATA.forEach(d => {
+          const key = d.units
+            ? 'multi_' + String(d.lat).replace(/[^0-9]/g,'') + String(d.lng).replace(/[^0-9]/g,'')
+            : (d.code||'x').replace(/[^a-zA-Z0-9_-]/g,'_');
+          setDoc(doc(_db, 'units', key), JSON.parse(JSON.stringify(d)));
+        });
+      }
+    })
+    .catch(e => console.warn('Firebase error:', e))
+    .finally(() => {
+      window._fbReady = true;
+      hideLoading();
+    });
+} else {
+  // Firebase ไม่พร้อม ซ่อน loading ทันที
+  window._fbReady = true;
+  hideLoading();
+}
 </script>
 
 </body>
