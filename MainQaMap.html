@@ -119,7 +119,7 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
 </style>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, getDocs, setDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAc7_R3-9M5S3eNoJ7bzLfs4YGNFKi0yAU",
@@ -131,13 +131,35 @@ const firebaseConfig = {
 };
 
 const _app = initializeApp(firebaseConfig);
-window._db = getFirestore(_app);
-window._col = (name) => collection(window._db, name);
+const _db  = getFirestore(_app);
+window._db     = _db;
+window._col    = (name) => collection(_db, name);
 window._setDoc = (ref, data) => setDoc(ref, data);
-window._delDoc = (ref) => deleteDoc(ref);
-window._docRef = (name, id) => doc(window._db, name, id);
+window._docRef = (name, id) => doc(_db, name, id);
 window._getDocs = getDocs;
-window._fbReady = true;
+
+// โหลดข้อมูลจาก Firestore ก่อน แล้วค่อย init map
+getDocs(collection(_db, 'units')).then(snap => {
+  if (!snap.empty) {
+    DATA.length = 0;
+    snap.forEach(d => DATA.push(d.data()));
+    console.log('Firebase loaded:', DATA.length, 'items');
+  } else {
+    // Firestore ว่าง → อัปโหลดข้อมูลเริ่มต้น
+    console.log('Firestore empty, uploading initial data...');
+    DATA.forEach(d => {
+      const key = d.units
+        ? 'multi_' + String(d.lat).replace(/\./g,'_') + '_' + String(d.lng).replace(/\./g,'_')
+        : (d.code||'x').replace(/[^a-zA-Z0-9ก-๙_-]/g,'_');
+      setDoc(doc(_db, 'units', key), JSON.parse(JSON.stringify(d)));
+    });
+  }
+}).catch(e => console.warn('Firebase load error:', e))
+.finally(() => {
+  window._fbReady = true;
+  document.getElementById('loadingOverlay').style.display = 'none';
+  window._initMap();
+});
 </script>
 </head>
 <body>
@@ -173,6 +195,7 @@ window._fbReady = true;
   <button class="pdf-btn"       onclick="exportPDF()">📄 PDF</button>
   <div class="stat">แสดง <span id="cnt">—</span> หมุด &nbsp;|&nbsp; 🧹 <span id="staffCnt">—</span> คน</div>
 </div>
+<div id="loadingOverlay" style="position:fixed;inset:0;background:#0f1623;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px"><div style="font-size:32px">🔥</div><div style="color:#4299e1;font-size:15px;font-family:Sarabun,sans-serif;font-weight:700">กำลังโหลดข้อมูล...</div></div>
 <div class="map-wrap">
   <div id="map"></div>
   <div class="legend">
@@ -533,16 +556,13 @@ const DATA = [
 const STORAGE_KEY = 'qa_map_v4_' + encodeURIComponent(window.location.pathname);
 
 function saveData() {
-  // บันทึก localStorage
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA)); } catch(e) {}
-  // บันทึก Firestore
   if (window._fbReady) {
-    DATA.forEach((d) => {
+    DATA.forEach(d => {
       const key = d.units
-        ? 'multi_' + String(d.lat).replace('.','') + '_' + String(d.lng).replace('.','')
-        : (d.code || 'unknown').replace(/[^a-zA-Z0-9ก-๙_-]/g, '_');
-      const clean = JSON.parse(JSON.stringify(d));
-      window._setDoc(window._docRef('units', key), clean)
+        ? 'multi_' + String(d.lat).replace(/\./g,'_') + '_' + String(d.lng).replace(/\./g,'_')
+        : (d.code||'x').replace(/[^a-zA-Z0-9ก-๙_-]/g,'_');
+      window._setDoc(window._docRef('units', key), JSON.parse(JSON.stringify(d)))
         .catch(e => console.warn('save error', key, e));
     });
   }
@@ -551,35 +571,18 @@ function saveData() {
   setTimeout(() => ind.classList.remove('show'), 1500);
 }
 
-async function mergeFromStorage() {
-  // โหลดจาก Firestore ก่อน
-  if (window._fbReady) {
-    try {
-      const snap = await window._getDocs(window._col('units'));
-      if (!snap.empty) {
-        DATA.length = 0;
-        snap.forEach(d => DATA.push(d.data()));
-        showToast('🔥 โหลดข้อมูลจาก Firebase (' + DATA.length + ' รายการ)');
-        rebuildMarkers();
-        return;
-      }
-      // ถ้า Firestore ว่าง → อัปโหลดข้อมูลเริ่มต้นขึ้นไป
-      showToast('📤 กำลังอัปโหลดข้อมูลเริ่มต้น...');
-      saveData();
-      showToast('✅ อัปโหลดข้อมูลเสร็จแล้ว!');
-      return;
-    } catch(e) { console.warn('firestore load error', e); }
-  }
-  // fallback: localStorage
+function mergeFromStorage() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return;
     const saved = JSON.parse(raw);
+    // สร้าง lookup จาก code -> saved entry
     const lookup = {};
     saved.forEach(s => {
       if (s.units) s.units.forEach(u => lookup[u.code] = u);
       else lookup[s.code] = s;
     });
+    // merge เข้า DATA
     let count = 0;
     DATA.forEach(d => {
       const entries = d.units ? d.units : [d];
@@ -597,32 +600,7 @@ async function mergeFromStorage() {
   } catch(e) {}
 }
 
-function rebuildMarkers() {
-  markers.forEach(m => map.removeLayer(m));
-  markers.length = 0;
-  DATA.forEach(d => {
-    let m;
-    if (d.units) {
-      m = L.marker([d.lat, d.lng], {icon: makeIconForData(d)});
-      m.bindPopup('<div class="my-popup"><div class="pop-location">📍 ' + d.units.length + ' หน่วยงานในพิกัดนี้</div><div class="pop-scroll">' + d.units.map(u=>renderUnit(u,false)).join('') + '</div></div>', {maxWidth:320});
-      m._qaList = d.units.map(u => u.qa);
-    } else {
-      m = L.marker([d.lat, d.lng], {icon: makeIconForData(d)});
-      m.bindPopup('<div class="my-popup">' + renderUnit({...d}, true) + '</div>', {maxWidth:300});
-      m._qaList = [d.qa];
-    }
-    m._raw = d;
-    let _cnt = 0;
-    if (d.units) d.units.forEach(u => _cnt += (u.count||0)); else _cnt = d.count||0;
-    m._size = getSizeFromCount(_cnt);
-    m.addTo(map);
-    markers.push(m);
-  });
-  document.getElementById('totalBadge').textContent = markers.length + ' จุด';
-  rebuildSearchIndex();
-  updateCount();
-}
-
+window._initMap = function() {
 // ── Map init ──────────────────────────────────────────────
 const map = L.map('map').setView([13.76, 100.5], 11);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
@@ -668,9 +646,6 @@ function renderUnit(u, showCoords) {
     ${u.link ? `<a class="pop-link" href="${u.link}" target="_blank">📍 Google Maps</a>` : ''}
   </div>`;
 }
-
-// โหลด cache ก่อนสร้าง markers
-mergeFromStorage();
 
 const markers = [];
 DATA.forEach(d => {
@@ -770,7 +745,9 @@ function updateCount() {
 }
 updateCount();
 
-// ── Search ────────────────────────────────────────────────
+// ── Search
+};
+ ────────────────────────────────────────────────
 const searchIndex = [];
 function rebuildSearchIndex() {
   searchIndex.length = 0;
