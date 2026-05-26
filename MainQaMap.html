@@ -1039,11 +1039,11 @@ function exportPDF() {
   });
   if (!rows.length) { showToast('⚠️ ไม่มีข้อมูล'); return; }
   rows.sort((a,b)=>a.qa.localeCompare(b.qa)||a.code.localeCompare(b.code));
-  const qaLabelMap = {Qa1:'พี่จุ๊ (Qa1)',Qa2:'พี่รุ่ง (Qa2)',Qa3:'พี่เปิ้ล (Qa3)',Qa4:'พี่เอก (Qa4)'};
+  const qaLabelMap = {Qa1:'พี่จุ๊ (Qa1)',Qa2:'พี่รุ่ง (Qa2)',Qa3:'Qa3',Qa4:'พี่เอก (Qa4)'};
   const qaLabel = activeQAs.has('all') ? 'ทั้งหมด' : [...activeQAs].map(q=>qaLabelMap[q]||q).join(', ');
   const total = rows.reduce((s,r)=>s+r.count,0);
   const today = new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'});
-  const qaShort = {Qa1:"พี่จุ๊",Qa2:"พี่รุ่ง",Qa3:"พี่เปิ้ล",Qa4:"พี่เอก"};
+  const qaShort = {Qa1:"พี่จุ๊",Qa2:"พี่รุ่ง",Qa3:"Qa3",Qa4:"พี่เอก"};
   const trs = rows.map((r,i) => {
     const c = QA_COLOR[r.qa]||'#666';
     return '<tr><td style="text-align:center;color:#718096">' + (i+1) + '</td>'
