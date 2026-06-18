@@ -54,6 +54,10 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
 .user-box b{color:#63b3ed}
 .logout-btn{padding:3px 10px;border-radius:14px;border:1px solid #4a5568;background:transparent;color:#a0aec0;font-family:'Sarabun',sans-serif;font-size:11px;cursor:pointer}
 .logout-btn:hover{border-color:#fc8181;color:#fc8181}
+.backup-btn{padding:5px 12px;border-radius:20px;border:1px solid #38b2ac;background:transparent;color:#38b2ac;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.backup-btn:hover{background:#38b2ac;color:white}
+.restore-btn{padding:5px 12px;border-radius:20px;border:1px solid #ed8936;background:transparent;color:#ed8936;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.restore-btn:hover{background:#ed8936;color:white}
 .stat{margin-left:auto;font-size:12px;color:#718096;white-space:nowrap}
 .stat span{color:#4299e1;font-weight:700}
 #map{flex:1;min-height:0}
@@ -156,6 +160,9 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
   </div>
   <button class="add-btn editor-only"       style="display:none" onclick="openAddModal()">＋ เพิ่ม</button>
   <button class="edit-btn-tool editor-only" style="display:none" onclick="openMgmtModal()">✏️ แก้ไข / ลบ</button>
+  <button class="backup-btn editor-only"  style="display:none" onclick="backupData()">💾 สำรอง</button>
+  <button class="restore-btn editor-only" style="display:none" onclick="restoreData()">♻️ กู้คืน</button>
+  <input type="file" id="restoreFile" accept="application/json,.json" style="display:none" onchange="onRestoreFile(this)">
   <button class="export-btn"    onclick="exportHTML()">⬇ Export</button>
   <button class="pdf-btn"       onclick="exportPDF()">📄 PDF</button>
   <button class="login-btn" id="loginBtn" onclick="openLoginModal()">🔓 เข้าสู่ระบบ</button>
@@ -264,14 +271,10 @@ let activeSizes = new Set(['all']);
 const DATA = [
 ];
 
-// ═══════════════════════════════════════════════
-// AUTO-SAVE: ปรับปรุงใหม่ บันทึกแค่ลงเครื่องเท่านั้น (กันโควต้าคลาวด์เต็ม)
-// ═══════════════════════════════════════════════
-const STORAGE_KEY = 'qa_map_v4_' + encodeURIComponent(window.location.pathname);
-
+// แสดงตัวบ่งชี้ "บันทึกแล้ว" (ข้อมูลจริง sync ขึ้น Firebase ในแต่ละ operation อยู่แล้ว)
 function saveData() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA)); } catch(e) {}
   const ind = document.getElementById('saveInd');
+  if (!ind) return;
   ind.classList.add('show');
   setTimeout(() => ind.classList.remove('show'), 1500);
 }
@@ -557,6 +560,39 @@ function doLogout() {
   if (window._logout) window._logout().then(() => showToast('ออกจากระบบแล้ว'));
 }
 
+// ── สำรอง / กู้คืนข้อมูล ──────────────────────────────────
+function backupData() {
+  const clean = DATA.map(d => { const o = JSON.parse(JSON.stringify(d)); delete o._docId; return o; });
+  const today = new Date().toISOString().slice(0,10);
+  downloadFile(JSON.stringify(clean, null, 2), 'qa-backup-' + today + '.json');
+  showToast('💾 สำรองข้อมูลแล้ว (' + clean.length + ' จุด)');
+}
+function restoreData() {
+  document.getElementById('restoreFile').click();
+}
+function onRestoreFile(input) {
+  const file = input.files && input.files[0];
+  input.value = '';                                   // เคลียร์ เผื่อเลือกไฟล์เดิมซ้ำ
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    let arr;
+    try { arr = JSON.parse(reader.result); } catch(e) { showToast('⚠️ ไฟล์ไม่ใช่ JSON ที่ถูกต้อง'); return; }
+    if (!Array.isArray(arr)) { showToast('⚠️ รูปแบบไฟล์ไม่ถูกต้อง (ต้องเป็น array)'); return; }
+    if (!window._restoreAll) { showToast('⚠️ ต้องเข้าสู่ระบบก่อนกู้คืน'); return; }
+    if (!confirm('กู้คืนข้อมูล ' + arr.length + ' จุด?\nข้อมูลปัจจุบันใน Firebase จะถูกแทนที่ให้ตรงกับไฟล์นี้ทั้งหมด')) return;
+    showToast('⏳ กำลังกู้คืน...');
+    window._restoreAll(arr)
+      .then(() => {
+        DATA.length = 0; arr.forEach(d => DATA.push(d));
+        if (typeof window.rebuildMarkers === 'function') window.rebuildMarkers();
+        showToast('✅ กู้คืนสำเร็จ (' + arr.length + ' จุด)');
+      })
+      .catch(e => { console.warn(e); showToast('⚠️ กู้คืนไม่สำเร็จ: ' + (e.code || e.message || '')); });
+  };
+  reader.readAsText(file);
+}
+
 // ── Modal ─────────────────────────────────────────────────
 function openAddModal()  { document.getElementById('addModal').classList.add('open'); }
 function openMgmtModal() { document.getElementById('mgmtSearch').value=''; renderMgmtList(''); document.getElementById('mgmtModal').classList.add('open'); }
@@ -613,20 +649,6 @@ function submitAdd() {
 }
 
 // ── แก้ไข/ลบ ─────────────────────────────────────────────
-function findUnitByCode(code) {
-  for (let mi = 0; mi < markers.length; mi++) {
-    const d = markers[mi]._raw;
-    if (d.units) {
-      for (let ui = 0; ui < d.units.length; ui++) {
-        if (d.units[ui].code === code) return { mi, ui, m: markers[mi], d, u: d.units[ui] };
-      }
-    } else {
-      if (d.code === code) return { mi, ui: -1, m: markers[mi], d, u: d };
-    }
-  }
-  return null;
-}
-
 function renderMgmtList(q) {
   q = q.toLowerCase().trim();
   const items = [];
@@ -845,71 +867,119 @@ function downloadFile(content, filename) {
 
 // ── Export PDF ────────────────────────────────────────────
 function exportPDF() {
-  const rows=[];
+  const esc = s => (s||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const rows = [];
   markers.forEach(m => {
     if (!map.hasLayer(m)) return;
     const d = m._raw;
-    if (d.units) d.units.forEach(u => { if(activeQAs.has('all')||activeQAs.has(u.qa)) rows.push({code:u.code,name:u.name||'',qa:u.qa,count:u.count||0,supervisor:u.supervisor||'',supervisorPhone:u.supervisorPhone||'',clientName:u.clientName||'',clientPhone:u.clientPhone||'',note:u.note||''}); });
-    else rows.push({code:d.code,name:d.name||'',qa:d.qa,count:d.count||0,supervisor:d.supervisor||'',supervisorPhone:d.supervisorPhone||'',clientName:d.clientName||'',clientPhone:d.clientPhone||'',note:d.note||''});
+    const push = u => { if (activeQAs.has('all') || activeQAs.has(u.qa)) rows.push({
+      code:u.code||'', name:u.name||'', qa:u.qa||'', count:u.count||0,
+      supervisor:u.supervisor||'', supervisorPhone:u.supervisorPhone||'',
+      clientName:u.clientName||'', clientPhone:u.clientPhone||'', note:u.note||'' }); };
+    if (d.units) d.units.forEach(push); else push(d);
   });
   if (!rows.length) { showToast('⚠️ ไม่มีข้อมูล'); return; }
-  rows.sort((a,b)=>a.qa.localeCompare(b.qa)||a.code.localeCompare(b.code));
-  const qaLabelMap = {Qa1:'พี่จุ๊ (Qa1)',Qa2:'พี่รุ่ง (Qa2)',Qa3:'Qa3',Qa4:'พี่เอก (Qa4)'};
-  const qaLabel = activeQAs.has('all') ? 'ทั้งหมด' : [...activeQAs].map(q=>qaLabelMap[q]||q).join(', ');
-  const total = rows.reduce((s,r)=>s+r.count,0);
+
+  // เรียงตามกลุ่ม QA แล้วตามรหัสแบบ natural (C2 มาก่อน C10)
+  const QA_ORDER = ['Qa1','Qa2','Qa3','Qa4','Qa5','Qa6','Ecs','แรงงาน'];
+  const ord = q => { const i = QA_ORDER.indexOf(q); return i < 0 ? 99 : i; };
+  rows.sort((a,b) => ord(a.qa) - ord(b.qa)
+    || (a.qa||'').localeCompare(b.qa||'')
+    || (a.code||'').localeCompare(b.code||'', undefined, {numeric:true, sensitivity:'base'}));
+
+  // จัดกลุ่มตาม QA
+  const groups = [];
+  rows.forEach(r => {
+    let g = groups[groups.length-1];
+    if (!g || g.qa !== r.qa) { g = {qa:r.qa, items:[]}; groups.push(g); }
+    g.items.push(r);
+  });
+
+  const totalSites = rows.length;
+  const totalStaff = rows.reduce((s,r)=>s+(r.count||0), 0);
   const today = new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'});
-  const qaShort = {Qa1:"พี่จุ๊",Qa2:"พี่รุ่ง",Qa3:"Qa3",Qa4:"พี่เอก"};
-  const trs = rows.map((r,i) => {
-    const c = QA_COLOR[r.qa]||'#666';
-    return '<tr><td style="text-align:center;color:#718096">' + (i+1) + '</td>'
-      + '<td style="font-family:monospace;font-weight:700">' + (r.code||'') + '</td>'
-      + '<td>' + (r.name||'') + '</td>'
-      + '<td style="text-align:center"><span style="background:' + c + '20;color:' + c + ';padding:1px 8px;border-radius:20px;font-size:10px;font-weight:700">' + (qaShort[r.qa]||r.qa) + '</span></td>'
-      + '<td style="text-align:center">' + r.count + '</td>'
-      + '<td>' + (r.supervisor||'') + '</td>'
-      + '<td>' + (r.supervisorPhone||'') + '</td>'
-      + '<td>' + (r.clientName||'') + '</td>'
-      + '<td>' + (r.clientPhone||'') + '</td>'
-      + '<td style="color:#718096">' + (r.note||'') + '</td></tr>';
-  }).join('');
+  const qaLabel = activeQAs.has('all') ? 'ทุก QA' : [...activeQAs].join(', ');
 
-  const pdfParts = [
-    '<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><title>รายงาน QA</title>',
-    '<style>@import url(\'https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap\');',
-    '*{margin:0;padding:0;box-sizing:border-box}body{font-family:\'Sarabun\',sans-serif;font-size:11px;color:#2d3748;padding:20px}',
-    '.header{border-bottom:3px solid #2b6cb0;padding-bottom:10px;margin-bottom:12px}',
-    '.header h1{font-size:16px;font-weight:700;color:#1a365d}.header .sub{font-size:10px;color:#718096;margin-top:2px}',
-    '.summary{display:flex;gap:10px;margin-bottom:12px}.sbox{background:#f7fafc;border:1px solid #e2e8f0;border-radius:6px;padding:6px 14px}',
-    '.sbox .lbl{font-size:10px;color:#718096}.sbox .val{font-size:14px;font-weight:700;color:#2b6cb0}',
-    'table{width:100%;border-collapse:collapse}thead tr{background:#2b6cb0;color:white}',
-    'thead th{padding:6px 8px;text-align:left;font-size:10px;font-weight:700}',
-    'tbody tr:nth-child(even){background:#f7fafc}tbody td{padding:5px 8px;border-bottom:1px solid #e2e8f0;font-size:10px;vertical-align:top}',
-    '.footer{margin-top:10px;text-align:right;font-size:9px;color:#a0aec0}',
-    '@media print{body{padding:10px}thead{display:table-header-group}tr{page-break-inside:avoid}}',
-    '</style></head><body>',
-    '<div class="header"><h1>📋 รายงานหน่วยงาน QA</h1><div class="sub">QA: ' + qaLabel + ' | ' + today + '</div></div>',
-    '<div class="summary">',
-    '<div class="sbox"><div class="lbl">หน่วยงาน</div><div class="val">' + rows.length + ' แห่ง</div></div>',
-    '<div class="sbox"><div class="lbl">🧹 แม่บ้านรวม</div><div class="val">' + total.toLocaleString() + ' คน</div></div>',
-    '</div>',
-    '<table><thead><tr>',
-    '<th style="width:28px">#</th><th style="width:65px">รหัส</th><th>ชื่อหน่วยงาน</th>',
-    '<th style="width:50px">QA</th><th style="width:55px">แม่บ้าน</th>',
-    '<th style="width:90px">หัวหน้างาน</th><th style="width:85px">เบอร์หัวหน้า</th>',
-    '<th style="width:90px">ลูกค้า</th><th style="width:85px">เบอร์ลูกค้า</th><th>หมายเหตุ</th>',
-    '</tr></thead><tbody>' + trs + '</tbody></table>',
-    '<div class="footer">แผนที่หน่วยงาน QA | ' + today + '</div>',
-    '<scr' + 'ipt>window.onload=function(){window.print();}</' + 'script>',
-    '</body></html>'
-  ];
-  const pdfHtml = pdfParts.join('');
+  let body = '';
+  let n = 0;
+  groups.forEach(g => {
+    const c = QA_COLOR[g.qa] || '#4a5568';
+    const gStaff = g.items.reduce((s,r)=>s+(r.count||0),0);
+    body += '<tr class="grp"><td colspan="7" style="background:' + c + '">● ' + esc(g.qa)
+      + ' <span class="gmeta">— ' + g.items.length + ' หน่วยงาน · ' + gStaff.toLocaleString() + ' คน</span></td></tr>';
+    g.items.forEach(r => {
+      n++;
+      const sup = esc(r.supervisor) + (r.supervisorPhone ? '<div class="ph">' + esc(r.supervisorPhone) + '</div>' : '');
+      const cli = esc(r.clientName) + (r.clientPhone ? '<div class="ph">' + esc(r.clientPhone) + '</div>' : '');
+      body += '<tr' + (n % 2 === 0 ? ' class="alt"' : '') + '>'
+        + '<td class="ctr num">' + n + '</td>'
+        + '<td class="code">' + esc(r.code) + '</td>'
+        + '<td>' + esc(r.name) + '</td>'
+        + '<td class="ctr cnt">' + (r.count||0) + '</td>'
+        + '<td>' + (sup || '<span class="dim">-</span>') + '</td>'
+        + '<td>' + (cli || '<span class="dim">-</span>') + '</td>'
+        + '<td class="note">' + esc(r.note) + '</td>'
+        + '</tr>';
+    });
+  });
 
-  const blob = new Blob([pdfHtml], {type:'text/html;charset=utf-8'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.target = '_blank';
-  a.click();
-  showToast('📄 เปิดแล้ว กด Ctrl+P');
+  const css = '@import url(\'https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap\');'
+    + '@page{size:A4 portrait;margin:12mm 10mm 14mm}'
+    + '*{margin:0;padding:0;box-sizing:border-box}'
+    + 'body{font-family:\'Sarabun\',sans-serif;color:#1a202c;font-size:11px;-webkit-print-color-adjust:exact;print-color-adjust:exact}'
+    + '.head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2.5px solid #2b6cb0;padding-bottom:8px;margin-bottom:10px}'
+    + '.head h1{font-size:18px;color:#1a365d}'
+    + '.head .meta{font-size:10px;color:#718096;text-align:right;line-height:1.5}'
+    + '.cards{display:flex;gap:8px;margin-bottom:12px}'
+    + '.card{flex:1;border:1px solid #e2e8f0;border-radius:8px;padding:8px 12px;background:#f8fafc}'
+    + '.card .l{font-size:9px;color:#718096}'
+    + '.card .v{font-size:17px;font-weight:700;color:#2b6cb0}'
+    + 'table{width:100%;border-collapse:collapse}'
+    + 'thead th{background:#2d3748;color:#fff;font-size:9.5px;font-weight:700;padding:6px 7px;text-align:left}'
+    + 'thead th.ctr{text-align:center}'
+    + 'tbody td{padding:5px 7px;border-bottom:1px solid #edf2f7;font-size:10px;vertical-align:top}'
+    + 'tr.alt td{background:#f7fafc}'
+    + '.code{font-family:\'Courier New\',monospace;font-weight:700;white-space:nowrap}'
+    + '.ctr{text-align:center}.num{color:#a0aec0}.cnt{font-weight:700}'
+    + '.note{color:#718096;font-size:9px}.ph{font-size:8.5px;color:#718096;margin-top:1px}.dim{color:#cbd5e0}'
+    + 'tr.grp td{padding:6px 10px;color:#fff;font-weight:700;font-size:11px;border:none}'
+    + 'tr.grp .gmeta{font-weight:400;opacity:.9;font-size:10px}'
+    + 'tr{page-break-inside:avoid}tr.grp{page-break-after:avoid}thead{display:table-header-group}'
+    + '.foot{margin-top:8px;text-align:right;font-size:8.5px;color:#a0aec0}';
+
+  const html = '<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><title>รายงานหน่วยงาน QA</title><style>' + css + '</style></head><body>'
+    + '<div class="head"><h1>📋 รายงานหน่วยงาน QA</h1><div class="meta">ขอบเขต: ' + esc(qaLabel) + '<br>วันที่ ' + today + '</div></div>'
+    + '<div class="cards">'
+    + '<div class="card"><div class="l">หน่วยงานทั้งหมด</div><div class="v">' + totalSites.toLocaleString() + ' แห่ง</div></div>'
+    + '<div class="card"><div class="l">🧹 แม่บ้านรวม</div><div class="v">' + totalStaff.toLocaleString() + ' คน</div></div>'
+    + '<div class="card"><div class="l">กลุ่ม QA</div><div class="v">' + groups.length + '</div></div>'
+    + '</div>'
+    + '<table><thead><tr>'
+    + '<th class="ctr" style="width:24px">#</th>'
+    + '<th style="width:58px">รหัส</th>'
+    + '<th>ชื่อหน่วยงาน</th>'
+    + '<th class="ctr" style="width:44px">แม่บ้าน</th>'
+    + '<th style="width:115px">หัวหน้างาน</th>'
+    + '<th style="width:115px">ลูกค้า</th>'
+    + '<th style="width:88px">หมายเหตุ</th>'
+    + '</tr></thead><tbody>' + body + '</tbody></table>'
+    + '<div class="foot">ระบบแผนที่หน่วยงาน QA · ' + today + '</div>'
+    + '<scr' + 'ipt>window.onload=function(){setTimeout(function(){window.print();},400);};</scr' + 'ipt>'
+    + '</body></html>';
+
+  const blob = new Blob([html], {type:'text/html;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const w = window.open(url, '_blank');
+  if (!w) {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'รายงาน-QA-' + new Date().toISOString().slice(0,10) + '.html';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    showToast('⚠️ ป็อปอัปถูกบล็อก — ดาวน์โหลดไฟล์แทน เปิดแล้วกด Ctrl+P');
+  } else {
+    showToast('📄 เปิดแล้ว กด Ctrl+P (เลือกขนาด A4)');
+  }
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
 </script>
 
@@ -931,6 +1001,7 @@ window._fbReady = false;
 window._setDoc  = null;
 window._deleteDoc = null;
 window._docRef  = null;
+window._restoreAll = null;
 
 let _app, _db, _auth;
 try {
@@ -948,6 +1019,27 @@ try {
     window._isEditor = !!user;
     if (typeof window.applyAuthUI === 'function') window.applyAuthUI(user);
   });
+
+  // ── กู้คืนข้อมูลทั้งหมด: เขียนทับด้วย backup แล้วลบ doc ที่ไม่มีในไฟล์ ──
+  window._restoreAll = async (arr) => {
+    const snap = await getDocs(collection(_db, 'units'));
+    const existing = [];
+    snap.forEach(d => existing.push(d.id));
+    const keep = new Set();
+    for (const d of arr) {
+      const key = d.units
+        ? 'multi_' + String(d.lat).replace(/[^0-9]/g,'') + String(d.lng).replace(/[^0-9]/g,'')
+        : (d.code||'x').replace(/[^a-zA-Z0-9_-]/g,'_');
+      d._docId = key;
+      keep.add(key);
+      const payload = JSON.parse(JSON.stringify(d));
+      delete payload._docId;
+      await setDoc(doc(_db, 'units', key), payload);
+    }
+    for (const id of existing) {
+      if (!keep.has(id)) await deleteDoc(doc(_db, 'units', id));
+    }
+  };
 } catch(e) {
   console.warn('Firebase init failed:', e);
 }
