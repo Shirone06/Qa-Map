@@ -128,6 +128,12 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
 .toast.show{opacity:1}
 .save-indicator{position:fixed;top:12px;right:12px;background:#2d4a2d;border:1px solid #48bb78;border-radius:20px;padding:4px 12px;font-size:11px;color:#48bb78;z-index:9998;opacity:0;transition:opacity .3s;pointer-events:none}
 .save-indicator.show{opacity:1}
+/* Dropdown ตัวกรอง */
+.dd{position:relative;display:inline-flex}
+.dd-trigger{padding:5px 14px;border-radius:20px;border:1px solid #3a4060;background:#2d3550;color:#cbd5e0;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.dd-trigger:hover{border-color:#718096;color:#fff}
+.dd-panel{position:absolute;top:calc(100% + 6px);left:0;background:#1e2433;border:1px solid #3a4060;border-radius:12px;padding:10px;z-index:2500;box-shadow:0 8px 24px rgba(0,0,0,.45);display:none;flex-wrap:wrap;gap:6px;max-width:min(86vw,320px)}
+.dd-panel.open{display:flex}
 /* กลุ่มปุ่ม: บนจอใหญ่ทำตัวเหมือนไม่มี wrapper (เลย์เอาต์เดิม) */
 .grp{display:contents}
 
@@ -143,6 +149,7 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
   .grp{display:flex;gap:6px;width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
   .grp::-webkit-scrollbar{display:none}
   .qa-btn,.size-btn{flex:0 0 auto;padding:8px 15px;font-size:13px}
+  .dd-trigger{padding:8px 14px;font-size:13px}
   .grp-act button{flex:0 0 auto;padding:8px 14px;font-size:13px}
   .search-wrap{flex:0 0 100%;width:100%;max-width:none}
   .search-wrap input{font-size:16px;padding:10px 34px 10px 14px}
@@ -167,24 +174,29 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
   <div class="hbadge" id="totalBadge">— จุด</div>
 </div>
 <div class="toolbar">
-  <div class="grp grp-qa">
-  <button class="qa-btn active" data-qa="all"     onclick="filterQA('all')">ทั้งหมด</button>
-  <button class="qa-btn"        data-qa="Qa1"     onclick="filterQA('Qa1')">Qa1</button>
-  <button class="qa-btn"        data-qa="Qa2"     onclick="filterQA('Qa2')">Qa2</button>
-  <button class="qa-btn"        data-qa="Qa3"     onclick="filterQA('Qa3')">Qa3</button>
-  <button class="qa-btn"        data-qa="Ecs"     onclick="filterQA('Ecs')">Ecs</button>
-  <button class="qa-btn"        data-qa="Qa4"     onclick="filterQA('Qa4')">Qa4</button>
-  <button class="qa-btn"        data-qa="Qa5"     onclick="filterQA('Qa5')">Qa5</button>
-  <button class="qa-btn"        data-qa="Qa6"     onclick="filterQA('Qa6')">Qa6</button>
-  <button class="qa-btn"        data-qa="แรงงาน"  onclick="filterQA('แรงงาน')">แรงงาน</button>
+  <div class="dd" id="ddQa">
+    <button class="dd-trigger" onclick="toggleDD('Qa')">🏷️ <span id="ddQaLabel">QA: ทั้งหมด</span> ▾</button>
+    <div class="dd-panel" id="ddQaPanel">
+      <button class="qa-btn active" data-qa="all"     onclick="filterQA('all')">ทั้งหมด</button>
+      <button class="qa-btn"        data-qa="Qa1"     onclick="filterQA('Qa1')">Qa1</button>
+      <button class="qa-btn"        data-qa="Qa2"     onclick="filterQA('Qa2')">Qa2</button>
+      <button class="qa-btn"        data-qa="Qa3"     onclick="filterQA('Qa3')">Qa3</button>
+      <button class="qa-btn"        data-qa="Ecs"     onclick="filterQA('Ecs')">Ecs</button>
+      <button class="qa-btn"        data-qa="Qa4"     onclick="filterQA('Qa4')">Qa4</button>
+      <button class="qa-btn"        data-qa="Qa5"     onclick="filterQA('Qa5')">Qa5</button>
+      <button class="qa-btn"        data-qa="Qa6"     onclick="filterQA('Qa6')">Qa6</button>
+      <button class="qa-btn"        data-qa="แรงงาน"  onclick="filterQA('แรงงาน')">แรงงาน</button>
+    </div>
   </div>
-  <div class="divider"></div>
-  <div class="grp grp-size">
-  <button class="size-btn active" data-size="all" onclick="filterSize('all')">ทุกขนาด</button>
-  <button class="size-btn" data-size="S"  onclick="filterSize('S')">S <span style="font-size:10px;opacity:.7">1-5</span></button>
-  <button class="size-btn" data-size="M"  onclick="filterSize('M')">M <span style="font-size:10px;opacity:.7">6-15</span></button>
-  <button class="size-btn" data-size="L"  onclick="filterSize('L')">L <span style="font-size:10px;opacity:.7">16-30</span></button>
-  <button class="size-btn" data-size="XL" onclick="filterSize('XL')">XL <span style="font-size:10px;opacity:.7">31+</span></button>
+  <div class="dd" id="ddSize">
+    <button class="dd-trigger" onclick="toggleDD('Size')">📏 <span id="ddSizeLabel">ขนาด: ทั้งหมด</span> ▾</button>
+    <div class="dd-panel" id="ddSizePanel">
+      <button class="size-btn active" data-size="all" onclick="filterSize('all')">ทุกขนาด</button>
+      <button class="size-btn" data-size="S"  onclick="filterSize('S')">S <span style="font-size:10px;opacity:.7">1-5</span></button>
+      <button class="size-btn" data-size="M"  onclick="filterSize('M')">M <span style="font-size:10px;opacity:.7">6-15</span></button>
+      <button class="size-btn" data-size="L"  onclick="filterSize('L')">L <span style="font-size:10px;opacity:.7">16-30</span></button>
+      <button class="size-btn" data-size="XL" onclick="filterSize('XL')">XL <span style="font-size:10px;opacity:.7">31+</span></button>
+    </div>
   </div>
   <div class="divider"></div>
   <div class="search-wrap" id="searchWrap">
@@ -460,6 +472,7 @@ function filterSize(size) {
     qaOk && sizeOk ? m.addTo(map) : map.removeLayer(m);
   });
   updateCount();
+  updateFilterLabels();
 }
 
 function filterQA(qa) {
@@ -482,7 +495,41 @@ function filterQA(qa) {
   const fqa = activeQAs.has('all') || activeQAs.size > 1 ? 'all' : [...activeQAs][0];
   refreshPopups(fqa);
   updateCount();
+  updateFilterLabels();
 }
+
+// ── Dropdown ตัวกรอง (QA / ขนาด) ──────────────────────────
+function toggleDD(which) {
+  const panel = document.getElementById('dd' + which + 'Panel');
+  if (!panel) return;
+  const isOpen = panel.classList.contains('open');
+  document.querySelectorAll('.dd-panel').forEach(p => {
+    p.classList.remove('open'); p.style.left = ''; p.style.right = ''; p.style.maxWidth = '';
+  });
+  if (isOpen) return;
+  panel.classList.add('open');
+  // กันแผงลนจอ: ถ้าขอบขวาเกินจอ → กางชิดขวาแทน
+  panel.style.left = '0'; panel.style.right = 'auto';
+  if (panel.getBoundingClientRect().right > window.innerWidth - 8) {
+    panel.style.left = 'auto'; panel.style.right = '0';
+  }
+  // จอแคบมากจนชิดขวาแล้วยังล้นซ้าย → ตรึงเต็มความกว้างที่เหลือ
+  if (panel.getBoundingClientRect().left < 8) {
+    panel.style.left = '0'; panel.style.right = 'auto';
+    panel.style.maxWidth = (window.innerWidth - 16) + 'px';
+  }
+}
+function updateFilterLabels() {
+  const qaL = document.getElementById('ddQaLabel');
+  if (qaL) qaL.textContent = 'QA: ' + (activeQAs.has('all') ? 'ทั้งหมด' : [...activeQAs].join(', '));
+  const szL = document.getElementById('ddSizeLabel');
+  if (szL) szL.textContent = 'ขนาด: ' + (activeSizes.has('all') ? 'ทั้งหมด' : [...activeSizes].join(', '));
+}
+// ปิด dropdown เมื่อคลิกนอกพื้นที่ (คลิก chip ในแผงไม่ปิด เพื่อเลือกหลายอันได้)
+document.addEventListener('click', e => {
+  if (!e.target.closest('.dd')) document.querySelectorAll('.dd-panel').forEach(p => p.classList.remove('open'));
+});
+updateFilterLabels();
 
 function refreshPopups(qa) {
   markers.forEach(m => {
