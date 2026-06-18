@@ -48,6 +48,12 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
 .export-btn:hover{background:#48bb78;color:white}
 .pdf-btn{padding:5px 12px;border-radius:20px;border:1px solid #f687b3;background:transparent;color:#f687b3;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;white-space:nowrap}
 .pdf-btn:hover{background:#f687b3;color:white}
+.login-btn{padding:5px 12px;border-radius:20px;border:1px solid #63b3ed;background:transparent;color:#63b3ed;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.login-btn:hover{background:#63b3ed;color:white}
+.user-box{display:flex;align-items:center;gap:6px;font-size:12px;color:#a0aec0;white-space:nowrap}
+.user-box b{color:#63b3ed}
+.logout-btn{padding:3px 10px;border-radius:14px;border:1px solid #4a5568;background:transparent;color:#a0aec0;font-family:'Sarabun',sans-serif;font-size:11px;cursor:pointer}
+.logout-btn:hover{border-color:#fc8181;color:#fc8181}
 .stat{margin-left:auto;font-size:12px;color:#718096;white-space:nowrap}
 .stat span{color:#4299e1;font-weight:700}
 #map{flex:1;min-height:0}
@@ -148,10 +154,12 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
     <span class="search-icon">🔍</span>
     <div class="search-results" id="searchResults"></div>
   </div>
-  <button class="add-btn"       onclick="openAddModal()">＋ เพิ่ม</button>
-  <button class="edit-btn-tool" onclick="openMgmtModal()">✏️ แก้ไข / ลบ</button>
+  <button class="add-btn editor-only"       style="display:none" onclick="openAddModal()">＋ เพิ่ม</button>
+  <button class="edit-btn-tool editor-only" style="display:none" onclick="openMgmtModal()">✏️ แก้ไข / ลบ</button>
   <button class="export-btn"    onclick="exportHTML()">⬇ Export</button>
   <button class="pdf-btn"       onclick="exportPDF()">📄 PDF</button>
+  <button class="login-btn" id="loginBtn" onclick="openLoginModal()">🔓 เข้าสู่ระบบ</button>
+  <span class="user-box" id="userBox" style="display:none">👤 <b id="userEmail"></b><button class="logout-btn" onclick="doLogout()">ออก</button></span>
   <div class="stat">แสดง <span id="cnt">—</span> หมุด  |  🧹 <span id="staffCnt">—</span> คน</div>
 </div>
 <div id="loadingOverlay" style="position:fixed;inset:0;background:#0f1623;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px"><div style="font-size:32px">🔥</div><div style="color:#4299e1;font-size:15px;font-family:Sarabun,sans-serif;font-weight:700">กำลังโหลดข้อมูล...</div></div>
@@ -222,6 +230,19 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal('editDetailModal');openMgmtModal()">ยกเลิก</button>
       <button class="btn-primary" onclick="submitEdit()">💾 บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="loginModal" onclick="if(event.target===this)closeModal('loginModal')">
+  <div class="modal" style="width:340px">
+    <h2>🔐 เข้าสู่ระบบ (สำหรับผู้แก้ไข)</h2>
+    <div class="form-row"><label>อีเมล</label><input type="email" id="l_email" placeholder="you@example.com" autocomplete="username"></div>
+    <div class="form-row"><label>รหัสผ่าน</label><input type="password" id="l_pass" placeholder="••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')submitLogin()"></div>
+    <div id="l_err" style="display:none;color:#fc8181;font-size:12px;margin-top:6px"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('loginModal')">ยกเลิก</button>
+      <button class="btn-primary" onclick="submitLogin()">เข้าสู่ระบบ</button>
     </div>
   </div>
 </div>
@@ -338,6 +359,7 @@ window.rebuildMarkers = buildMarkers;
 
 // ── เพิ่มปุ่ม แก้ไข/ลบ เข้าไปในป็อปอัปของหมุด (แก้ข้อมูลตรงหมุดได้เลย) ──
 map.on('popupopen', function(e) {
+  if (!window._isEditor) return;                  // ดูอย่างเดียว ไม่ต้องมีปุ่มแก้/ลบ
   const marker = e.popup._source;
   if (!marker || !marker._raw) return;
   const d = marker._raw;
@@ -499,6 +521,41 @@ document.addEventListener('click', e => {
   if (!document.getElementById('searchWrap').contains(e.target))
     document.getElementById('searchResults').style.display='none';
 });
+
+// ── ระบบสิทธิ์ (Login) : แสดง/ซ่อนปุ่มแก้ไขตามสถานะ ───────────
+window._isEditor = false;
+window.applyAuthUI = function(user) {
+  const isEditor = !!user;
+  document.querySelectorAll('.editor-only').forEach(el => el.style.display = isEditor ? '' : 'none');
+  const loginBtn = document.getElementById('loginBtn');
+  const userBox  = document.getElementById('userBox');
+  if (loginBtn) loginBtn.style.display = isEditor ? 'none' : '';
+  if (userBox)  userBox.style.display  = isEditor ? '' : 'none';
+  if (isEditor) { const ue = document.getElementById('userEmail'); if (ue) ue.textContent = (user && user.email) || ''; }
+};
+function openLoginModal() {
+  const err = document.getElementById('l_err'); if (err) err.style.display = 'none';
+  document.getElementById('l_pass').value = '';
+  document.getElementById('loginModal').classList.add('open');
+  setTimeout(() => document.getElementById('l_email').focus(), 50);
+}
+function submitLogin() {
+  const email = document.getElementById('l_email').value.trim();
+  const pass  = document.getElementById('l_pass').value;
+  const err   = document.getElementById('l_err');
+  const showErr = msg => { if (err) { err.textContent = msg; err.style.display = 'block'; } };
+  if (!window._login) { showErr('ยังเชื่อมต่อ Firebase ไม่สำเร็จ'); return; }
+  if (!email || !pass) { showErr('กรุณากรอกอีเมลและรหัสผ่าน'); return; }
+  window._login(email, pass)
+    .then(() => { closeModal('loginModal'); showToast('✅ เข้าสู่ระบบแล้ว'); })
+    .catch(e => {
+      const code = (e && e.code) || '';
+      showErr(/invalid|wrong|not-found|credential/i.test(code) ? 'อีเมลหรือรหัสผ่านไม่ถูกต้อง' : ('ผิดพลาด: ' + (code || e.message || '')));
+    });
+}
+function doLogout() {
+  if (window._logout) window._logout().then(() => showToast('ออกจากระบบแล้ว'));
+}
 
 // ── Modal ─────────────────────────────────────────────────
 function openAddModal()  { document.getElementById('addModal').classList.add('open'); }
@@ -859,6 +916,7 @@ function exportPDF() {
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, getDocs, setDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAc7_R3-9M5S3eNoJ7bzLfs4YGNFKi0yAU",
@@ -874,13 +932,22 @@ window._setDoc  = null;
 window._deleteDoc = null;
 window._docRef  = null;
 
-let _app, _db;
+let _app, _db, _auth;
 try {
   _app = initializeApp(firebaseConfig);
   _db  = getFirestore(_app);
   window._setDoc = (ref, data) => setDoc(ref, data);
   window._deleteDoc = (ref) => deleteDoc(ref);
   window._docRef = (name, id)  => doc(_db, name, id);
+
+  // ── ระบบ Login (Email/Password) ──
+  _auth = getAuth(_app);
+  window._login  = (email, pass) => signInWithEmailAndPassword(_auth, email, pass);
+  window._logout = () => signOut(_auth);
+  onAuthStateChanged(_auth, (user) => {
+    window._isEditor = !!user;
+    if (typeof window.applyAuthUI === 'function') window.applyAuthUI(user);
+  });
 } catch(e) {
   console.warn('Firebase init failed:', e);
 }
