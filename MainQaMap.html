@@ -128,6 +128,36 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
 .toast.show{opacity:1}
 .save-indicator{position:fixed;top:12px;right:12px;background:#2d4a2d;border:1px solid #48bb78;border-radius:20px;padding:4px 12px;font-size:11px;color:#48bb78;z-index:9998;opacity:0;transition:opacity .3s;pointer-events:none}
 .save-indicator.show{opacity:1}
+/* กลุ่มปุ่ม: บนจอใหญ่ทำตัวเหมือนไม่มี wrapper (เลย์เอาต์เดิม) */
+.grp{display:contents}
+
+/* ───────── มือถือ / จอเล็ก ───────── */
+@media (max-width:640px){
+  .header{padding:8px 12px;gap:8px}
+  .header-title{font-size:15px}
+  .header-sub{display:none}
+  .hbadge{padding:3px 11px;font-size:11px}
+  .toolbar{padding:6px 8px;gap:6px}
+  .toolbar .divider{display:none}
+  /* แต่ละกลุ่มกลายเป็นแถบเลื่อนซ้าย-ขวา ไม่เด้งเป็นก้อนสูง */
+  .grp{display:flex;gap:6px;width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
+  .grp::-webkit-scrollbar{display:none}
+  .qa-btn,.size-btn{flex:0 0 auto;padding:8px 15px;font-size:13px}
+  .grp-act button{flex:0 0 auto;padding:8px 14px;font-size:13px}
+  .search-wrap{flex:0 0 100%;width:100%;max-width:none}
+  .search-wrap input{font-size:16px;padding:10px 34px 10px 14px}
+  .user-box{flex:0 0 auto}
+  .stat{display:none}
+  /* legend ย่อลง ไม่บังแผนที่ */
+  .legend{bottom:10px;right:8px;padding:8px 10px;font-size:10px}
+  .legend h4{margin-bottom:5px}
+  .leg-item{margin-bottom:3px}
+  /* modal เด้งจากด้านล่าง เต็มความกว้าง กดง่าย */
+  .modal-overlay{align-items:flex-end}
+  .modal{width:100%;max-width:100%;border-radius:16px 16px 0 0;max-height:90vh;padding:20px 18px 16px}
+  .form-row input,.form-row select{font-size:16px;padding:10px 12px}
+  .btn-primary,.btn-cancel{padding:12px;font-size:14px}
+}
 </style>
 </head>
 <body>
@@ -137,6 +167,7 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
   <div class="hbadge" id="totalBadge">— จุด</div>
 </div>
 <div class="toolbar">
+  <div class="grp grp-qa">
   <button class="qa-btn active" data-qa="all"     onclick="filterQA('all')">ทั้งหมด</button>
   <button class="qa-btn"        data-qa="Qa1"     onclick="filterQA('Qa1')">Qa1</button>
   <button class="qa-btn"        data-qa="Qa2"     onclick="filterQA('Qa2')">Qa2</button>
@@ -144,20 +175,24 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
   <button class="qa-btn"        data-qa="Ecs"     onclick="filterQA('Ecs')">Ecs</button>
   <button class="qa-btn"        data-qa="Qa4"     onclick="filterQA('Qa4')">Qa4</button>
   <button class="qa-btn"        data-qa="Qa5"     onclick="filterQA('Qa5')">Qa5</button>
-   <button class="qa-btn"        data-qa="Qa6"     onclick="filterQA('Qa6')">Qa6</button>
+  <button class="qa-btn"        data-qa="Qa6"     onclick="filterQA('Qa6')">Qa6</button>
   <button class="qa-btn"        data-qa="แรงงาน"  onclick="filterQA('แรงงาน')">แรงงาน</button>
+  </div>
   <div class="divider"></div>
+  <div class="grp grp-size">
   <button class="size-btn active" data-size="all" onclick="filterSize('all')">ทุกขนาด</button>
   <button class="size-btn" data-size="S"  onclick="filterSize('S')">S <span style="font-size:10px;opacity:.7">1-5</span></button>
   <button class="size-btn" data-size="M"  onclick="filterSize('M')">M <span style="font-size:10px;opacity:.7">6-15</span></button>
   <button class="size-btn" data-size="L"  onclick="filterSize('L')">L <span style="font-size:10px;opacity:.7">16-30</span></button>
   <button class="size-btn" data-size="XL" onclick="filterSize('XL')">XL <span style="font-size:10px;opacity:.7">31+</span></button>
+  </div>
   <div class="divider"></div>
   <div class="search-wrap" id="searchWrap">
     <input type="text" id="searchInput" placeholder="ค้นหารหัส / ชื่อหน่วยงาน..." oninput="onSearch(this.value)" autocomplete="off">
     <span class="search-icon">🔍</span>
     <div class="search-results" id="searchResults"></div>
   </div>
+  <div class="grp grp-act">
   <button class="add-btn editor-only"       style="display:none" onclick="openAddModal()">＋ เพิ่ม</button>
   <button class="edit-btn-tool editor-only" style="display:none" onclick="openMgmtModal()">✏️ แก้ไข / ลบ</button>
   <button class="backup-btn editor-only"  style="display:none" onclick="backupData()">💾 สำรอง</button>
@@ -167,6 +202,7 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
   <button class="pdf-btn"       onclick="exportPDF()">📄 PDF</button>
   <button class="login-btn" id="loginBtn" onclick="openLoginModal()">🔓 เข้าสู่ระบบ</button>
   <span class="user-box" id="userBox" style="display:none">👤 <b id="userEmail"></b><button class="logout-btn" onclick="doLogout()">ออก</button></span>
+  </div>
   <div class="stat">แสดง <span id="cnt">—</span> หมุด  |  🧹 <span id="staffCnt">—</span> คน</div>
 </div>
 <div id="loadingOverlay" style="position:fixed;inset:0;background:#0f1623;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px"><div style="font-size:32px">🔥</div><div style="color:#4299e1;font-size:15px;font-family:Sarabun,sans-serif;font-weight:700">กำลังโหลดข้อมูล...</div></div>
