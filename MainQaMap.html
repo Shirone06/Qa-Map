@@ -336,6 +336,50 @@ buildMarkers();
 // expose ให้ Firebase ใช้ rebuildMarkers
 window.rebuildMarkers = buildMarkers;
 
+// ── เพิ่มปุ่ม แก้ไข/ลบ เข้าไปในป็อปอัปของหมุด (แก้ข้อมูลตรงหมุดได้เลย) ──
+map.on('popupopen', function(e) {
+  const marker = e.popup._source;
+  if (!marker || !marker._raw) return;
+  const d = marker._raw;
+  const el = e.popup.getElement();
+  if (!el) return;
+  el.querySelectorAll('.pop-unit').forEach(unitEl => {
+    if (unitEl.querySelector('.pop-edit-actions')) return;          // กันเพิ่มซ้ำ
+    const codeEl = unitEl.querySelector('.pop-code');
+    const code = codeEl ? codeEl.textContent.trim() : '';
+    const findUi = () => d.units ? d.units.findIndex(u => u.code === code) : -1;
+
+    const actions = document.createElement('div');
+    actions.className = 'pop-edit-actions';
+    actions.style.cssText = 'margin-top:8px;display:flex;gap:6px';
+
+    const bEdit = document.createElement('button');
+    bEdit.textContent = '✏️ แก้ไข';
+    bEdit.style.cssText = 'flex:1;padding:5px;border:none;background:#f6ad55;color:#fff;border-radius:6px;font-family:Sarabun,sans-serif;font-size:12px;font-weight:700;cursor:pointer';
+    bEdit.addEventListener('click', () => {
+      const mi = markers.indexOf(marker);                          // หาตำแหน่งสดๆ ตอนคลิก
+      if (mi < 0) { showToast('⚠️ ไม่พบหน่วยงาน'); return; }
+      map.closePopup();
+      openEditDetail(mi, findUi());
+    });
+
+    const bDel = document.createElement('button');
+    bDel.textContent = '🗑 ลบ';
+    bDel.style.cssText = 'padding:5px 12px;border:1px solid #fc8181;background:#fff;color:#e53e3e;border-radius:6px;font-family:Sarabun,sans-serif;font-size:12px;font-weight:700;cursor:pointer';
+    bDel.addEventListener('click', () => {
+      const mi = markers.indexOf(marker);
+      if (mi < 0) { showToast('⚠️ ไม่พบหน่วยงาน'); return; }
+      if (!confirm('ยืนยันลบ ' + code + ' ?')) return;
+      map.closePopup();
+      deleteUnit(mi, findUi());
+    });
+
+    actions.appendChild(bEdit);
+    actions.appendChild(bDel);
+    unitEl.appendChild(actions);
+  });
+});
+
 // ── Filter ────────────────────────────────────────────────
 function filterSize(size) {
   if (size === 'all') {
