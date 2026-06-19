@@ -178,13 +178,13 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
     <button class="dd-trigger" onclick="toggleDD('Qa')">🏷️ <span id="ddQaLabel">QA: ทั้งหมด</span> ▾</button>
     <div class="dd-panel" id="ddQaPanel">
       <button class="qa-btn active" data-qa="all"     onclick="filterQA('all')">ทั้งหมด</button>
-      <button class="qa-btn"        data-qa="Qa1"     onclick="filterQA('Qa1')">Qa1</button>
-      <button class="qa-btn"        data-qa="Qa2"     onclick="filterQA('Qa2')">Qa2</button>
-      <button class="qa-btn"        data-qa="Qa3"     onclick="filterQA('Qa3')">Qa3</button>
+      <button class="qa-btn"        data-qa="Qa1"     onclick="filterQA('Qa1')">คุณจุ๊(สมใจ)</button>
+      <button class="qa-btn"        data-qa="Qa2"     onclick="filterQA('Qa2')">คุณกวาง(กชกร)</button>
+      <button class="qa-btn"        data-qa="Qa3"     onclick="filterQA('Qa3')">คุณเอื้อง(ศิริกานต์)</button>
       <button class="qa-btn"        data-qa="Ecs"     onclick="filterQA('Ecs')">Ecs</button>
-      <button class="qa-btn"        data-qa="Qa4"     onclick="filterQA('Qa4')">Qa4</button>
+      <button class="qa-btn"        data-qa="Qa4"     onclick="filterQA('Qa4')">คุณแทน(ณัฐกิจ)</button>
       <button class="qa-btn"        data-qa="Qa5"     onclick="filterQA('Qa5')">Qa5</button>
-      <button class="qa-btn"        data-qa="Qa6"     onclick="filterQA('Qa6')">Qa6</button>
+      <button class="qa-btn"        data-qa="Qa6"     onclick="filterQA('Qa6')">คุณกาญ(หนูกาญ)</button>
       <button class="qa-btn"        data-qa="แรงงาน"  onclick="filterQA('แรงงาน')">แรงงาน</button>
     </div>
   </div>
@@ -222,14 +222,14 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
   <div id="map"></div>
   <div class="legend">
     <h4>QA ผู้รับผิดชอบ</h4>
-    <div class="leg-item"><div class="leg-dot" style="background:#d69e2e"></div>Qa1</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#38a169"></div>Qa2</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#3182ce"></div>Qa3</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#d69e2e"></div>คุณจุ๊(สมใจ)</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#38a169"></div>คุณกวาง(กชกร)</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#3182ce"></div>คุณเอื้อง(ศิริกานต์)</div>
     <div class="leg-item"><div class="leg-dot" style="background:#805ad5"></div>Ecs</div>
     <div class="leg-item"><div class="leg-dot" style="background:#dd6b20"></div>แรงงาน</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#e53e3e"></div>Qa4</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#e53e3e"></div>คุณแทน(ณัฐกิจ)</div>
     <div class="leg-item"><div class="leg-dot" style="background:#d53f8c"></div>Qa5</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#00b5d8"></div>Qa6</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#00b5d8"></div>คุณกาญ(หนูกาญ)</div>
   </div>
 </div>
 
@@ -239,7 +239,7 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
     <div class="form-row"><label>รหัส *</label><input type="text" id="a_code" placeholder="เช่น C999"></div>
     <div class="form-row"><label>ชื่อหน่วยงาน *</label><input type="text" id="a_name"></div>
     <div class="form-row"><label>QA *</label>
-      <select id="a_qa"><option value="Qa1">Qa1</option><option value="Qa2">Qa2</option><option value="Qa3">Qa3</option><option value="Qa4">Qa4</option><option value="Qa5">Qa5</option><option value="Qa6">Qa6</option><option value="Ecs">Ecs</option><option value="แรงงาน">แรงงาน</option></select></div>
+      <select id="a_qa"><option value="Qa1">คุณจุ๊(สมใจ)</option><option value="Qa2">คุณกวาง(กชกร)</option><option value="Qa3">คุณเอื้อง(ศิริกานต์)</option><option value="Qa4">คุณแทน(ณัฐกิจ)</option><option value="Qa5">Qa5</option><option value="Qa6">คุณกาญ(หนูกาญ)</option><option value="Ecs">Ecs</option><option value="แรงงาน">แรงงาน</option></select></div>
     <div class="form-row"><label>จำนวนแม่บ้าน</label><input type="number" id="a_count" placeholder="0" min="0"></div>
     <div class="form-row"><label>Latitude *</label><input type="text" id="a_lat" placeholder="13.756000"><div class="hint">ตัวเลขแรกหลัง @ ใน Google Maps URL</div></div>
     <div class="form-row"><label>Longitude *</label><input type="text" id="a_lng" placeholder="100.548000"></div>
@@ -248,6 +248,7 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
     <div class="form-row"><label>เบอร์หัวหน้างาน</label><input type="text" id="a_supervisorPhone" placeholder="0812345678"></div>
     <div class="form-row"><label>ชื่อลูกค้า</label><input type="text" id="a_clientName"></div>
     <div class="form-row"><label>เบอร์ลูกค้า</label><input type="text" id="a_clientPhone" placeholder="0812345678"></div>
+    <div class="form-row"><label>วันที่หมดสัญญา</label><input type="date" id="a_expiry"></div>
     <div class="form-row"><label>หมายเหตุ</label><input type="text" id="a_note"></div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal('addModal')">ยกเลิก</button>
@@ -272,7 +273,7 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
     <div class="form-row"><label>รหัส</label><input type="text" id="e_code"></div>
     <div class="form-row"><label>ชื่อหน่วยงาน</label><input type="text" id="e_name"></div>
     <div class="form-row"><label>QA</label>
-      <select id="e_qa"><option value="Qa1">Qa1</option><option value="Qa2">Qa2</option><option value="Qa3">Qa3</option><option value="Qa4">Qa4</option><option value="Qa5">Qa5</option><option value="Qa6">Qa6</option><option value="Ecs">Ecs</option><option value="แรงงาน">แรงงาน</option></select></div>
+      <select id="e_qa"><option value="Qa1">คุณจุ๊(สมใจ)</option><option value="Qa2">คุณกวาง(กชกร)</option><option value="Qa3">คุณเอื้อง(ศิริกานต์)</option><option value="Qa4">คุณแทน(ณัฐกิจ)</option><option value="Qa5">Qa5</option><option value="Qa6">คุณกาญ(หนูกาญ)</option><option value="Ecs">Ecs</option><option value="แรงงาน">แรงงาน</option></select></div>
     <div class="form-row"><label>จำนวนแม่บ้าน</label><input type="number" id="e_count" min="0"></div>
     <div class="form-row"><label>Latitude</label><input type="text" id="e_lat"><div class="hint">⚠️ แก้จะย้ายหมุด</div></div>
     <div class="form-row"><label>Longitude</label><input type="text" id="e_lng"></div>
@@ -281,6 +282,7 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
     <div class="form-row"><label>เบอร์หัวหน้างาน</label><input type="text" id="e_supervisorPhone"></div>
     <div class="form-row"><label>ชื่อลูกค้า</label><input type="text" id="e_clientName"></div>
     <div class="form-row"><label>เบอร์ลูกค้า</label><input type="text" id="e_clientPhone"></div>
+    <div class="form-row"><label>วันที่หมดสัญญา</label><input type="date" id="e_expiry"></div>
     <div class="form-row"><label>หมายเหตุ</label><input type="text" id="e_note"></div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal('editDetailModal');openMgmtModal()">ยกเลิก</button>
@@ -308,6 +310,7 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
 <script>
 const QA_COLOR   = {Qa1:"#d69e2e",Qa2:"#38a169",Qa3:"#3182ce",Ecs:"#805ad5","แรงงาน":"#dd6b20",Qa4:"#e53e3e",Qa5:"#d53f8c",Qa6:"#00b5d8"};
 const QA_CODE_BG = {Qa1:"#fefcbf",Qa2:"#f0fff4",Qa3:"#ebf8ff",Ecs:"#faf5ff","แรงงาน":"#fffaf0",Qa4:"#fff5f5",Qa5:"#fff0f6",Qa6:"#00b5d8"};
+const QA_LABEL   = {Qa1:"คุณจุ๊(สมใจ)",Qa2:"คุณกวาง(กชกร)",Qa3:"คุณเอื้อง(ศิริกานต์)",Qa4:"คุณแทน(ณัฐกิจ)",Qa6:"คุณกาญ(หนูกาญ)"};
 
 // ── ประกาศตัวแปรทั้งหมดไว้ด้านบนสุด เพื่อป้องกัน Error "before initialization" ──
 const searchIndex = [];
@@ -363,10 +366,11 @@ function renderUnit(u, showCoords) {
   return '<div class="pop-unit">'
     + '<span class="pop-code" style="background:' + bg + ';color:#2d3748">' + (u.code||'') + '</span>'
     + '<div class="pop-name">' + (u.name||'') + '</div>'
-    + '<div class="pop-row">👤 <strong>' + (u.qa||'') + '</strong></div>'
+    + '<div class="pop-row">👤 <strong>' + (QA_LABEL[u.qa]||u.qa||'') + '</strong></div>'
     + '<div class="pop-row">🧹 แม่บ้าน <strong>' + (u.count||0) + ' คน</strong><span class="size-badge size-' + getSizeFromCount(u.count) + '">' + getSizeFromCount(u.count) + '</span></div>'
     + (u.supervisor ? '<div class="pop-row">👷 หัวหน้า <strong>' + u.supervisor + '</strong>' + (u.supervisorPhone ? ' <a href="tel:' + u.supervisorPhone + '">' + u.supervisorPhone + '</a>' : '') + '</div>' : '')
     + (u.clientName ? '<div class="pop-row">🏢 ลูกค้า <strong>' + u.clientName + '</strong>' + (u.clientPhone ? ' <a href="tel:' + u.clientPhone + '">' + u.clientPhone + '</a>' : '') + '</div>' : '')
+    + (u.expiry ? '<div class="pop-row">📅 หมดสัญญา <strong>' + fmtDate(u.expiry) + '</strong></div>' : '')
     + (u.note ? '<div class="pop-row">📝 <em>' + u.note + '</em></div>' : '')
     + (showCoords ? '<div class="pop-coords">📌 ' + (u.lat||'') + ', ' + (u.lng||'') + '</div>' : '')
     + (u.link ? '<a class="pop-link" href="' + u.link + '" target="_blank">📍 Google Maps</a>' : '')
@@ -682,19 +686,25 @@ function openMgmtModal() { document.getElementById('mgmtSearch').value=''; rende
 function closeModal(id)  { document.getElementById(id).classList.remove('open'); }
 function showToast(msg)  { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
 
+function fmtDate(s) {
+  if (!s) return '';
+  const d = new Date(s);
+  return isNaN(d.getTime()) ? s : d.toLocaleDateString('th-TH', {day:'2-digit', month:'2-digit', year:'numeric'});
+}
 function getExtra(p) {
   const g = id => (document.getElementById(id)||{value:''}).value.trim();
-  return { supervisor:g(p+'_supervisor'), supervisorPhone:g(p+'_supervisorPhone'), clientName:g(p+'_clientName'), clientPhone:g(p+'_clientPhone'), note:g(p+'_note') };
+  return { supervisor:g(p+'_supervisor'), supervisorPhone:g(p+'_supervisorPhone'), clientName:g(p+'_clientName'), clientPhone:g(p+'_clientPhone'), expiry:g(p+'_expiry'), note:g(p+'_note') };
 }
 function setExtra(p, u) {
   document.getElementById(p+'_supervisor').value      = u.supervisor||'';
   document.getElementById(p+'_supervisorPhone').value = u.supervisorPhone||'';
   document.getElementById(p+'_clientName').value      = u.clientName||'';
   document.getElementById(p+'_clientPhone').value     = u.clientPhone||'';
+  document.getElementById(p+'_expiry').value          = u.expiry||'';
   document.getElementById(p+'_note').value            = u.note||'';
 }
 function clearExtra(p) {
-  ['supervisor','supervisorPhone','clientName','clientPhone','note'].forEach(k => document.getElementById(p+'_'+k).value='');
+  ['supervisor','supervisorPhone','clientName','clientPhone','expiry','note'].forEach(k => document.getElementById(p+'_'+k).value='');
 }
 
 // ── เพิ่ม ─────────────────────────────────────────────────
@@ -749,7 +759,7 @@ function renderMgmtList(q) {
       + '<div class="mgmt-info">'
       + '<div class="mgmt-code" style="color:' + c + '">' + (i.code||'') + '</div>'
       + '<div class="mgmt-name">' + (i.name||'') + '</div>'
-      + '<div class="mgmt-qa">' + (i.qa||'') + '</div>'
+      + '<div class="mgmt-qa">' + (QA_LABEL[i.qa]||i.qa||'') + '</div>'
       + '</div>'
       + '<div class="mgmt-actions">'
       + '<button class="btn-edit-sm" onclick="openEditDetail(' + i.mi + ',' + i.ui + ')">✏️</button>'
@@ -904,6 +914,7 @@ function serializeData() {
         if(u.supervisorPhone) s+=', supervisorPhone:"' + esc(u.supervisorPhone) + '"';
         if(u.clientName)      s+=', clientName:"' + esc(u.clientName) + '"';
         if(u.clientPhone)     s+=', clientPhone:"' + esc(u.clientPhone) + '"';
+        if(u.expiry)          s+=', expiry:"' + esc(u.expiry) + '"';
         if(u.note)            s+=', note:"' + esc(u.note) + '"';
         return s+' }';
       }).join(',\n');
@@ -914,6 +925,7 @@ function serializeData() {
     if(d.supervisorPhone) s+=', supervisorPhone:"' + esc(d.supervisorPhone) + '"';
     if(d.clientName)      s+=', clientName:"' + esc(d.clientName) + '"';
     if(d.clientPhone)     s+=', clientPhone:"' + esc(d.clientPhone) + '"';
+    if(d.expiry)          s+=', expiry:"' + esc(d.expiry) + '"';
     if(d.note)            s+=', note:"' + esc(d.note) + '"';
     return s+' }';
   }).join(',\n') + '\n];';
@@ -958,7 +970,7 @@ function exportPDF() {
     const push = u => { if (activeQAs.has('all') || activeQAs.has(u.qa)) rows.push({
       code:u.code||'', name:u.name||'', qa:u.qa||'', count:u.count||0,
       supervisor:u.supervisor||'', supervisorPhone:u.supervisorPhone||'',
-      clientName:u.clientName||'', clientPhone:u.clientPhone||'', note:u.note||'' }); };
+      clientName:u.clientName||'', clientPhone:u.clientPhone||'', expiry:u.expiry||'', note:u.note||'' }); };
     if (d.units) d.units.forEach(push); else push(d);
   });
   if (!rows.length) { showToast('⚠️ ไม่มีข้อมูล'); return; }
@@ -978,32 +990,49 @@ function exportPDF() {
     g.items.push(r);
   });
 
-  const totalSites = rows.length;
-  const totalStaff = rows.reduce((s,r)=>s+(r.count||0), 0);
   const today = new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'});
-  const qaLabel = activeQAs.has('all') ? 'ทุก QA' : [...activeQAs].join(', ');
 
-  let body = '';
-  let n = 0;
-  groups.forEach(g => {
-    const c = QA_COLOR[g.qa] || '#4a5568';
+  // สร้างรายงานแยกส่วน — Qa แต่ละคนมีหัวข้อ/การ์ด/ตารางของตัวเอง และขึ้นหน้าใหม่
+  let sections = '';
+  groups.forEach((g, gi) => {
+    const c = QA_COLOR[g.qa] || '#2b6cb0';
     const gStaff = g.items.reduce((s,r)=>s+(r.count||0),0);
-    body += '<tr class="grp"><td colspan="7" style="background:' + c + '">● ' + esc(g.qa)
-      + ' <span class="gmeta">— ' + g.items.length + ' หน่วยงาน · ' + gStaff.toLocaleString() + ' คน</span></td></tr>';
+    let rowsHtml = '';
+    let n = 0;
     g.items.forEach(r => {
       n++;
       const sup = esc(r.supervisor) + (r.supervisorPhone ? '<div class="ph">' + esc(r.supervisorPhone) + '</div>' : '');
       const cli = esc(r.clientName) + (r.clientPhone ? '<div class="ph">' + esc(r.clientPhone) + '</div>' : '');
-      body += '<tr' + (n % 2 === 0 ? ' class="alt"' : '') + '>'
+      rowsHtml += '<tr' + (n % 2 === 0 ? ' class="alt"' : '') + '>'
         + '<td class="ctr num">' + n + '</td>'
         + '<td class="code">' + esc(r.code) + '</td>'
         + '<td>' + esc(r.name) + '</td>'
         + '<td class="ctr cnt">' + (r.count||0) + '</td>'
+        + '<td class="ctr">' + (r.expiry ? esc(fmtDate(r.expiry)) : '<span class="dim">-</span>') + '</td>'
         + '<td>' + (sup || '<span class="dim">-</span>') + '</td>'
         + '<td>' + (cli || '<span class="dim">-</span>') + '</td>'
         + '<td class="note">' + esc(r.note) + '</td>'
         + '</tr>';
     });
+    sections += '<section class="qa-sec"' + (gi === 0 ? '' : ' style="page-break-before:always"') + '>'
+      + '<div class="head" style="border-bottom-color:' + c + '">'
+      + '<h1><span class="dot" style="background:' + c + '"></span>📋 รายงานหน่วยงาน QA ของ ' + esc(QA_LABEL[g.qa] || g.qa) + '</h1>'
+      + '<div class="meta">วันที่ ' + today + '</div></div>'
+      + '<div class="cards">'
+      + '<div class="card"><div class="l">หน่วยงาน</div><div class="v">' + g.items.length.toLocaleString() + ' แห่ง</div></div>'
+      + '<div class="card"><div class="l">🧹 แม่บ้านรวม</div><div class="v">' + gStaff.toLocaleString() + ' คน</div></div>'
+      + '</div>'
+      + '<table><thead><tr>'
+      + '<th class="ctr" style="width:22px">#</th>'
+      + '<th style="width:54px">รหัส</th>'
+      + '<th>ชื่อหน่วยงาน</th>'
+      + '<th class="ctr" style="width:40px">แม่บ้าน</th>'
+      + '<th class="ctr" style="width:64px">หมดสัญญา</th>'
+      + '<th style="width:104px">หัวหน้างาน</th>'
+      + '<th style="width:104px">ลูกค้า</th>'
+      + '<th style="width:78px">หมายเหตุ</th>'
+      + '</tr></thead><tbody>' + rowsHtml + '</tbody></table>'
+      + '</section>';
   });
 
   const css = '@import url(\'https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap\');'
@@ -1011,7 +1040,8 @@ function exportPDF() {
     + '*{margin:0;padding:0;box-sizing:border-box}'
     + 'body{font-family:\'Sarabun\',sans-serif;color:#1a202c;font-size:11px;-webkit-print-color-adjust:exact;print-color-adjust:exact}'
     + '.head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2.5px solid #2b6cb0;padding-bottom:8px;margin-bottom:10px}'
-    + '.head h1{font-size:18px;color:#1a365d}'
+    + '.head h1{font-size:17px;color:#1a365d;display:flex;align-items:center;gap:7px}'
+    + '.head .dot{width:12px;height:12px;border-radius:50%;flex:0 0 auto}'
     + '.head .meta{font-size:10px;color:#718096;text-align:right;line-height:1.5}'
     + '.cards{display:flex;gap:8px;margin-bottom:12px}'
     + '.card{flex:1;border:1px solid #e2e8f0;border-radius:8px;padding:8px 12px;background:#f8fafc}'
@@ -1031,21 +1061,7 @@ function exportPDF() {
     + '.foot{margin-top:8px;text-align:right;font-size:8.5px;color:#a0aec0}';
 
   const html = '<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><title>รายงานหน่วยงาน QA</title><style>' + css + '</style></head><body>'
-    + '<div class="head"><h1>📋 รายงานหน่วยงาน QA</h1><div class="meta">ขอบเขต: ' + esc(qaLabel) + '<br>วันที่ ' + today + '</div></div>'
-    + '<div class="cards">'
-    + '<div class="card"><div class="l">หน่วยงานทั้งหมด</div><div class="v">' + totalSites.toLocaleString() + ' แห่ง</div></div>'
-    + '<div class="card"><div class="l">🧹 แม่บ้านรวม</div><div class="v">' + totalStaff.toLocaleString() + ' คน</div></div>'
-    + '<div class="card"><div class="l">กลุ่ม QA</div><div class="v">' + groups.length + '</div></div>'
-    + '</div>'
-    + '<table><thead><tr>'
-    + '<th class="ctr" style="width:24px">#</th>'
-    + '<th style="width:58px">รหัส</th>'
-    + '<th>ชื่อหน่วยงาน</th>'
-    + '<th class="ctr" style="width:44px">แม่บ้าน</th>'
-    + '<th style="width:115px">หัวหน้างาน</th>'
-    + '<th style="width:115px">ลูกค้า</th>'
-    + '<th style="width:88px">หมายเหตุ</th>'
-    + '</tr></thead><tbody>' + body + '</tbody></table>'
+    + sections
     + '<div class="foot">ระบบแผนที่หน่วยงาน QA · ' + today + '</div>'
     + '<scr' + 'ipt>window.onload=function(){setTimeout(function(){window.print();},400);};</scr' + 'ipt>'
     + '</body></html>';
