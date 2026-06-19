@@ -248,7 +248,7 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
     <div class="form-row"><label>เบอร์หัวหน้างาน</label><input type="text" id="a_supervisorPhone" placeholder="0812345678"></div>
     <div class="form-row"><label>ชื่อลูกค้า</label><input type="text" id="a_clientName"></div>
     <div class="form-row"><label>เบอร์ลูกค้า</label><input type="text" id="a_clientPhone" placeholder="0812345678"></div>
-    <div class="form-row"><label>วันที่หมดสัญญา</label><input type="date" id="a_expiry"></div>
+    <div class="form-row"><label>ระยะเวลาสัญญา</label><div style="display:flex;align-items:center;gap:8px"><input type="date" id="a_contractStart" style="flex:1;min-width:0"><span style="color:#718096;font-size:11px;flex:0 0 auto">ถึง</span><input type="date" id="a_contractEnd" style="flex:1;min-width:0"></div></div>
     <div class="form-row"><label>หมายเหตุ</label><input type="text" id="a_note"></div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal('addModal')">ยกเลิก</button>
@@ -282,7 +282,7 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
     <div class="form-row"><label>เบอร์หัวหน้างาน</label><input type="text" id="e_supervisorPhone"></div>
     <div class="form-row"><label>ชื่อลูกค้า</label><input type="text" id="e_clientName"></div>
     <div class="form-row"><label>เบอร์ลูกค้า</label><input type="text" id="e_clientPhone"></div>
-    <div class="form-row"><label>วันที่หมดสัญญา</label><input type="date" id="e_expiry"></div>
+    <div class="form-row"><label>ระยะเวลาสัญญา</label><div style="display:flex;align-items:center;gap:8px"><input type="date" id="e_contractStart" style="flex:1;min-width:0"><span style="color:#718096;font-size:11px;flex:0 0 auto">ถึง</span><input type="date" id="e_contractEnd" style="flex:1;min-width:0"></div></div>
     <div class="form-row"><label>หมายเหตุ</label><input type="text" id="e_note"></div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal('editDetailModal');openMgmtModal()">ยกเลิก</button>
@@ -370,7 +370,7 @@ function renderUnit(u, showCoords) {
     + '<div class="pop-row">🧹 แม่บ้าน <strong>' + (u.count||0) + ' คน</strong><span class="size-badge size-' + getSizeFromCount(u.count) + '">' + getSizeFromCount(u.count) + '</span></div>'
     + (u.supervisor ? '<div class="pop-row">👷 หัวหน้า <strong>' + u.supervisor + '</strong>' + (u.supervisorPhone ? ' <a href="tel:' + u.supervisorPhone + '">' + u.supervisorPhone + '</a>' : '') + '</div>' : '')
     + (u.clientName ? '<div class="pop-row">🏢 ลูกค้า <strong>' + u.clientName + '</strong>' + (u.clientPhone ? ' <a href="tel:' + u.clientPhone + '">' + u.clientPhone + '</a>' : '') + '</div>' : '')
-    + (u.expiry ? '<div class="pop-row">📅 หมดสัญญา <strong>' + fmtDate(u.expiry) + '</strong></div>' : '')
+    + ((u.contractStart || u.contractEnd) ? '<div class="pop-row">📅 สัญญา <strong>' + (fmtDate(u.contractStart) || '?') + ' – ' + (fmtDate(u.contractEnd) || '?') + '</strong></div>' : '')
     + (u.note ? '<div class="pop-row">📝 <em>' + u.note + '</em></div>' : '')
     + (showCoords ? '<div class="pop-coords">📌 ' + (u.lat||'') + ', ' + (u.lng||'') + '</div>' : '')
     + (u.link ? '<a class="pop-link" href="' + u.link + '" target="_blank">📍 Google Maps</a>' : '')
@@ -693,18 +693,19 @@ function fmtDate(s) {
 }
 function getExtra(p) {
   const g = id => (document.getElementById(id)||{value:''}).value.trim();
-  return { supervisor:g(p+'_supervisor'), supervisorPhone:g(p+'_supervisorPhone'), clientName:g(p+'_clientName'), clientPhone:g(p+'_clientPhone'), expiry:g(p+'_expiry'), note:g(p+'_note') };
+  return { supervisor:g(p+'_supervisor'), supervisorPhone:g(p+'_supervisorPhone'), clientName:g(p+'_clientName'), clientPhone:g(p+'_clientPhone'), contractStart:g(p+'_contractStart'), contractEnd:g(p+'_contractEnd'), note:g(p+'_note') };
 }
 function setExtra(p, u) {
   document.getElementById(p+'_supervisor').value      = u.supervisor||'';
   document.getElementById(p+'_supervisorPhone').value = u.supervisorPhone||'';
   document.getElementById(p+'_clientName').value      = u.clientName||'';
   document.getElementById(p+'_clientPhone').value     = u.clientPhone||'';
-  document.getElementById(p+'_expiry').value          = u.expiry||'';
+  document.getElementById(p+'_contractStart').value   = u.contractStart||'';
+  document.getElementById(p+'_contractEnd').value     = u.contractEnd||'';
   document.getElementById(p+'_note').value            = u.note||'';
 }
 function clearExtra(p) {
-  ['supervisor','supervisorPhone','clientName','clientPhone','expiry','note'].forEach(k => document.getElementById(p+'_'+k).value='');
+  ['supervisor','supervisorPhone','clientName','clientPhone','contractStart','contractEnd','note'].forEach(k => document.getElementById(p+'_'+k).value='');
 }
 
 // ── เพิ่ม ─────────────────────────────────────────────────
@@ -914,7 +915,8 @@ function serializeData() {
         if(u.supervisorPhone) s+=', supervisorPhone:"' + esc(u.supervisorPhone) + '"';
         if(u.clientName)      s+=', clientName:"' + esc(u.clientName) + '"';
         if(u.clientPhone)     s+=', clientPhone:"' + esc(u.clientPhone) + '"';
-        if(u.expiry)          s+=', expiry:"' + esc(u.expiry) + '"';
+        if(u.contractStart)   s+=', contractStart:"' + esc(u.contractStart) + '"';
+        if(u.contractEnd)     s+=', contractEnd:"' + esc(u.contractEnd) + '"';
         if(u.note)            s+=', note:"' + esc(u.note) + '"';
         return s+' }';
       }).join(',\n');
@@ -925,7 +927,8 @@ function serializeData() {
     if(d.supervisorPhone) s+=', supervisorPhone:"' + esc(d.supervisorPhone) + '"';
     if(d.clientName)      s+=', clientName:"' + esc(d.clientName) + '"';
     if(d.clientPhone)     s+=', clientPhone:"' + esc(d.clientPhone) + '"';
-    if(d.expiry)          s+=', expiry:"' + esc(d.expiry) + '"';
+    if(d.contractStart)   s+=', contractStart:"' + esc(d.contractStart) + '"';
+    if(d.contractEnd)     s+=', contractEnd:"' + esc(d.contractEnd) + '"';
     if(d.note)            s+=', note:"' + esc(d.note) + '"';
     return s+' }';
   }).join(',\n') + '\n];';
@@ -970,7 +973,7 @@ function exportPDF() {
     const push = u => { if (activeQAs.has('all') || activeQAs.has(u.qa)) rows.push({
       code:u.code||'', name:u.name||'', qa:u.qa||'', count:u.count||0,
       supervisor:u.supervisor||'', supervisorPhone:u.supervisorPhone||'',
-      clientName:u.clientName||'', clientPhone:u.clientPhone||'', expiry:u.expiry||'', note:u.note||'' }); };
+      clientName:u.clientName||'', clientPhone:u.clientPhone||'', contractStart:u.contractStart||'', contractEnd:u.contractEnd||'', note:u.note||'' }); };
     if (d.units) d.units.forEach(push); else push(d);
   });
   if (!rows.length) { showToast('⚠️ ไม่มีข้อมูล'); return; }
@@ -1008,7 +1011,7 @@ function exportPDF() {
         + '<td class="code">' + esc(r.code) + '</td>'
         + '<td>' + esc(r.name) + '</td>'
         + '<td class="ctr cnt">' + (r.count||0) + '</td>'
-        + '<td class="ctr">' + (r.expiry ? esc(fmtDate(r.expiry)) : '<span class="dim">-</span>') + '</td>'
+        + '<td class="ctr">' + ((r.contractStart || r.contractEnd) ? esc(fmtDate(r.contractStart) || '?') + '<br>– ' + esc(fmtDate(r.contractEnd) || '?') : '<span class="dim">-</span>') + '</td>'
         + '<td>' + (sup || '<span class="dim">-</span>') + '</td>'
         + '<td>' + (cli || '<span class="dim">-</span>') + '</td>'
         + '<td class="note">' + esc(r.note) + '</td>'
@@ -1027,10 +1030,10 @@ function exportPDF() {
       + '<th style="width:54px">รหัส</th>'
       + '<th>ชื่อหน่วยงาน</th>'
       + '<th class="ctr" style="width:40px">แม่บ้าน</th>'
-      + '<th class="ctr" style="width:64px">หมดสัญญา</th>'
-      + '<th style="width:104px">หัวหน้างาน</th>'
-      + '<th style="width:104px">ลูกค้า</th>'
-      + '<th style="width:78px">หมายเหตุ</th>'
+      + '<th class="ctr" style="width:84px">ระยะเวลาสัญญา</th>'
+      + '<th style="width:98px">หัวหน้างาน</th>'
+      + '<th style="width:98px">ลูกค้า</th>'
+      + '<th style="width:74px">หมายเหตุ</th>'
       + '</tr></thead><tbody>' + rowsHtml + '</tbody></table>'
       + '</section>';
   });
