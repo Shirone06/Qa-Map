@@ -248,6 +248,7 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
     <div class="form-row"><label>เบอร์หัวหน้างาน</label><input type="text" id="a_supervisorPhone" placeholder="0812345678"></div>
     <div class="form-row"><label>ชื่อลูกค้า</label><input type="text" id="a_clientName"></div>
     <div class="form-row"><label>เบอร์ลูกค้า</label><input type="text" id="a_clientPhone" placeholder="0812345678"></div>
+    <div class="form-row"><label>อีเมลลูกค้า</label><input type="email" id="a_clientEmail" placeholder="customer@example.com"></div>
     <div class="form-row"><label>ระยะเวลาสัญญา</label><div style="display:flex;align-items:center;gap:8px"><input type="date" id="a_contractStart" style="flex:1;min-width:0"><span style="color:#718096;font-size:11px;flex:0 0 auto">ถึง</span><input type="date" id="a_contractEnd" style="flex:1;min-width:0"></div></div>
     <div class="form-row"><label>หมายเหตุ</label><input type="text" id="a_note"></div>
     <div class="modal-actions">
@@ -282,6 +283,7 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
     <div class="form-row"><label>เบอร์หัวหน้างาน</label><input type="text" id="e_supervisorPhone"></div>
     <div class="form-row"><label>ชื่อลูกค้า</label><input type="text" id="e_clientName"></div>
     <div class="form-row"><label>เบอร์ลูกค้า</label><input type="text" id="e_clientPhone"></div>
+    <div class="form-row"><label>อีเมลลูกค้า</label><input type="email" id="e_clientEmail" placeholder="customer@example.com"></div>
     <div class="form-row"><label>ระยะเวลาสัญญา</label><div style="display:flex;align-items:center;gap:8px"><input type="date" id="e_contractStart" style="flex:1;min-width:0"><span style="color:#718096;font-size:11px;flex:0 0 auto">ถึง</span><input type="date" id="e_contractEnd" style="flex:1;min-width:0"></div></div>
     <div class="form-row"><label>หมายเหตุ</label><input type="text" id="e_note"></div>
     <div class="modal-actions">
@@ -370,6 +372,7 @@ function renderUnit(u, showCoords) {
     + '<div class="pop-row">🧹 แม่บ้าน <strong>' + (u.count||0) + ' คน</strong><span class="size-badge size-' + getSizeFromCount(u.count) + '">' + getSizeFromCount(u.count) + '</span></div>'
     + (u.supervisor ? '<div class="pop-row">👷 หัวหน้า <strong>' + u.supervisor + '</strong>' + (u.supervisorPhone ? ' <a href="tel:' + u.supervisorPhone + '">' + u.supervisorPhone + '</a>' : '') + '</div>' : '')
     + (u.clientName ? '<div class="pop-row">🏢 ลูกค้า <strong>' + u.clientName + '</strong>' + (u.clientPhone ? ' <a href="tel:' + u.clientPhone + '">' + u.clientPhone + '</a>' : '') + '</div>' : '')
+    + (u.clientEmail ? '<div class="pop-row">📧 <a href="mailto:' + u.clientEmail + '">' + u.clientEmail + '</a></div>' : '')
     + ((u.contractStart || u.contractEnd) ? '<div class="pop-row">📅 สัญญา <strong>' + (fmtDate(u.contractStart) || '?') + ' – ' + (fmtDate(u.contractEnd) || '?') + '</strong></div>' : '')
     + (u.note ? '<div class="pop-row">📝 <em>' + u.note + '</em></div>' : '')
     + (showCoords ? '<div class="pop-coords">📌 ' + (u.lat||'') + ', ' + (u.lng||'') + '</div>' : '')
@@ -693,19 +696,20 @@ function fmtDate(s) {
 }
 function getExtra(p) {
   const g = id => (document.getElementById(id)||{value:''}).value.trim();
-  return { supervisor:g(p+'_supervisor'), supervisorPhone:g(p+'_supervisorPhone'), clientName:g(p+'_clientName'), clientPhone:g(p+'_clientPhone'), contractStart:g(p+'_contractStart'), contractEnd:g(p+'_contractEnd'), note:g(p+'_note') };
+  return { supervisor:g(p+'_supervisor'), supervisorPhone:g(p+'_supervisorPhone'), clientName:g(p+'_clientName'), clientPhone:g(p+'_clientPhone'), clientEmail:g(p+'_clientEmail'), contractStart:g(p+'_contractStart'), contractEnd:g(p+'_contractEnd'), note:g(p+'_note') };
 }
 function setExtra(p, u) {
   document.getElementById(p+'_supervisor').value      = u.supervisor||'';
   document.getElementById(p+'_supervisorPhone').value = u.supervisorPhone||'';
   document.getElementById(p+'_clientName').value      = u.clientName||'';
   document.getElementById(p+'_clientPhone').value     = u.clientPhone||'';
+  document.getElementById(p+'_clientEmail').value     = u.clientEmail||'';
   document.getElementById(p+'_contractStart').value   = u.contractStart||'';
   document.getElementById(p+'_contractEnd').value     = u.contractEnd||'';
   document.getElementById(p+'_note').value            = u.note||'';
 }
 function clearExtra(p) {
-  ['supervisor','supervisorPhone','clientName','clientPhone','contractStart','contractEnd','note'].forEach(k => document.getElementById(p+'_'+k).value='');
+  ['supervisor','supervisorPhone','clientName','clientPhone','clientEmail','contractStart','contractEnd','note'].forEach(k => document.getElementById(p+'_'+k).value='');
 }
 
 // ── เพิ่ม ─────────────────────────────────────────────────
@@ -915,6 +919,7 @@ function serializeData() {
         if(u.supervisorPhone) s+=', supervisorPhone:"' + esc(u.supervisorPhone) + '"';
         if(u.clientName)      s+=', clientName:"' + esc(u.clientName) + '"';
         if(u.clientPhone)     s+=', clientPhone:"' + esc(u.clientPhone) + '"';
+        if(u.clientEmail)     s+=', clientEmail:"' + esc(u.clientEmail) + '"';
         if(u.contractStart)   s+=', contractStart:"' + esc(u.contractStart) + '"';
         if(u.contractEnd)     s+=', contractEnd:"' + esc(u.contractEnd) + '"';
         if(u.note)            s+=', note:"' + esc(u.note) + '"';
@@ -927,6 +932,7 @@ function serializeData() {
     if(d.supervisorPhone) s+=', supervisorPhone:"' + esc(d.supervisorPhone) + '"';
     if(d.clientName)      s+=', clientName:"' + esc(d.clientName) + '"';
     if(d.clientPhone)     s+=', clientPhone:"' + esc(d.clientPhone) + '"';
+    if(d.clientEmail)     s+=', clientEmail:"' + esc(d.clientEmail) + '"';
     if(d.contractStart)   s+=', contractStart:"' + esc(d.contractStart) + '"';
     if(d.contractEnd)     s+=', contractEnd:"' + esc(d.contractEnd) + '"';
     if(d.note)            s+=', note:"' + esc(d.note) + '"';
@@ -973,7 +979,7 @@ function exportPDF() {
     const push = u => { if (activeQAs.has('all') || activeQAs.has(u.qa)) rows.push({
       code:u.code||'', name:u.name||'', qa:u.qa||'', count:u.count||0,
       supervisor:u.supervisor||'', supervisorPhone:u.supervisorPhone||'',
-      clientName:u.clientName||'', clientPhone:u.clientPhone||'', contractStart:u.contractStart||'', contractEnd:u.contractEnd||'', note:u.note||'' }); };
+      clientName:u.clientName||'', clientPhone:u.clientPhone||'', clientEmail:u.clientEmail||'', contractStart:u.contractStart||'', contractEnd:u.contractEnd||'', note:u.note||'' }); };
     if (d.units) d.units.forEach(push); else push(d);
   });
   if (!rows.length) { showToast('⚠️ ไม่มีข้อมูล'); return; }
@@ -1005,7 +1011,7 @@ function exportPDF() {
     g.items.forEach(r => {
       n++;
       const sup = esc(r.supervisor) + (r.supervisorPhone ? '<div class="ph">' + esc(r.supervisorPhone) + '</div>' : '');
-      const cli = esc(r.clientName) + (r.clientPhone ? '<div class="ph">' + esc(r.clientPhone) + '</div>' : '');
+      const cli = esc(r.clientName) + (r.clientPhone ? '<div class="ph">' + esc(r.clientPhone) + '</div>' : '') + (r.clientEmail ? '<div class="ph">' + esc(r.clientEmail) + '</div>' : '');
       rowsHtml += '<tr' + (n % 2 === 0 ? ' class="alt"' : '') + '>'
         + '<td class="ctr num">' + n + '</td>'
         + '<td class="code">' + esc(r.code) + '</td>'
