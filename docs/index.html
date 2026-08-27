@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>เช็คอินนอกสถานที่</title>
+<meta name="theme-color" content="#0f1623">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="เช็คอิน">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ 1. เตือนเมื่อเปิดจากเบราว์เซอร์ในแอพ ============ -->
+  <div id="scBlock" class="hide">
+    <div class="head">
+      <h1>⚠️ เปิดจากเบราว์เซอร์ในแอพ</h1>
+      <p>คุณกำลังเปิดหน้านี้จาก <b id="blkApp">แอพ</b> ซึ่งมักจะขอตำแหน่ง GPS ไม่ได้</p>
+    </div>
+    <div class="card">
+      <div class="box warn">
+        <b>ทำไมต้องเปิดในเบราว์เซอร์จริง?</b>
+        เบราว์เซอร์ที่ฝังอยู่ในแอพแชทมักบล็อกการเข้าถึงตำแหน่ง ทำให้เช็คอินไม่ได้ทั้งที่ยืนอยู่หน้างานจริง
+      </div>
+      <button class="btn" id="btnOpenExt">🌐 เปิดในเบราว์เซอร์ปกติ</button>
+      <div class="hint mt" id="blkManual">
+        ถ้าปุ่มด้านบนไม่ทำงาน ให้แตะปุ่ม <b>⋯</b> มุมขวาบน แล้วเลือก <b>“เปิดในเบราว์เซอร์”</b>
+      </div>
+      <button class="btn gray mt" id="btnIgnoreBlock">ข้ามไปก่อน (อาจเช็คอินไม่ได้)</button>
+    </div>
+  </div>
+
+  <!-- ============ 2. ใส่รหัสพนักงาน ============ -->
+  <div id="scLogin" class="hide">
+    <div class="head">
+      <h1>📍 ระบบเช็คอินนอกสถานที่</h1>
+      <p id="loginOrg"></p>
+    </div>
+    <div class="card">
+      <div class="q">รหัสพนักงาน <span class="req">*</span></div>
+      <input type="text" id="inpCode" class="code-input" inputmode="numeric"
+             autocomplete="off" placeholder="••••" maxlength="20">
+      <div class="hint mt center">ใส่รหัสพนักงานของคุณ ระบบจะดึงชื่อขึ้นมาให้อัตโนมัติ</div>
+      <div class="box err mt hide" id="loginErr"></div>
+      <button class="btn mt" id="btnLogin">เข้าใช้งาน</button>
+    </div>
+    <div class="card hide" id="installTip">
+      <div class="hint">
+        💡 <b>ใช้ครั้งแรก?</b> แนะนำให้เพิ่มหน้านี้ไปที่หน้าจอโฮม จะใช้งานได้เหมือนแอพจริง
+        เปิดเร็วกว่า และไม่ต้องเปิดลิงก์ใหม่ทุกครั้ง<br>
+        <span id="installHow"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 3. หน้าหลัก ============ -->
+  <div id="scHome" class="hide">
+    <div class="head">
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <h1 id="homeName">—</h1>
+          <p id="homeMeta"></p>
+        </div>
+        <button class="btn gray sm" id="btnLogout">ออก</button>
+      </div>
+    </div>
+
+    <div id="openList"></div>
+
+    <div class="card">
+      <button class="btn" id="btnGoCheckin">📍 เช็คอินเข้างาน</button>
+      <div class="hint mt center">ต้องอยู่ในพื้นที่หน่วยงานจริงจึงจะเช็คอินได้</div>
+    </div>
+  </div>
+
+  <!-- ============ 4. หน้าเช็คอิน ============ -->
+  <div id="scCheckin" class="hide">
+    <div class="head">
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <h1>📍 เช็คอินเข้างาน</h1>
+          <p id="ciWho"></p>
+        </div>
+        <button class="btn gray sm" id="btnCiBack">ย้อนกลับ</button>
+      </div>
+    </div>
+
+    <div class="box err hide" id="ciErr"></div>
+
+    <!-- สถานะ GPS -->
+    <div class="card">
+      <div class="q">1. ตำแหน่งปัจจุบัน</div>
+      <div class="gps" id="gpsPanel"></div>
+    </div>
+
+    <!-- เลือกหน่วยงาน -->
+    <div class="card">
+      <div class="q">2. เลือกหน่วยงาน <span class="req">*</span></div>
+      <input type="text" id="locSearch" placeholder="🔍 ค้นหาชื่อหน่วยงาน" autocomplete="off">
+      <div class="locs mt" id="locList"></div>
+      <div class="hint mt" id="locHint"></div>
+    </div>
+
+    <!-- รูปถ่าย -->
+    <div class="card">
+      <div class="q">3. รูปถ่ายหน้างาน <span class="req">*</span></div>
+      <div class="photo-actions" id="photoPick">
+        <label class="drop" for="fCam">
+          <div class="ic">📷</div>
+          <div class="t">ถ่ายรูป</div>
+          <div class="s">เปิดกล้องเลย</div>
+        </label>
+        <label class="drop" for="fLib">
+          <div class="ic">🖼️</div>
+          <div class="t">เลือกรูป</div>
+          <div class="s">จากคลังภาพ</div>
+        </label>
+      </div>
+      <input type="file" id="fCam" accept="image/*" capture="environment">
+      <input type="file" id="fLib" accept="image/*">
+      <div id="photoBox"></div>
+      <div class="hint mt">ระบบจะประทับวันเวลาและพิกัดลงบนรูปให้อัตโนมัติ</div>
+    </div>
+
+    <!-- หมายเหตุ -->
+    <div class="card">
+      <div class="q">4. หมายเหตุ</div>
+      <textarea id="ciNote" placeholder="เช่น งานที่มาทำ / ผู้ติดต่อ (ไม่บังคับ)"></textarea>
+    </div>
+
+    <button class="btn" id="btnCheckin" disabled>เช็คอิน</button>
+    <div class="hint mt center" id="ciReady"></div>
+    <div style="height:26px"></div>
+  </div>
+
+  <!-- ============ 5. หน้าเช็คเอาท์ ============ -->
+  <div id="scCheckout" class="hide">
+    <div class="head">
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <h1>🏁 เช็คเอาท์</h1>
+          <p id="coWhere"></p>
+        </div>
+        <button class="btn gray sm" id="btnCoBack">ย้อนกลับ</button>
+      </div>
+    </div>
+
+    <div class="box err hide" id="coErr"></div>
+
+    <div class="card">
+      <div id="coSummary"></div>
+    </div>
+
+    <div class="card">
+      <div class="q">ตำแหน่งปัจจุบัน</div>
+      <div class="gps" id="coGps"></div>
+      <div class="hint mt">เช็คเอาท์ไม่บังคับว่าต้องอยู่ในพื้นที่ แต่ระบบจะบันทึกพิกัดไว้เป็นหลักฐาน</div>
+    </div>
+
+    <div class="card">
+      <div class="q">รูปถ่าย (ไม่บังคับ)</div>
+      <div class="photo-actions" id="coPhotoPick">
+        <label class="drop" for="fCoCam">
+          <div class="ic">📷</div>
+          <div class="t">ถ่ายรูป</div>
+        </label>
+        <label class="drop" for="fCoLib">
+          <div class="ic">🖼️</div>
+          <div class="t">เลือกรูป</div>
+        </label>
+      </div>
+      <input type="file" id="fCoCam" accept="image/*" capture="environment">
+      <input type="file" id="fCoLib" accept="image/*">
+      <div id="coPhotoBox"></div>
+    </div>
+
+    <div class="card">
+      <div class="q">หมายเหตุปิดงาน</div>
+      <textarea id="coNote" placeholder="สรุปงานที่ทำ (ไม่บังคับ)"></textarea>
+    </div>
+
+    <button class="btn amber" id="btnCheckout">เช็คเอาท์</button>
+    <div style="height:26px"></div>
+  </div>
+
+  <!-- ============ 6. สำเร็จ ============ -->
+  <div id="scDone" class="hide">
+    <div class="card done">
+      <div class="big" id="doneIcon">✅</div>
+      <h2 id="doneTitle">สำเร็จ</h2>
+      <div id="doneDetail" style="text-align:left;margin-top:16px"></div>
+      <button class="btn mt" id="btnDoneHome">กลับหน้าหลัก</button>
+    </div>
+  </div>
+
+  <div class="loading" id="scLoad"><span class="spinner"></span> กำลังโหลด…</div>
+
+</div>
+
+<script src="config.js"></script>
+<script src="common.js"></script>
+<script>
+// ===================== สถานะแอพ =====================
+var S = {
+  emp: null,
+  locations: [],
+  open: [],
+  loc: null,          // หน่วยงานที่เลือก
+  photo: null,        // รูปเช็คอิน
+  coLog: null,        // รายการที่กำลังเช็คเอาท์
+  coPhoto: null,
+  search: ''
+};
+
+var SCREENS = ['scBlock', 'scLogin', 'scHome', 'scCheckin', 'scCheckout', 'scDone', 'scLoad'];
+
+function show(id) {
+  SCREENS.forEach(function (s) { document.getElementById(s).classList.add('hide'); });
+  document.getElementById(id).classList.remove('hide');
+  window.scrollTo(0, 0);
+}
+
+function setErr(id, msg) {
+  var el = document.getElementById(id);
+  if (!msg) { el.classList.add('hide'); return; }
+  el.innerHTML = '⚠️ ' + esc(msg);
+  el.classList.remove('hide');
+  window.scrollTo(0, 0);
+}
+
+
+// ===================== เริ่มต้น =====================
+document.getElementById('loginOrg').textContent = ORG_NAME;
+
+if (Env.isInApp) {
+  document.getElementById('blkApp').textContent = Env.appName;
+  if (!Env.isLine) document.getElementById('btnOpenExt').classList.add('hide');
+  show('scBlock');
+} else {
+  boot();
+}
+
+function boot() {
+  var saved = store.get('empCode', '');
+  if (saved) {
+    show('scLoad');
+    login(saved, true);
+  } else {
+    showLogin();
+  }
+}
+
+function showLogin() {
+  show('scLogin');
+  if (!Env.standalone) {
+    document.getElementById('installTip').classList.remove('hide');
+    document.getElementById('installHow').innerHTML = Env.isIOS
+      ? 'iPhone: แตะปุ่ม <b>แชร์</b> ⬆️ ด้านล่าง → <b>เพิ่มไปยังหน้าจอโฮม</b>'
+      : 'Android: แตะปุ่ม <b>⋮</b> มุมขวาบน → <b>เพิ่มลงในหน้าจอหลัก</b>';
+  }
+  setTimeout(function () { document.getElementById('inpCode').focus(); }, 200);
+}
+
+
+// ===================== เข้าสู่ระบบ =====================
+document.getElementById('btnLogin').onclick = function () {
+  login(document.getElementById('inpCode').value.trim(), false);
+};
+document.getElementById('inpCode').addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') document.getElementById('btnLogin').click();
+});
+
+function login(code, silent) {
+  if (!code) return setErr('loginErr', 'กรุณากรอกรหัสพนักงาน');
+  setErr('loginErr', '');
+
+  var btn = document.getElementById('btnLogin');
+  if (!silent) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> กำลังตรวจสอบ…'; }
+
+  apiGet({ action: 'bootstrap', code: code })
+    .then(function (res) {
+      S.emp       = res.employee;
+      S.locations = res.locations || [];
+      S.open      = res.open || [];
+      store.set('empCode', S.emp.code);
+      renderHome();
+      show('scHome');
+    })
+    .catch(function (e) {
+      if (silent) { store.del('empCode'); showLogin(); }
+      setErr('loginErr', e.message);
+    })
+    .then(function () {
+      btn.disabled = false; btn.textContent = 'เข้าใช้งาน';
+    });
+}
+
+document.getElementById('btnLogout').onclick = function () {
+  store.del('empCode');
+  S.emp = null;
+  document.getElementById('inpCode').value = '';
+  Geo.stop();
+  showLogin();
+};
+
+document.getElementById('btnIgnoreBlock').onclick = function () { boot(); };
+document.getElementById('btnOpenExt').onclick = function () {
+  // LINE รองรับพารามิเตอร์นี้ให้เด้งออกไปเปิดในเบราว์เซอร์ปกติ
+  var url = location.href.split('#')[0];
+  url += (url.indexOf('?') < 0 ? '?' : '&') + 'openExternalBrowser=1';
+  location.href = url;
+};
+
+
+// ===================== หน้าหลัก =====================
+function renderHome() {
+  document.getElementById('homeName').textContent = S.emp.name;
+  document.getElementById('homeMeta').textContent =
+    'รหัส ' + S.emp.code + (S.emp.position ? ' · ' + S.emp.position : '');
+
+  var box = document.getElementById('openList');
+  if (!S.open.length) {
+    box.innerHTML = '<div class="card"><div class="box info" style="margin:0">' +
+      '<b>ยังไม่มีงานที่ค้างอยู่</b>กดปุ่มด้านล่างเพื่อเช็คอินเข้างานที่หน่วยงาน</div></div>';
+    return;
+  }
+
+  var html = '<div class="card"><div class="q">🔴 งานที่กำลังปฏิบัติอยู่</div>';
+  S.open.forEach(function (o, i) {
+    html += '<div class="loc" style="cursor:default;margin-bottom:8px">' +
+              '<div class="ic">🏢</div>' +
+              '<div class="grow">' +
+                '<div class="nm">' + esc(o.location) + '</div>' +
+                '<div class="meta">เช็คอิน ' + esc(o.date) + ' เวลา ' + esc(o.timeIn) + ' น. · ' + esc(o.logId) + '</div>' +
+              '</div>' +
+            '</div>' +
+            '<button class="btn amber" data-co="' + i + '" style="margin-bottom:10px">🏁 เช็คเอาท์ที่นี่</button>';
+  });
+  html += '</div>';
+  box.innerHTML = html;
+
+  box.querySelectorAll('[data-co]').forEach(function (b) {
+    b.onclick = function () { openCheckout(S.open[+b.getAttribute('data-co')]); };
+  });
+}
+
+document.getElementById('btnDoneHome').onclick = function () { refreshHome(); };
+
+function refreshHome() {
+  show('scLoad');
+  apiGet({ action: 'bootstrap', code: S.emp.code })
+    .then(function (res) {
+      S.locations = res.locations || [];
+      S.open      = res.open || [];
+      renderHome();
+      show('scHome');
+    })
+    .catch(function (e) {
+      renderHome(); show('scHome');
+      alert('รีเฟรชข้อมูลไม่สำเร็จ: ' + e.message);
+    });
+}
+
+
+// ===================== หน้าเช็คอิน =====================
+document.getElementById('btnGoCheckin').onclick = function () {
+  S.loc = null; S.photo = null; S.search = '';
+  document.getElementById('locSearch').value = '';
+  document.getElementById('ciNote').value = '';
+  document.getElementById('photoBox').innerHTML = '';
+  document.getElementById('photoPick').classList.remove('hide');
+  document.getElementById('ciWho').textContent = S.emp.name + ' · รหัส ' + S.emp.code;
+  setErr('ciErr', '');
+
+  show('scCheckin');
+  Geo.start(onGeoChange);
+  renderLocs();
+  renderReady();
+};
+
+document.getElementById('btnCiBack').onclick = function () {
+  Geo.stop();
+  show('scHome');
+};
+
+document.getElementById('locSearch').oninput = function () {
+  S.search = this.value.trim().toLowerCase();
+  renderLocs();
+};
+
+/** GPS มีค่าใหม่ → อัปเดตทุกส่วนที่เกี่ยวข้อง */
+function onGeoChange() {
+  renderGps('gpsPanel', true);
+  renderGps('coGps', false);
+  renderLocs();
+  renderReady();
+}
+
+/** แผงสถานะ GPS */
+function renderGps(elId, showRetry) {
+  var el = document.getElementById(elId);
+  if (!el) return;
+
+  var cls, dot, title, sub, pct, color;
+
+  if (Geo.error) {
+    cls = 'fail'; dot = 'red'; pct = 0; color = '#fc8181';
+    title = Geo.error.text;
+    sub   = Geo.error.help;
+  } else if (!Geo.fix) {
+    cls = 'searching'; dot = 'blue'; pct = 15; color = '#4299e1';
+    title = 'กำลังค้นหาสัญญาณ GPS…';
+    sub   = 'ผ่านไป ' + Geo.elapsed() + ' วินาที · ครั้งแรกอาจใช้เวลา 10-30 วินาที หากอยู่ในอาคารให้ออกมาที่โล่ง';
+  } else {
+    var acc = Geo.fix.acc;
+    var age = Geo.fixAge();
+    // watchPosition จะยิงค่าใหม่เมื่อมีการเคลื่อนที่ ถ้ายืนนิ่งค่าจะเก่าได้ — บอกให้รู้ไว้
+    var ageNote = age > 60 ? ' · อัปเดตล่าสุด ' + Math.round(age / 60) + ' นาทีที่แล้ว' : '';
+    pct = Math.max(8, Math.min(100, Math.round(100 - (acc - 5) / 1.5)));
+    if (acc <= GOOD_ACCURACY_M) {
+      cls = 'good'; dot = 'green'; color = '#48bb78';
+      title = 'จับตำแหน่งได้แล้ว';
+      sub   = 'ความแม่นยำ ±' + Math.round(acc) + ' ม. (ดี)' + ageNote;
+    } else if (acc <= MAX_ACCURACY_M) {
+      cls = 'weak'; dot = 'amber'; color = '#ed8936';
+      title = 'สัญญาณ GPS ยังไม่นิ่ง';
+      sub   = 'ความแม่นยำ ±' + Math.round(acc) + ' ม. · รอสักครู่ให้แม่นขึ้น หรือออกไปที่โล่ง' + ageNote;
+    } else {
+      cls = 'weak'; dot = 'amber'; color = '#ed8936';
+      title = 'สัญญาณ GPS คลาดเคลื่อนมาก';
+      sub   = 'ความแม่นยำ ±' + Math.round(acc) + ' ม. (ต้องไม่เกิน ±' + MAX_ACCURACY_M + ' ม.) กรุณาออกไปที่โล่ง';
+    }
+  }
+
+  var html =
+    '<div class="t"><span class="dot ' + dot + '"></span><span>' + esc(title) + '</span></div>' +
+    '<div class="sub">' + esc(sub) + '</div>' +
+    '<div class="bar"><i style="width:' + pct + '%;background:' + color + '"></i></div>';
+
+  if (showRetry && (Geo.error || !Geo.fix || Geo.fix.acc > GOOD_ACCURACY_M)) {
+    html += '<button class="btn ghost sm mt" style="width:100%" onclick="retryGps()">🔄 ลองอีกครั้ง</button>';
+  }
+  el.className = 'gps ' + cls;
+  el.innerHTML = html;
+}
+
+function retryGps() { Geo.restart(); onGeoChange(); }
+
+/** รายชื่อหน่วยงาน เรียงจากใกล้ไปไกล พร้อมป้ายบอกว่าอยู่ในพื้นที่หรือยัง */
+function renderLocs() {
+  var box = document.getElementById('locList');
+  var fix = Geo.fix;
+
+  var list = S.locations.map(function (l) {
+    var d = fix ? distanceM(fix.lat, fix.lng, l.lat, l.lng) : null;
+    return { l: l, d: d, inside: d != null && d <= l.radius };
+  });
+
+  if (S.search) {
+    list = list.filter(function (x) { return x.l.name.toLowerCase().indexOf(S.search) >= 0; });
+  }
+
+  list.sort(function (a, b) {
+    if (a.d == null && b.d == null) return a.l.name.localeCompare(b.l.name, 'th');
+    if (a.d == null) return 1;
+    if (b.d == null) return -1;
+    return a.d - b.d;
+  });
+
+  if (!list.length) {
+    box.innerHTML = '<div class="hint center" style="padding:18px">ไม่พบหน่วยงานที่ค้นหา</div>';
+    return;
+  }
+
+  var html = '';
+  list.forEach(function (x) {
+    var sel = S.loc && S.loc.id === x.l.id;
+    var badge = (x.d == null)
+      ? '<span class="badge na">รอ GPS</span>'
+      : (x.inside ? '<span class="badge in">✓ ' + fmtDist(x.d) + '</span>'
+                  : '<span class="badge out">' + fmtDist(x.d) + '</span>');
+
+    html += '<button type="button" class="loc' + (sel ? ' sel' : '') + (x.d != null && !x.inside ? ' out' : '') +
+            '" data-id="' + esc(x.l.id) + '">' +
+              '<div class="ic">' + (x.inside ? '📍' : '🏢') + '</div>' +
+              '<div class="grow">' +
+                '<div class="nm">' + esc(x.l.name) + '</div>' +
+                '<div class="meta">รัศมีที่อนุญาต ' + x.l.radius + ' ม.' +
+                  (x.l.address ? ' · ' + esc(x.l.address) : '') + '</div>' +
+              '</div>' + badge +
+            '</button>';
+  });
+  box.innerHTML = html;
+
+  box.querySelectorAll('[data-id]').forEach(function (b) {
+    b.onclick = function () {
+      var id = b.getAttribute('data-id');
+      S.loc = S.locations.filter(function (l) { return l.id === id; })[0] || null;
+      renderLocs(); renderReady();
+    };
+  });
+
+  document.getElementById('locHint').textContent = fix
+    ? 'เรียงจากหน่วยงานที่ใกล้ที่สุด · เลือกได้เฉพาะที่อยู่ในรัศมี'
+    : 'รอสัญญาณ GPS เพื่อคำนวณระยะห่าง';
+}
+
+/** สรุปว่าพร้อมกดเช็คอินหรือยัง */
+function renderReady() {
+  var btn = document.getElementById('btnCheckin');
+  var msg = document.getElementById('ciReady');
+  var reasons = [];
+
+  if (!Geo.fix)              reasons.push('รอสัญญาณ GPS');
+  else if (!Geo.isUsable())  reasons.push('GPS ยังคลาดเคลื่อนเกิน ±' + MAX_ACCURACY_M + ' ม.');
+  if (!S.loc)                reasons.push('ยังไม่ได้เลือกหน่วยงาน');
+  if (!S.photo)              reasons.push('ยังไม่ได้แนบรูป');
+
+  var dist = null, inside = false;
+  if (Geo.fix && S.loc) {
+    dist = distanceM(Geo.fix.lat, Geo.fix.lng, S.loc.lat, S.loc.lng);
+    inside = dist <= S.loc.radius;
+    if (!inside) reasons.push('คุณอยู่ห่างจาก ' + S.loc.name + ' ' + fmtDist(dist) +
+                              ' (อนุญาต ' + S.loc.radius + ' ม.)');
+  }
+
+  var ready = reasons.length === 0;
+  btn.disabled = !ready;
+  btn.textContent = ready ? '✅ เช็คอินที่ ' + S.loc.name : 'เช็คอิน';
+
+  msg.innerHTML = ready
+    ? '<span style="color:#9ae6b4">อยู่ในพื้นที่แล้ว — ห่างจากจุดหมาย ' + fmtDist(dist) + '</span>'
+    : esc('ยังเช็คอินไม่ได้: ' + reasons.join(' · '));
+}
+
+
+// ===================== รูปถ่าย =====================
+function stampLines(locName) {
+  var lines = [nowText() + ' น.'];
+  if (locName) lines.push('📍 ' + locName);
+  if (Geo.fix) {
+    lines.push(Geo.fix.lat.toFixed(6) + ', ' + Geo.fix.lng.toFixed(6) +
+               '  (±' + Math.round(Geo.fix.acc) + ' ม.)');
+  }
+  if (S.emp) lines.push(S.emp.name + ' · ' + S.emp.code);
+  return lines;
+}
+
+function hookPhoto(inputId, onDone, locNameFn) {
+  document.getElementById(inputId).addEventListener('change', function (e) {
+    var file = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    preparePhoto(file, stampLines(locNameFn()))
+      .then(onDone)
+      .catch(function (err) { alert('เตรียมรูปไม่สำเร็จ: ' + err.message); });
+  });
+}
+
+function ciLocName() { return S.loc ? S.loc.name : ''; }
+function coLocName() { return S.coLog ? S.coLog.location : ''; }
+
+hookPhoto('fCam', setCiPhoto, ciLocName);
+hookPhoto('fLib', setCiPhoto, ciLocName);
+hookPhoto('fCoCam', setCoPhoto, coLocName);
+hookPhoto('fCoLib', setCoPhoto, coLocName);
+
+function setCiPhoto(p) {
+  S.photo = p;
+  document.getElementById('photoPick').classList.add('hide');
+  document.getElementById('photoBox').innerHTML =
+    '<div class="shot"><img src="' + p.preview + '"><button class="rm" onclick="clearCiPhoto()">×</button></div>';
+  renderReady();
+}
+function clearCiPhoto() {
+  S.photo = null;
+  document.getElementById('photoBox').innerHTML = '';
+  document.getElementById('photoPick').classList.remove('hide');
+  renderReady();
+}
+
+function setCoPhoto(p) {
+  S.coPhoto = p;
+  document.getElementById('coPhotoPick').classList.add('hide');
+  document.getElementById('coPhotoBox').innerHTML =
+    '<div class="shot"><img src="' + p.preview + '"><button class="rm" onclick="clearCoPhoto()">×</button></div>';
+}
+function clearCoPhoto() {
+  S.coPhoto = null;
+  document.getElementById('coPhotoBox').innerHTML = '';
+  document.getElementById('coPhotoPick').classList.remove('hide');
+}
+
+
+// ===================== ส่งเช็คอิน =====================
+document.getElementById('btnCheckin').onclick = function () {
+  var btn = this;
+  setErr('ciErr', '');
+
+  if (!Geo.fix || !S.loc || !S.photo) return;
+  var dist = distanceM(Geo.fix.lat, Geo.fix.lng, S.loc.lat, S.loc.lng);
+  if (dist > S.loc.radius) { renderReady(); return setErr('ciErr', 'คุณอยู่นอกพื้นที่ที่กำหนด'); }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> กำลังบันทึก…';
+
+  apiPost({
+    action:     'checkin',
+    empCode:    S.emp.code,
+    locationId: S.loc.id,
+    lat:        Geo.fix.lat,
+    lng:        Geo.fix.lng,
+    accuracy:   Geo.fix.acc,
+    note:       document.getElementById('ciNote').value.trim(),
+    photo:      { data: S.photo.data, mimeType: S.photo.mimeType }
+  })
+  .then(function (res) {
+    Geo.stop();
+    showDone('✅', 'เช็คอินสำเร็จ', [
+      ['หน่วยงาน', res.location],
+      ['วันที่',    res.date],
+      ['เวลาเข้า',  res.timeIn + ' น.'],
+      ['ระยะห่างจากจุด', fmtDist(res.distance)],
+      ['รหัสรายการ', res.logId]
+    ]);
+  })
+  .catch(function (e) {
+    btn.disabled = false;
+    renderReady();
+    setErr('ciErr', e.message);
+  });
+};
+
+
+// ===================== เช็คเอาท์ =====================
+function openCheckout(log) {
+  S.coLog = log; S.coPhoto = null;
+  document.getElementById('coNote').value = '';
+  document.getElementById('coPhotoBox').innerHTML = '';
+  document.getElementById('coPhotoPick').classList.remove('hide');
+  document.getElementById('coWhere').textContent = log.location;
+  setErr('coErr', '');
+
+  var mins = '';
+  if (log.startIso) {
+    var t = new Date(log.startIso);
+    if (!isNaN(t.getTime())) mins = fmtDur(Math.round((Date.now() - t) / 60000));
+  }
+  document.getElementById('coSummary').innerHTML =
+    '<div class="kv"><span class="k">หน่วยงาน</span><span class="v">' + esc(log.location) + '</span></div>' +
+    '<div class="kv"><span class="k">เช็คอินเมื่อ</span><span class="v">' + esc(log.date) + ' ' + esc(log.timeIn) + ' น.</span></div>' +
+    (mins ? '<div class="kv"><span class="k">อยู่หน้างานแล้ว</span><span class="v">' + esc(mins) + '</span></div>' : '') +
+    '<div class="kv"><span class="k">รหัสรายการ</span><span class="v">' + esc(log.logId) + '</span></div>';
+
+  show('scCheckout');
+  Geo.start(onGeoChange);
+  renderGps('coGps', false);
+}
+
+document.getElementById('btnCoBack').onclick = function () {
+  Geo.stop();
+  show('scHome');
+};
+
+document.getElementById('btnCheckout').onclick = function () {
+  var btn = this;
+  setErr('coErr', '');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> กำลังบันทึก…';
+
+  var payload = {
+    action:  'checkout',
+    empCode: S.emp.code,
+    logId:   S.coLog.logId,
+    note:    document.getElementById('coNote').value.trim()
+  };
+  if (Geo.fix) {
+    payload.lat = Geo.fix.lat;
+    payload.lng = Geo.fix.lng;
+    payload.accuracy = Geo.fix.acc;
+  }
+  if (S.coPhoto) payload.photo = { data: S.coPhoto.data, mimeType: S.coPhoto.mimeType };
+
+  apiPost(payload)
+    .then(function (res) {
+      Geo.stop();
+      showDone('🏁', 'เช็คเอาท์สำเร็จ', [
+        ['หน่วยงาน', S.coLog.location],
+        ['เวลาเข้า',  S.coLog.timeIn + ' น.'],
+        ['เวลาออก',  res.timeOut + ' น.'],
+        ['รวมเวลาปฏิบัติงาน', res.duration || '-']
+      ]);
+    })
+    .catch(function (e) {
+      btn.disabled = false;
+      btn.textContent = 'เช็คเอาท์';
+      setErr('coErr', e.message);
+    });
+};
+
+
+// ===================== หน้าสำเร็จ =====================
+function showDone(icon, title, pairs) {
+  document.getElementById('doneIcon').textContent = icon;
+  document.getElementById('doneTitle').textContent = title;
+  document.getElementById('doneDetail').innerHTML = pairs.map(function (p) {
+    return '<div class="kv"><span class="k">' + esc(p[0]) + '</span><span class="v">' + esc(p[1]) + '</span></div>';
+  }).join('');
+  show('scDone');
+}
+
+// นับเวลาระหว่างรอ GPS ให้ตัวเลข "ผ่านไป n วินาที" เดินจริง
+setInterval(function () {
+  if (!document.getElementById('scCheckin').classList.contains('hide') && !Geo.fix && !Geo.error) {
+    renderGps('gpsPanel', true);
+  }
+}, 1000);
+
+// ลงทะเบียน service worker เพื่อให้ติดตั้งเป็นแอพบนหน้าจอโฮมได้
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js').catch(function () { /* ไม่สำเร็จก็ใช้งานได้ปกติ */ });
+  });
+}
+</script>
+</body>
+</html>

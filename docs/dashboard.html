@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard การเช็คอินนอกสถานที่</title>
+<meta name="theme-color" content="#0f1623">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="style.css">
+<style>
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 14px; }
+.tile { background: #1a2340; border: 1px solid #2a3550; border-left: 4px solid #38b2ac; border-radius: 12px; padding: 14px 16px; }
+.tile .n { font-size: 30px; font-weight: 700; color: #fff; line-height: 1.1; }
+.tile .l { font-size: 13px; color: #a0aec0; margin-top: 4px; }
+.tile.live { border-left-color: #48bb78; }
+.tile.miss { border-left-color: #ed8936; }
+.tile.hrs  { border-left-color: #4299e1; }
+
+.filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; align-items: end; }
+
+#map { height: 380px; border-radius: 12px; border: 1px solid #2a3550; background: #151d33; }
+.leaflet-container { background: #151d33; font-family: 'Sarabun', sans-serif; }
+.leaflet-popup-content-wrapper, .leaflet-popup-tip { background: #1a2340; color: #e2e8f0; }
+.leaflet-popup-content { font-size: 13px; line-height: 1.6; margin: 12px 14px; }
+
+.tblwrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 880px; }
+th { background: #151d33; color: #a0aec0; font-weight: 600; text-align: left; padding: 11px 10px; position: sticky; top: 0; white-space: nowrap; border-bottom: 1px solid #2a3550; }
+td { padding: 10px; border-bottom: 1px solid #232c45; vertical-align: middle; }
+tbody tr { cursor: pointer; }
+tbody tr:hover { background: #1e2740; }
+td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.thumb { width: 46px; height: 46px; object-fit: cover; border-radius: 7px; border: 1px solid #2a3550; display: block; background: #151d33; }
+
+.modal { position: fixed; inset: 0; background: rgba(0,0,0,.72); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 9999; }
+.modal .inner { background: #1a2340; border: 1px solid #2a3550; border-radius: 16px; max-width: 620px; width: 100%; max-height: 88vh; overflow-y: auto; padding: 20px; }
+.shots { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.shots figure { border: 1px solid #2a3550; border-radius: 10px; overflow: hidden; background: #151d33; }
+.shots img { width: 100%; display: block; }
+.shots figcaption { font-size: 12px; color: #a0aec0; padding: 6px 8px; text-align: center; }
+
+@media print {
+  body { background: #fff; color: #000; padding: 0; }
+  .noprint, #map, .head, .filters { display: none !important; }
+  .card, .tile { background: #fff; border: 1px solid #ccc; box-shadow: none; color: #000; }
+  .tile .n, th, td, .card .q { color: #000; }
+  th { background: #eee; }
+  table { min-width: 0; font-size: 11px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap wide">
+
+  <!-- ============ ใส่รหัสผ่าน ============ -->
+  <div id="scPin">
+    <div class="head">
+      <h1>📊 Dashboard การเช็คอิน</h1>
+      <p>สำหรับหัวหน้างานและผู้ดูแลระบบ</p>
+    </div>
+    <div class="card" style="max-width:420px;margin:0 auto">
+      <div class="q">รหัสผ่านผู้ดูแล</div>
+      <input type="password" id="inpPin" placeholder="รหัสผ่าน" autocomplete="current-password">
+      <div class="box err mt hide" id="pinErr"></div>
+      <button class="btn mt" id="btnPin">เข้าสู่ระบบ</button>
+    </div>
+  </div>
+
+  <!-- ============ Dashboard ============ -->
+  <div id="scMain" class="hide">
+    <div class="head noprint">
+      <div class="row" style="justify-content:space-between;flex-wrap:wrap">
+        <div>
+          <h1>📊 Dashboard การเช็คอินนอกสถานที่</h1>
+          <p id="subHead"></p>
+        </div>
+        <div class="row">
+          <button class="btn gray sm" id="btnPrint">🖨️ พิมพ์</button>
+          <button class="btn gray sm" id="btnCsv">⬇️ CSV</button>
+          <button class="btn ghost sm" id="btnReload">🔄 รีเฟรช</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card noprint">
+      <div class="filters">
+        <div>
+          <label class="fld">ตั้งแต่วันที่</label>
+          <input type="date" id="fFrom">
+        </div>
+        <div>
+          <label class="fld">ถึงวันที่</label>
+          <input type="date" id="fTo">
+        </div>
+        <div>
+          <label class="fld">พนักงาน</label>
+          <select id="fEmp"><option value="">ทั้งหมด</option></select>
+        </div>
+        <div>
+          <label class="fld">หน่วยงาน</label>
+          <select id="fLoc"><option value="">ทั้งหมด</option></select>
+        </div>
+        <div>
+          <label class="fld">สถานะ</label>
+          <select id="fStatus">
+            <option value="">ทั้งหมด</option>
+            <option value="open">กำลังปฏิบัติงาน</option>
+            <option value="done">เสร็จสิ้น</option>
+            <option value="miss">ลืมเช็คเอาท์</option>
+          </select>
+        </div>
+        <div class="row">
+          <button class="btn sm" id="btnToday" style="flex:1">วันนี้</button>
+          <button class="btn gray sm" id="btnMonth" style="flex:1">เดือนนี้</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tiles" id="tiles"></div>
+
+    <div class="card noprint">
+      <div class="q">🗺️ จุดเช็คอิน</div>
+      <div id="map"></div>
+      <div class="hint mt">หมุดเขียว = อยู่ในรัศมี · วงกลมประ = ขอบเขตหน่วยงาน</div>
+    </div>
+
+    <div class="card">
+      <div class="q">📋 รายการเช็คอิน (<span id="rowCount">0</span> รายการ)</div>
+      <div class="tblwrap">
+        <table>
+          <thead>
+            <tr>
+              <th>วันที่</th><th>พนักงาน</th><th>หน่วยงาน</th>
+              <th>เข้า</th><th>ออก</th><th>ระยะเวลา</th>
+              <th>ห่างจากจุด</th><th>รูป</th><th>สถานะ</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="hint mt noprint">แตะที่แถวเพื่อดูรายละเอียดและรูปภาพ</div>
+    </div>
+
+    <div style="height:26px"></div>
+  </div>
+
+  <div class="loading hide" id="scLoad"><span class="spinner"></span> กำลังโหลดข้อมูล…</div>
+</div>
+
+<div id="modalHost"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="config.js"></script>
+<script src="common.js"></script>
+<script>
+var D = { pin: '', rows: [], locations: [], employees: [], today: '', view: [] };
+var map = null, layer = null;
+
+function show(id) {
+  ['scPin', 'scMain', 'scLoad'].forEach(function (s) { document.getElementById(s).classList.add('hide'); });
+  document.getElementById(id).classList.remove('hide');
+}
+
+// ===================== เข้าสู่ระบบ =====================
+document.getElementById('btnPin').onclick = function () { doLogin(document.getElementById('inpPin').value); };
+document.getElementById('inpPin').addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') doLogin(this.value);
+});
+
+var savedPin = store.get('dashPin', '');
+if (savedPin) doLogin(savedPin, true);
+
+function doLogin(pin, silent) {
+  if (!pin) return;
+  D.pin = pin;
+  show('scLoad');
+  loadData()
+    .then(function () {
+      store.set('dashPin', pin);
+      show('scMain');
+    })
+    .catch(function (e) {
+      store.del('dashPin');
+      show('scPin');
+      if (!silent || String(e.message).indexOf('รหัสผ่าน') >= 0) {
+        var el = document.getElementById('pinErr');
+        el.textContent = '⚠️ ' + e.message;
+        el.classList.remove('hide');
+      }
+    });
+}
+
+// ===================== โหลดข้อมูล =====================
+function loadData() {
+  var from = document.getElementById('fFrom').value;
+  var to   = document.getElementById('fTo').value;
+
+  return apiGet({ action: 'dashboard', pin: D.pin, from: from || '', to: to || '' })
+    .then(function (res) {
+      D.rows      = res.rows || [];
+      D.locations = res.locations || [];
+      D.employees = res.employees || [];
+      D.today     = res.today;
+
+      if (!document.getElementById('fFrom').value) setRangeToday(false);
+      fillSelect('fEmp', D.employees.map(function (e) { return [e.code, e.name + ' (' + e.code + ')']; }));
+      fillSelect('fLoc', D.locations.map(function (l) { return [l.id, l.name]; }));
+
+      document.getElementById('subHead').textContent = 'ข้อมูลล่าสุด ' + res.fetchedAt + ' น.';
+      render();
+    });
+}
+
+function fillSelect(id, pairs) {
+  var sel = document.getElementById(id), keep = sel.value;
+  sel.innerHTML = '<option value="">ทั้งหมด</option>' + pairs.map(function (p) {
+    return '<option value="' + esc(p[0]) + '">' + esc(p[1]) + '</option>';
+  }).join('');
+  sel.value = keep;
+}
+
+// ===================== ตัวกรอง =====================
+function setRangeToday(reload) {
+  var t = todayISO();
+  document.getElementById('fFrom').value = t;
+  document.getElementById('fTo').value   = t;
+  if (reload !== false) reload_();
+}
+function setRangeMonth() {
+  var d = new Date();
+  document.getElementById('fFrom').value = d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-01';
+  document.getElementById('fTo').value   = todayISO();
+  reload_();
+}
+function reload_() {
+  show('scLoad');
+  loadData().then(function () { show('scMain'); })
+            .catch(function (e) { show('scMain'); alert('โหลดข้อมูลไม่สำเร็จ: ' + e.message); });
+}
+
+document.getElementById('btnToday').onclick  = function () { setRangeToday(true); };
+document.getElementById('btnMonth').onclick  = setRangeMonth;
+document.getElementById('btnReload').onclick = reload_;
+document.getElementById('fFrom').onchange    = reload_;
+document.getElementById('fTo').onchange      = reload_;
+document.getElementById('fEmp').onchange     = render;
+document.getElementById('fLoc').onchange     = render;
+document.getElementById('fStatus').onchange  = render;
+document.getElementById('btnPrint').onclick  = function () { window.print(); };
+
+/** ลืมเช็คเอาท์ = ยังไม่ปิดงาน และเป็นของวันก่อนหน้า */
+function isMissing(r) { return !r.timeOut && r.day && r.day < D.today; }
+
+function render() {
+  var emp = document.getElementById('fEmp').value;
+  var loc = document.getElementById('fLoc').value;
+  var st  = document.getElementById('fStatus').value;
+
+  D.view = D.rows.filter(function (r) {
+    if (emp && r.empCode !== emp)     return false;
+    if (loc && r.locationId !== loc)  return false;
+    if (st === 'open' && r.timeOut)   return false;
+    if (st === 'done' && !r.timeOut)  return false;
+    if (st === 'miss' && !isMissing(r)) return false;
+    return true;
+  });
+
+  renderTiles();
+  renderTable();
+  renderMap();
+}
+
+function renderTiles() {
+  var open = 0, done = 0, miss = 0, mins = 0, people = {};
+  D.view.forEach(function (r) {
+    if (r.timeOut) done++; else open++;
+    if (isMissing(r)) miss++;
+    if (r.minutes) mins += r.minutes;
+    people[r.empCode] = 1;
+  });
+
+  document.getElementById('tiles').innerHTML =
+    tile('', D.view.length, 'รายการทั้งหมด') +
+    tile('live', open, 'กำลังปฏิบัติงาน') +
+    tile('', done, 'เสร็จสิ้นแล้ว') +
+    tile('miss', miss, 'ลืมเช็คเอาท์') +
+    tile('hrs', Object.keys(people).length, 'จำนวนพนักงาน') +
+    tile('hrs', (mins / 60).toFixed(1), 'รวมชั่วโมงปฏิบัติงาน');
+}
+function tile(cls, n, label) {
+  return '<div class="tile ' + cls + '"><div class="n">' + esc(n) + '</div><div class="l">' + esc(label) + '</div></div>';
+}
+
+function renderTable() {
+  document.getElementById('rowCount').textContent = D.view.length;
+  var tb = document.getElementById('tbody');
+
+  if (!D.view.length) {
+    tb.innerHTML = '<tr><td colspan="9" class="center muted" style="padding:26px">ไม่พบข้อมูลในช่วงที่เลือก</td></tr>';
+    return;
+  }
+
+  tb.innerHTML = D.view.map(function (r, i) {
+    var tag = isMissing(r) ? '<span class="tag miss">ลืมเช็คเอาท์</span>'
+            : r.timeOut    ? '<span class="tag done">เสร็จสิ้น</span>'
+                           : '<span class="tag live">กำลังทำงาน</span>';
+    var thumb = driveThumb(r.photoIn);
+    return '<tr data-i="' + i + '">' +
+      '<td>' + esc(r.date) + '</td>' +
+      '<td>' + esc(r.empName) + '<div class="muted">' + esc(r.empCode) + '</div></td>' +
+      '<td>' + esc(r.location) + '</td>' +
+      '<td>' + esc(r.timeIn || '-') + '</td>' +
+      '<td>' + esc(r.timeOut || '-') + '</td>' +
+      '<td class="num">' + (r.minutes != null ? esc(fmtDur(r.minutes)) : '-') + '</td>' +
+      '<td class="num">' + (r.distIn != null ? esc(fmtDist(r.distIn)) : '-') + '</td>' +
+      '<td>' + (thumb ? '<img class="thumb" src="' + thumb + '" loading="lazy" alt="">' : '<span class="muted">-</span>') + '</td>' +
+      '<td>' + tag + '</td>' +
+    '</tr>';
+  }).join('');
+
+  tb.querySelectorAll('tr[data-i]').forEach(function (tr) {
+    tr.onclick = function () { openDetail(D.view[+tr.getAttribute('data-i')]); };
+  });
+}
+
+// ===================== แผนที่ =====================
+function renderMap() {
+  if (!map) {
+    map = L.map('map', { scrollWheelZoom: false }).setView([13.7563, 100.5018], 11);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19, attribution: '© OpenStreetMap'
+    }).addTo(map);
+  }
+  if (layer) map.removeLayer(layer);
+  layer = L.layerGroup().addTo(map);
+
+  var bounds = [];
+  var usedLoc = {};
+
+  D.view.forEach(function (r) {
+    if (r.latIn == null || r.lngIn == null) return;
+    var inside = r.distIn != null && locRadius(r.locationId) >= r.distIn;
+    L.circleMarker([r.latIn, r.lngIn], {
+      radius: 7, weight: 2,
+      color: inside ? '#48bb78' : '#fc8181',
+      fillColor: inside ? '#48bb78' : '#fc8181', fillOpacity: .75
+    }).addTo(layer).bindPopup(
+      '<b>' + esc(r.empName) + '</b><br>' + esc(r.location) + '<br>' +
+      esc(r.date) + ' ' + esc(r.timeIn) + ' น.<br>ห่างจากจุด ' + esc(fmtDist(r.distIn))
+    );
+    bounds.push([r.latIn, r.lngIn]);
+    usedLoc[r.locationId] = 1;
+  });
+
+  D.locations.forEach(function (l) {
+    if (!usedLoc[l.id]) return;
+    L.circle([l.lat, l.lng], {
+      radius: l.radius, color: '#38b2ac', weight: 1.5, dashArray: '5,5', fillOpacity: .07
+    }).addTo(layer).bindPopup('<b>' + esc(l.name) + '</b><br>รัศมี ' + l.radius + ' ม.');
+    bounds.push([l.lat, l.lng]);
+  });
+
+  if (bounds.length) map.fitBounds(bounds, { padding: [40, 40], maxZoom: 16 });
+  setTimeout(function () { map.invalidateSize(); }, 60);
+}
+
+function locRadius(id) {
+  for (var i = 0; i < D.locations.length; i++) if (D.locations[i].id === id) return D.locations[i].radius;
+  return 200;
+}
+
+// ===================== รายละเอียด =====================
+function openDetail(r) {
+  var gmapIn  = r.latIn  != null ? 'https://www.google.com/maps?q=' + r.latIn + ',' + r.lngIn : '';
+  var gmapOut = r.latOut != null ? 'https://www.google.com/maps?q=' + r.latOut + ',' + r.lngOut : '';
+
+  var html =
+    '<div class="row" style="justify-content:space-between;margin-bottom:12px">' +
+      '<h2 style="font-size:19px;color:#fff">' + esc(r.empName) + '</h2>' +
+      '<button class="btn gray sm" onclick="closeDetail()">ปิด</button>' +
+    '</div>' +
+    kv('รหัสรายการ', r.logId) +
+    kv('รหัสพนักงาน', r.empCode) +
+    kv('หน่วยงาน', r.location) +
+    kv('วันที่', r.date) +
+    kv('เวลาเข้า', (r.timeIn || '-') + ' น.') +
+    kv('เวลาออก', (r.timeOut || '-') + (r.timeOut ? ' น.' : '')) +
+    kv('ระยะเวลา', r.minutes != null ? fmtDur(r.minutes) : '-') +
+    kv('ห่างจากจุดตอนเข้า', r.distIn != null ? fmtDist(r.distIn) : '-') +
+    kv('ความแม่นยำ GPS', r.accIn != null ? '±' + r.accIn + ' ม.' : '-') +
+    kv('ห่างจากจุดตอนออก', r.distOut != null ? fmtDist(r.distOut) : '-') +
+    kv('หมายเหตุ', r.note || '-');
+
+  if (gmapIn || gmapOut) {
+    html += '<div class="row mt">' +
+      (gmapIn  ? '<a class="btn ghost sm" href="' + gmapIn  + '" target="_blank" rel="noopener">📍 จุดเช็คอิน</a>' : '') +
+      (gmapOut ? '<a class="btn ghost sm" href="' + gmapOut + '" target="_blank" rel="noopener">🏁 จุดเช็คเอาท์</a>' : '') +
+    '</div>';
+  }
+
+  var shots = '';
+  if (r.photoIn)  shots += figure(r.photoIn,  'รูปตอนเช็คอิน');
+  if (r.photoOut) shots += figure(r.photoOut, 'รูปตอนเช็คเอาท์');
+  if (shots) html += '<div class="shots">' + shots + '</div>';
+
+  document.getElementById('modalHost').innerHTML =
+    '<div class="modal" onclick="if(event.target===this)closeDetail()"><div class="inner">' + html + '</div></div>';
+}
+
+function figure(url, caption) {
+  return '<figure><a href="' + esc(url) + '" target="_blank" rel="noopener">' +
+         '<img src="' + driveThumb(url) + '" alt="' + esc(caption) + '" loading="lazy"></a>' +
+         '<figcaption>' + esc(caption) + ' · แตะเพื่อดูเต็ม</figcaption></figure>';
+}
+function kv(k, v) {
+  return '<div class="kv"><span class="k">' + esc(k) + '</span><span class="v">' + esc(v) + '</span></div>';
+}
+function closeDetail() { document.getElementById('modalHost').innerHTML = ''; }
+
+// ===================== ส่งออก CSV =====================
+document.getElementById('btnCsv').onclick = function () {
+  var head = ['Log ID', 'วันที่', 'รหัสพนักงาน', 'ชื่อพนักงาน', 'หน่วยงาน', 'เวลาเข้า', 'เวลาออก',
+              'ระยะเวลา(นาที)', 'ห่างตอนเข้า(ม.)', 'ห่างตอนออก(ม.)', 'ความแม่นยำ(ม.)',
+              'พิกัดเข้า', 'พิกัดออก', 'หมายเหตุ', 'สถานะ', 'รูปเช็คอิน', 'รูปเช็คเอาท์'];
+
+  var lines = [head].concat(D.view.map(function (r) {
+    return [r.logId, r.date, r.empCode, r.empName, r.location, r.timeIn, r.timeOut,
+            r.minutes, r.distIn, r.distOut, r.accIn,
+            (r.latIn != null ? r.latIn + ',' + r.lngIn : ''),
+            (r.latOut != null ? r.latOut + ',' + r.lngOut : ''),
+            r.note, (isMissing(r) ? 'ลืมเช็คเอาท์' : r.status), r.photoIn, r.photoOut];
+  }));
+
+  var csv = lines.map(function (row) {
+    return row.map(function (c) {
+      return '"' + String(c == null ? '' : c).replace(/"/g, '""') + '"';
+    }).join(',');
+  }).join('\r\n');
+
+  // BOM เพื่อให้ Excel อ่านภาษาไทยถูกต้อง
+  var blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'checkin_' + document.getElementById('fFrom').value + '_' + document.getElementById('fTo').value + '.csv';
+  a.click();
+  setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+};
+</script>
+</body>
+</html>

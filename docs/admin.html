@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ตั้งค่าระบบเช็คอิน</title>
+<meta name="theme-color" content="#0f1623">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="style.css">
+<style>
+.tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+.tabs button { flex: 1; padding: 12px; border-radius: 11px; border: 1px solid #2a3550; background: #151d33; color: #a0aec0; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer; }
+.tabs button.on { background: rgba(56,178,172,.14); border-color: #38b2ac; color: #38b2ac; }
+
+#pickMap { height: 330px; border-radius: 12px; border: 1px solid #2a3550; background: #151d33; }
+.leaflet-container { background: #151d33; font-family: 'Sarabun', sans-serif; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 520px) { .grid2 { grid-template-columns: 1fr; } }
+
+.item { display: flex; align-items: center; gap: 12px; padding: 12px 13px; border: 1px solid #2a3550; border-radius: 12px; background: #151d33; margin-bottom: 8px; }
+.item.off { opacity: .5; }
+.item .grow { flex: 1; min-width: 0; }
+.item .nm { font-size: 15px; font-weight: 600; }
+.item .meta { font-size: 12px; color: #718096; margin-top: 3px; }
+.item .acts { display: flex; gap: 6px; flex: none; }
+.item .acts button { padding: 7px 11px; font-size: 13px; border-radius: 8px; border: 1px solid #3a4060; background: #2d3550; color: #cbd5e0; cursor: pointer; font-family: inherit; }
+.item .acts button:hover { border-color: #4299e1; color: #fff; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ รหัสผ่าน ============ -->
+  <div id="scPin">
+    <div class="head">
+      <h1>⚙️ ตั้งค่าระบบเช็คอิน</h1>
+      <p>จัดการหน่วยงานและรายชื่อพนักงาน</p>
+    </div>
+    <div class="card">
+      <div class="q">รหัสผ่านผู้ดูแล</div>
+      <input type="password" id="inpPin" placeholder="รหัสผ่าน" autocomplete="current-password">
+      <div class="box err mt hide" id="pinErr"></div>
+      <button class="btn mt" id="btnPin">เข้าสู่ระบบ</button>
+    </div>
+  </div>
+
+  <!-- ============ หน้าหลัก ============ -->
+  <div id="scMain" class="hide">
+    <div class="head">
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <h1>⚙️ ตั้งค่าระบบเช็คอิน</h1>
+          <p><a href="dashboard.html">→ ไปหน้า Dashboard</a></p>
+        </div>
+        <button class="btn gray sm" id="btnReload">🔄</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button id="tabLoc" class="on">🏢 หน่วยงาน</button>
+      <button id="tabEmp">👤 พนักงาน</button>
+    </div>
+
+    <div class="box err hide" id="err"></div>
+    <div class="box ok hide" id="okMsg"></div>
+
+    <!-- ---------- หน่วยงาน ---------- -->
+    <div id="paneLoc">
+      <div class="card">
+        <div class="q" id="locFormTitle">เพิ่มหน่วยงานใหม่</div>
+
+        <div class="fldgrp">
+          <label class="fld">ชื่อหน่วยงาน / ลูกค้า <span style="color:#fc8181">*</span></label>
+          <input type="text" id="lName" placeholder="เช่น บริษัท เอบีซี จำกัด (สำนักงานใหญ่)">
+        </div>
+
+        <div class="fldgrp">
+          <label class="fld">ที่อยู่ / หมายเหตุ</label>
+          <input type="text" id="lAddr" placeholder="ไม่บังคับ">
+        </div>
+
+        <label class="fld">ปักหมุดตำแหน่ง <span style="color:#fc8181">*</span></label>
+        <div id="pickMap"></div>
+        <div class="hint mt">แตะบนแผนที่เพื่อปักหมุด หรือลากหมุดเพื่อปรับตำแหน่ง</div>
+
+        <div class="row mt">
+          <button class="btn ghost sm" id="btnHere" style="flex:1">📍 ใช้ตำแหน่งปัจจุบัน</button>
+          <button class="btn gray sm" id="btnPaste" style="flex:1">📋 วางพิกัดจาก Google Maps</button>
+        </div>
+
+        <div class="grid2 mt">
+          <div>
+            <label class="fld">ละติจูด</label>
+            <input type="text" id="lLat" inputmode="decimal" placeholder="13.756300">
+          </div>
+          <div>
+            <label class="fld">ลองจิจูด</label>
+            <input type="text" id="lLng" inputmode="decimal" placeholder="100.501800">
+          </div>
+        </div>
+
+        <div class="fldgrp mt">
+          <label class="fld">รัศมีที่อนุญาตให้เช็คอิน (เมตร)</label>
+          <input type="number" id="lRadius" value="200" min="20" max="20000" step="10">
+          <div class="hint mt">
+            แนะนำ: ออฟฟิศ/อาคารเดี่ยว 100-150 ม. · โรงงาน/ไซต์ใหญ่ 300-500 ม.<br>
+            เผื่อความคลาดเคลื่อนของ GPS ไว้อย่างน้อย 50 ม. เสมอ
+          </div>
+        </div>
+
+        <div class="row mt">
+          <button class="btn" id="btnSaveLoc" style="flex:2">บันทึกหน่วยงาน</button>
+          <button class="btn gray hide" id="btnCancelLoc" style="flex:1">ยกเลิก</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="q">รายการหน่วยงาน (<span id="locCount">0</span>)</div>
+        <input type="text" id="locFilter" placeholder="🔍 ค้นหา" autocomplete="off">
+        <div class="mt" id="locItems"></div>
+      </div>
+    </div>
+
+    <!-- ---------- พนักงาน ---------- -->
+    <div id="paneEmp" class="hide">
+      <div class="card">
+        <div class="q" id="empFormTitle">เพิ่มพนักงานใหม่</div>
+        <div class="grid2">
+          <div>
+            <label class="fld">รหัสพนักงาน <span style="color:#fc8181">*</span></label>
+            <input type="text" id="eCode" placeholder="เช่น 1001">
+          </div>
+          <div>
+            <label class="fld">ตำแหน่ง</label>
+            <input type="text" id="ePos" placeholder="ไม่บังคับ">
+          </div>
+        </div>
+        <div class="fldgrp mt">
+          <label class="fld">ชื่อ-นามสกุล <span style="color:#fc8181">*</span></label>
+          <input type="text" id="eName" placeholder="เช่น สมชาย ใจดี">
+        </div>
+        <div class="row mt">
+          <button class="btn" id="btnSaveEmp" style="flex:2">บันทึกพนักงาน</button>
+          <button class="btn gray hide" id="btnCancelEmp" style="flex:1">ยกเลิก</button>
+        </div>
+        <div class="hint mt">
+          ถ้ามีรายชื่อพนักงานอยู่แล้วในระบบเดิม แนะนำให้คัดลอกไปวางตรงๆ ในแท็บ
+          <b>Employees</b> ของ Google Sheet จะเร็วกว่ากรอกทีละคน
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="q">รายชื่อพนักงาน (<span id="empCount">0</span>)</div>
+        <input type="text" id="empFilter" placeholder="🔍 ค้นหาชื่อหรือรหัส" autocomplete="off">
+        <div class="mt" id="empItems"></div>
+      </div>
+    </div>
+
+    <div style="height:26px"></div>
+  </div>
+
+  <div class="loading hide" id="scLoad"><span class="spinner"></span> กำลังโหลด…</div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="config.js"></script>
+<script src="common.js"></script>
+<script>
+var A = { pin: '', locations: [], employees: [], editLocId: '', editEmpCode: '' };
+var pmap = null, marker = null, ring = null;
+
+function show(id) {
+  ['scPin', 'scMain', 'scLoad'].forEach(function (s) { document.getElementById(s).classList.add('hide'); });
+  document.getElementById(id).classList.remove('hide');
+}
+
+function msg(type, text) {
+  var e = document.getElementById('err'), o = document.getElementById('okMsg');
+  e.classList.add('hide'); o.classList.add('hide');
+  if (!text) return;
+  var el = (type === 'ok') ? o : e;
+  el.textContent = (type === 'ok' ? '✅ ' : '⚠️ ') + text;
+  el.classList.remove('hide');
+  window.scrollTo(0, 0);
+  if (type === 'ok') setTimeout(function () { el.classList.add('hide'); }, 4000);
+}
+
+// ===================== เข้าสู่ระบบ =====================
+document.getElementById('btnPin').onclick = function () { doLogin(document.getElementById('inpPin').value); };
+document.getElementById('inpPin').addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') doLogin(this.value);
+});
+
+var saved = store.get('dashPin', '');
+if (saved) doLogin(saved, true);
+
+function doLogin(pin, silent) {
+  if (!pin) return;
+  A.pin = pin;
+  show('scLoad');
+  load()
+    .then(function () { store.set('dashPin', pin); show('scMain'); initMap(); })
+    .catch(function (e) {
+      store.del('dashPin');
+      show('scPin');
+      if (!silent) {
+        var el = document.getElementById('pinErr');
+        el.textContent = '⚠️ ' + e.message;
+        el.classList.remove('hide');
+      }
+    });
+}
+
+function load() {
+  return apiGet({ action: 'adminLoad', pin: A.pin }).then(function (res) {
+    A.locations = res.locations || [];
+    A.employees = res.employees || [];
+    renderLocs();
+    renderEmps();
+  });
+}
+
+document.getElementById('btnReload').onclick = function () {
+  show('scLoad');
+  load().then(function () { show('scMain'); setTimeout(function () { pmap && pmap.invalidateSize(); }, 60); })
+        .catch(function (e) { show('scMain'); msg('err', e.message); });
+};
+
+// ===================== แท็บ =====================
+document.getElementById('tabLoc').onclick = function () { switchTab('Loc'); };
+document.getElementById('tabEmp').onclick = function () { switchTab('Emp'); };
+
+function switchTab(which) {
+  document.getElementById('tabLoc').classList.toggle('on', which === 'Loc');
+  document.getElementById('tabEmp').classList.toggle('on', which === 'Emp');
+  document.getElementById('paneLoc').classList.toggle('hide', which !== 'Loc');
+  document.getElementById('paneEmp').classList.toggle('hide', which !== 'Emp');
+  if (which === 'Loc') setTimeout(function () { pmap && pmap.invalidateSize(); }, 60);
+}
+
+// ===================== แผนที่ปักหมุด =====================
+function initMap() {
+  if (pmap) { setTimeout(function () { pmap.invalidateSize(); }, 60); return; }
+
+  pmap = L.map('pickMap').setView([13.7563, 100.5018], 12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19, attribution: '© OpenStreetMap'
+  }).addTo(pmap);
+
+  pmap.on('click', function (e) { setPin(e.latlng.lat, e.latlng.lng, false); });
+  setTimeout(function () { pmap.invalidateSize(); }, 120);
+}
+
+function setPin(lat, lng, recenter) {
+  document.getElementById('lLat').value = Number(lat).toFixed(6);
+  document.getElementById('lLng').value = Number(lng).toFixed(6);
+
+  if (!marker) {
+    marker = L.marker([lat, lng], { draggable: true }).addTo(pmap);
+    marker.on('drag', function (e) {
+      var p = e.target.getLatLng();
+      document.getElementById('lLat').value = p.lat.toFixed(6);
+      document.getElementById('lLng').value = p.lng.toFixed(6);
+      drawRing();
+    });
+  } else {
+    marker.setLatLng([lat, lng]);
+  }
+  if (recenter) pmap.setView([lat, lng], Math.max(pmap.getZoom(), 16));
+  drawRing();
+}
+
+function drawRing() {
+  var lat = parseFloat(document.getElementById('lLat').value);
+  var lng = parseFloat(document.getElementById('lLng').value);
+  var r   = parseInt(document.getElementById('lRadius').value, 10) || 200;
+  if (!isFinite(lat) || !isFinite(lng)) return;
+
+  if (ring) pmap.removeLayer(ring);
+  ring = L.circle([lat, lng], {
+    radius: r, color: '#38b2ac', weight: 2, dashArray: '5,5', fillOpacity: .1
+  }).addTo(pmap);
+}
+
+document.getElementById('lRadius').oninput = drawRing;
+document.getElementById('lLat').oninput = syncFromInputs;
+document.getElementById('lLng').oninput = syncFromInputs;
+
+function syncFromInputs() {
+  var lat = parseFloat(document.getElementById('lLat').value);
+  var lng = parseFloat(document.getElementById('lLng').value);
+  if (isFinite(lat) && isFinite(lng)) setPin(lat, lng, true);
+}
+
+document.getElementById('btnHere').onclick = function () {
+  var btn = this;
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> กำลังหาตำแหน่ง…';
+  Geo.start(function () {
+    if (Geo.fix) {
+      setPin(Geo.fix.lat, Geo.fix.lng, true);
+      msg('ok', 'ใช้ตำแหน่งปัจจุบันแล้ว (ความแม่นยำ ±' + Math.round(Geo.fix.acc) + ' ม.)');
+      Geo.stop();
+      btn.disabled = false; btn.textContent = '📍 ใช้ตำแหน่งปัจจุบัน';
+    } else if (Geo.error) {
+      msg('err', Geo.error.text + ' — ' + Geo.error.help);
+      Geo.stop();
+      btn.disabled = false; btn.textContent = '📍 ใช้ตำแหน่งปัจจุบัน';
+    }
+  });
+};
+
+document.getElementById('btnPaste').onclick = function () {
+  var s = prompt('วางพิกัดจาก Google Maps\n(คัดลอกจากช่องค้นหา เช่น 13.756331, 100.501765)');
+  if (!s) return;
+  var m = String(s).match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);
+  if (!m) return msg('err', 'อ่านพิกัดไม่ออก — ต้องเป็นรูปแบบ 13.756331, 100.501765');
+  setPin(parseFloat(m[1]), parseFloat(m[2]), true);
+  msg('ok', 'ปักหมุดตามพิกัดที่วางแล้ว');
+};
+
+// ===================== บันทึกหน่วยงาน =====================
+document.getElementById('btnSaveLoc').onclick = function () {
+  var btn = this;
+  msg('', '');
+
+  var body = {
+    action: 'adminSaveLocation',
+    pin: A.pin,
+    location: {
+      id:      A.editLocId,
+      name:    document.getElementById('lName').value.trim(),
+      address: document.getElementById('lAddr').value.trim(),
+      lat:     parseFloat(document.getElementById('lLat').value),
+      lng:     parseFloat(document.getElementById('lLng').value),
+      radius:  parseInt(document.getElementById('lRadius').value, 10)
+    }
+  };
+
+  if (!body.location.name)          return msg('err', 'กรุณากรอกชื่อหน่วยงาน');
+  if (!isFinite(body.location.lat)) return msg('err', 'กรุณาปักหมุดตำแหน่งบนแผนที่');
+
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> กำลังบันทึก…';
+  apiPost(body)
+    .then(function (res) {
+      A.locations = res.locations || [];
+      renderLocs();
+      resetLocForm();
+      msg('ok', 'บันทึกหน่วยงานเรียบร้อย (' + res.id + ')');
+    })
+    .catch(function (e) { msg('err', e.message); })
+    .then(function () { btn.disabled = false; btn.textContent = 'บันทึกหน่วยงาน'; });
+};
+
+document.getElementById('btnCancelLoc').onclick = resetLocForm;
+
+function resetLocForm() {
+  A.editLocId = '';
+  ['lName', 'lAddr', 'lLat', 'lLng'].forEach(function (id) { document.getElementById(id).value = ''; });
+  document.getElementById('lRadius').value = 200;
+  document.getElementById('locFormTitle').textContent = 'เพิ่มหน่วยงานใหม่';
+  document.getElementById('btnCancelLoc').classList.add('hide');
+  if (marker) { pmap.removeLayer(marker); marker = null; }
+  if (ring)   { pmap.removeLayer(ring);   ring = null; }
+}
+
+function editLoc(id) {
+  var l = A.locations.filter(function (x) { return x.id === id; })[0];
+  if (!l) return;
+  A.editLocId = id;
+  document.getElementById('lName').value   = l.name;
+  document.getElementById('lAddr').value   = l.address || '';
+  document.getElementById('lRadius').value = l.radius;
+  document.getElementById('locFormTitle').textContent = 'แก้ไข: ' + l.name;
+  document.getElementById('btnCancelLoc').classList.remove('hide');
+  setPin(l.lat, l.lng, true);
+  window.scrollTo(0, 0);
+}
+
+function toggleLoc(id) {
+  var l = A.locations.filter(function (x) { return x.id === id; })[0];
+  if (!l) return;
+
+  if (l.active) {
+    if (!confirm('ปิดการใช้งาน "' + l.name + '" ?\nพนักงานจะเช็คอินที่นี่ไม่ได้ แต่ประวัติเดิมยังอยู่ครบ')) return;
+    apiPost({ action: 'adminDeleteLocation', pin: A.pin, id: id })
+      .then(function (res) { A.locations = res.locations || []; renderLocs(); msg('ok', 'ปิดการใช้งานแล้ว'); })
+      .catch(function (e) { msg('err', e.message); });
+  } else {
+    apiPost({ action: 'adminSaveLocation', pin: A.pin,
+              location: { id: l.id, name: l.name, address: l.address, lat: l.lat, lng: l.lng, radius: l.radius, active: true } })
+      .then(function (res) { A.locations = res.locations || []; renderLocs(); msg('ok', 'เปิดใช้งานอีกครั้งแล้ว'); })
+      .catch(function (e) { msg('err', e.message); });
+  }
+}
+
+document.getElementById('locFilter').oninput = renderLocs;
+
+function renderLocs() {
+  var q = document.getElementById('locFilter').value.trim().toLowerCase();
+  var list = A.locations.filter(function (l) { return !q || l.name.toLowerCase().indexOf(q) >= 0; });
+
+  document.getElementById('locCount').textContent = A.locations.length;
+  var box = document.getElementById('locItems');
+
+  if (!list.length) {
+    box.innerHTML = '<div class="hint center" style="padding:18px">ยังไม่มีหน่วยงาน — เพิ่มด้านบนได้เลย</div>';
+    return;
+  }
+
+  box.innerHTML = list.map(function (l) {
+    return '<div class="item' + (l.active ? '' : ' off') + '">' +
+      '<div class="grow">' +
+        '<div class="nm">' + esc(l.name) + (l.active ? '' : ' <span class="tag">ปิดอยู่</span>') + '</div>' +
+        '<div class="meta">' + esc(l.id) + ' · รัศมี ' + l.radius + ' ม. · ' +
+          l.lat.toFixed(5) + ', ' + l.lng.toFixed(5) +
+          (l.address ? ' · ' + esc(l.address) : '') + '</div>' +
+      '</div>' +
+      '<div class="acts">' +
+        '<button onclick="editLoc(\'' + esc(l.id) + '\')">แก้ไข</button>' +
+        '<button onclick="toggleLoc(\'' + esc(l.id) + '\')">' + (l.active ? 'ปิด' : 'เปิด') + '</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// ===================== พนักงาน =====================
+document.getElementById('btnSaveEmp').onclick = function () {
+  var btn = this;
+  msg('', '');
+
+  var body = {
+    action: 'adminSaveEmployee',
+    pin: A.pin,
+    employee: {
+      code:     document.getElementById('eCode').value.trim(),
+      name:     document.getElementById('eName').value.trim(),
+      position: document.getElementById('ePos').value.trim()
+    }
+  };
+  if (!body.employee.code) return msg('err', 'กรุณากรอกรหัสพนักงาน');
+  if (!body.employee.name) return msg('err', 'กรุณากรอกชื่อ-นามสกุล');
+
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> กำลังบันทึก…';
+  apiPost(body)
+    .then(function (res) {
+      A.employees = res.employees || [];
+      renderEmps();
+      resetEmpForm();
+      msg('ok', 'บันทึกพนักงานเรียบร้อย');
+    })
+    .catch(function (e) { msg('err', e.message); })
+    .then(function () { btn.disabled = false; btn.textContent = 'บันทึกพนักงาน'; });
+};
+
+document.getElementById('btnCancelEmp').onclick = resetEmpForm;
+
+function resetEmpForm() {
+  A.editEmpCode = '';
+  ['eCode', 'eName', 'ePos'].forEach(function (id) { document.getElementById(id).value = ''; });
+  document.getElementById('eCode').disabled = false;
+  document.getElementById('empFormTitle').textContent = 'เพิ่มพนักงานใหม่';
+  document.getElementById('btnCancelEmp').classList.add('hide');
+}
+
+function editEmp(code) {
+  var e = A.employees.filter(function (x) { return x.code === code; })[0];
+  if (!e) return;
+  A.editEmpCode = code;
+  document.getElementById('eCode').value = e.code;
+  document.getElementById('eCode').disabled = true;
+  document.getElementById('eName').value = e.name;
+  document.getElementById('ePos').value  = e.position || '';
+  document.getElementById('empFormTitle').textContent = 'แก้ไข: ' + e.name;
+  document.getElementById('btnCancelEmp').classList.remove('hide');
+  window.scrollTo(0, 0);
+}
+
+function toggleEmp(code) {
+  var e = A.employees.filter(function (x) { return x.code === code; })[0];
+  if (!e) return;
+  if (e.active && !confirm('ระงับการใช้งานของ "' + e.name + '" ?')) return;
+
+  apiPost({ action: 'adminSaveEmployee', pin: A.pin,
+            employee: { code: e.code, name: e.name, position: e.position, active: !e.active } })
+    .then(function (res) {
+      A.employees = res.employees || [];
+      renderEmps();
+      msg('ok', e.active ? 'ระงับการใช้งานแล้ว' : 'เปิดใช้งานอีกครั้งแล้ว');
+    })
+    .catch(function (err) { msg('err', err.message); });
+}
+
+document.getElementById('empFilter').oninput = renderEmps;
+
+function renderEmps() {
+  var q = document.getElementById('empFilter').value.trim().toLowerCase();
+  var list = A.employees.filter(function (e) {
+    return !q || e.name.toLowerCase().indexOf(q) >= 0 || e.code.toLowerCase().indexOf(q) >= 0;
+  });
+
+  document.getElementById('empCount').textContent = A.employees.length;
+  var box = document.getElementById('empItems');
+
+  if (!list.length) {
+    box.innerHTML = '<div class="hint center" style="padding:18px">ยังไม่มีรายชื่อพนักงาน</div>';
+    return;
+  }
+
+  box.innerHTML = list.map(function (e) {
+    return '<div class="item' + (e.active ? '' : ' off') + '">' +
+      '<div class="grow">' +
+        '<div class="nm">' + esc(e.name) + (e.active ? '' : ' <span class="tag">พ้นสภาพ</span>') + '</div>' +
+        '<div class="meta">รหัส ' + esc(e.code) + (e.position ? ' · ' + esc(e.position) : '') + '</div>' +
+      '</div>' +
+      '<div class="acts">' +
+        '<button onclick="editEmp(\'' + esc(e.code) + '\')">แก้ไข</button>' +
+        '<button onclick="toggleEmp(\'' + esc(e.code) + '\')">' + (e.active ? 'ระงับ' : 'เปิด') + '</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+</script>
+</body>
+</html>
