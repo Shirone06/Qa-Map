@@ -22,7 +22,6 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
 .qa-btn.active{color:white;border-color:transparent}
 .qa-btn[data-qa="all"].active{background:#4a5568}
 .qa-btn[data-qa="Qa1"].active{background:#d69e2e}
-.qa-btn[data-qa="Qa2"].active{background:#38a169}
 .qa-btn[data-qa="Qa3"].active{background:#3182ce}
 .qa-btn[data-qa="Ecs"].active{background:#805ad5}
 .qa-btn[data-qa="แรงงาน"].active{background:#dd6b20}
@@ -179,10 +178,9 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
     <div class="dd-panel" id="ddQaPanel">
       <button class="qa-btn active" data-qa="all"     onclick="filterQA('all')">ทั้งหมด</button>
       <button class="qa-btn"        data-qa="Qa1"     onclick="filterQA('Qa1')">คุณจุ๊(สมใจ)</button>
-      <button class="qa-btn"        data-qa="Qa2"     onclick="filterQA('Qa2')">คุณกวาง(กชกร)</button>
       <button class="qa-btn"        data-qa="Qa3"     onclick="filterQA('Qa3')">คุณเอื้อง(ศิริกานต์)</button>
       <button class="qa-btn"        data-qa="Ecs"     onclick="filterQA('Ecs')">Ecs</button>
-      <button class="qa-btn"        data-qa="Qa4"     onclick="filterQA('Qa4')">คุณแทน(ณัฐกิจ)</button>
+      <button class="qa-btn"        data-qa="Qa4"     onclick="filterQA('Qa4')">คุณจา(จารุภัทร)</button>
       <button class="qa-btn"        data-qa="Qa5"     onclick="filterQA('Qa5')">Qa5</button>
       <button class="qa-btn"        data-qa="Qa6"     onclick="filterQA('Qa6')">คุณกาญ(หนูกาญ)</button>
       <button class="qa-btn"        data-qa="แรงงาน"  onclick="filterQA('แรงงาน')">แรงงาน</button>
@@ -223,11 +221,10 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
   <div class="legend">
     <h4>QA ผู้รับผิดชอบ</h4>
     <div class="leg-item"><div class="leg-dot" style="background:#d69e2e"></div>คุณจุ๊(สมใจ)</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#38a169"></div>คุณกวาง(กชกร)</div>
     <div class="leg-item"><div class="leg-dot" style="background:#3182ce"></div>คุณเอื้อง(ศิริกานต์)</div>
     <div class="leg-item"><div class="leg-dot" style="background:#805ad5"></div>Ecs</div>
     <div class="leg-item"><div class="leg-dot" style="background:#dd6b20"></div>แรงงาน</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#e53e3e"></div>คุณแทน(ณัฐกิจ)</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#e53e3e"></div>คุณจา(จารุภัทร)</div>
     <div class="leg-item"><div class="leg-dot" style="background:#d53f8c"></div>Qa5</div>
     <div class="leg-item"><div class="leg-dot" style="background:#00b5d8"></div>คุณกาญ(หนูกาญ)</div>
   </div>
@@ -239,7 +236,7 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
     <div class="form-row"><label>รหัส *</label><input type="text" id="a_code" placeholder="เช่น C999"></div>
     <div class="form-row"><label>ชื่อหน่วยงาน *</label><input type="text" id="a_name"></div>
     <div class="form-row"><label>QA *</label>
-      <select id="a_qa"><option value="Qa1">คุณจุ๊(สมใจ)</option><option value="Qa2">คุณกวาง(กชกร)</option><option value="Qa3">คุณเอื้อง(ศิริกานต์)</option><option value="Qa4">คุณแทน(ณัฐกิจ)</option><option value="Qa5">Qa5</option><option value="Qa6">คุณกาญ(หนูกาญ)</option><option value="Ecs">Ecs</option><option value="แรงงาน">แรงงาน</option></select></div>
+      <select id="a_qa"><option value="Qa1">คุณจุ๊(สมใจ)</option><option value="Qa3">คุณเอื้อง(ศิริกานต์)</option><option value="Qa4">คุณจา(จารุภัทร)</option><option value="Qa5">Qa5</option><option value="Qa6">คุณกาญ(หนูกาญ)</option><option value="Ecs">Ecs</option><option value="แรงงาน">แรงงาน</option></select></div>
     <div class="form-row"><label>จำนวนแม่บ้าน</label><input type="number" id="a_count" placeholder="0" min="0"></div>
     <div class="form-row"><label>Latitude *</label><input type="text" id="a_lat" placeholder="13.756000"><div class="hint">ตัวเลขแรกหลัง @ ใน Google Maps URL</div></div>
     <div class="form-row"><label>Longitude *</label><input type="text" id="a_lng" placeholder="100.548000"></div>
@@ -274,7 +271,7 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
     <div class="form-row"><label>รหัส</label><input type="text" id="e_code"></div>
     <div class="form-row"><label>ชื่อหน่วยงาน</label><input type="text" id="e_name"></div>
     <div class="form-row"><label>QA</label>
-      <select id="e_qa"><option value="Qa1">คุณจุ๊(สมใจ)</option><option value="Qa2">คุณกวาง(กชกร)</option><option value="Qa3">คุณเอื้อง(ศิริกานต์)</option><option value="Qa4">คุณแทน(ณัฐกิจ)</option><option value="Qa5">Qa5</option><option value="Qa6">คุณกาญ(หนูกาญ)</option><option value="Ecs">Ecs</option><option value="แรงงาน">แรงงาน</option></select></div>
+      <select id="e_qa"><option value="Qa1">คุณจุ๊(สมใจ)</option><option value="Qa3">คุณเอื้อง(ศิริกานต์)</option><option value="Qa4">คุณจา(จารุภัทร)</option><option value="Qa5">Qa5</option><option value="Qa6">คุณกาญ(หนูกาญ)</option><option value="Ecs">Ecs</option><option value="แรงงาน">แรงงาน</option></select></div>
     <div class="form-row"><label>จำนวนแม่บ้าน</label><input type="number" id="e_count" min="0"></div>
     <div class="form-row"><label>Latitude</label><input type="text" id="e_lat"><div class="hint">⚠️ แก้จะย้ายหมุด</div></div>
     <div class="form-row"><label>Longitude</label><input type="text" id="e_lng"></div>
@@ -310,9 +307,9 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
 <div class="save-indicator" id="saveInd">💾 บันทึกแล้ว</div>
 
 <script>
-const QA_COLOR   = {Qa1:"#d69e2e",Qa2:"#38a169",Qa3:"#3182ce",Ecs:"#805ad5","แรงงาน":"#dd6b20",Qa4:"#e53e3e",Qa5:"#d53f8c",Qa6:"#00b5d8"};
-const QA_CODE_BG = {Qa1:"#fefcbf",Qa2:"#f0fff4",Qa3:"#ebf8ff",Ecs:"#faf5ff","แรงงาน":"#fffaf0",Qa4:"#fff5f5",Qa5:"#fff0f6",Qa6:"#00b5d8"};
-const QA_LABEL   = {Qa1:"คุณจุ๊(สมใจ)",Qa2:"คุณกวาง(กชกร)",Qa3:"คุณเอื้อง(ศิริกานต์)",Qa4:"คุณแทน(ณัฐกิจ)",Qa6:"คุณกาญ(หนูกาญ)"};
+const QA_COLOR   = {Qa1:"#d69e2e",Qa3:"#3182ce",Ecs:"#805ad5","แรงงาน":"#dd6b20",Qa4:"#e53e3e",Qa5:"#d53f8c",Qa6:"#00b5d8"};
+const QA_CODE_BG = {Qa1:"#fefcbf",Qa3:"#ebf8ff",Ecs:"#faf5ff","แรงงาน":"#fffaf0",Qa4:"#fff5f5",Qa5:"#fff0f6",Qa6:"#00b5d8"};
+const QA_LABEL   = {Qa1:"คุณจุ๊(สมใจ)",Qa3:"คุณเอื้อง(ศิริกานต์)",Qa4:"คุณจา(จารุภัทร)",Qa6:"คุณกาญ(หนูกาญ)"};
 
 // ── ประกาศตัวแปรทั้งหมดไว้ด้านบนสุด เพื่อป้องกัน Error "before initialization" ──
 const searchIndex = [];
@@ -985,7 +982,7 @@ function exportPDF() {
   if (!rows.length) { showToast('⚠️ ไม่มีข้อมูล'); return; }
 
   // เรียงตามกลุ่ม QA แล้วตามรหัสแบบ natural (C2 มาก่อน C10)
-  const QA_ORDER = ['Qa1','Qa2','Qa3','Qa4','Qa5','Qa6','Ecs','แรงงาน'];
+  const QA_ORDER = ['Qa1','Qa3','Qa4','Qa5','Qa6','Ecs','แรงงาน'];
   const ord = q => { const i = QA_ORDER.indexOf(q); return i < 0 ? 99 : i; };
   rows.sort((a,b) => ord(a.qa) - ord(b.qa)
     || (a.qa||'').localeCompare(b.qa||'')
