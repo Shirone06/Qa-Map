@@ -311,6 +311,12 @@ const QA_COLOR   = {Qa1:"#d69e2e",Qa3:"#3182ce",Ecs:"#805ad5","แรงงา�
 const QA_CODE_BG = {Qa1:"#fefcbf",Qa3:"#ebf8ff",Ecs:"#faf5ff","แรงงาน":"#fffaf0",Qa4:"#fff5f5",Qa5:"#fff0f6",Qa6:"#00b5d8"};
 const QA_LABEL   = {Qa1:"คุณจุ๊(สมใจ)",Qa3:"คุณเอื้อง(ศิริกานต์)",Qa4:"คุณจา(จารุภัทร)",Qa6:"คุณกาญ(หนูกาญ)"};
 
+// หน่วยงาน Ecs ดูจากรหัสที่ขึ้นต้นด้วย E — ยังสังกัด QA เดิม แต่กรองด้วยปุ่ม Ecs ได้ด้วย
+function isEcs(u) { return /^E/i.test((u && u.code) || ''); }
+function qaTags(u) { const t = [u.qa]; if (isEcs(u) && u.qa !== 'Ecs') t.push('Ecs'); return t; }
+function qaListOf(d) { return d.units ? d.units.reduce((a, u) => a.concat(qaTags(u)), []) : qaTags(d); }
+function matchQA(u) { return activeQAs.has('all') || qaTags(u).some(q => activeQAs.has(q)); }
+
 // ── ประกาศตัวแปรทั้งหมดไว้ด้านบนสุด เพื่อป้องกัน Error "before initialization" ──
 const searchIndex = [];
 const markers = [];
@@ -387,11 +393,11 @@ function buildMarkers() {
     if (d.units) {
       m = L.marker([d.lat, d.lng], {icon: makeIconForData(d)});
       m.bindPopup('<div class="my-popup"><div class="pop-location">📍 ' + d.units.length + ' หน่วยงานในพิกัดนี้</div>' + d.units.map(u=>renderUnit(u,false)).join('') + '</div>', {maxWidth:320});
-      m._qaList = d.units.map(u => u.qa);
+      m._qaList = qaListOf(d);
     } else {
       m = L.marker([d.lat, d.lng], {icon: makeIconForData(d)});
       m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},d), true) + '</div>', {maxWidth:300});
-      m._qaList = [d.qa];
+      m._qaList = qaListOf(d);
     }
     m._raw = d;
     let _cnt = 0;
@@ -539,7 +545,7 @@ function refreshPopups(qa) {
   markers.forEach(m => {
     const d = m._raw;
     if (d.units) {
-      const vis = qa === 'all' ? d.units : d.units.filter(u => u.qa === qa);
+      const vis = qa === 'all' ? d.units : d.units.filter(u => qaTags(u).indexOf(qa) > -1);
       const pop = vis.length > 1
         ? '<div class="my-popup"><div class="pop-location">📍 ' + vis.length + ' หน่วยงานในพิกัดนี้</div>' + vis.map(u=>renderUnit(u,false)).join('') + '</div>'
         : '<div class="my-popup">' + renderUnit(vis[0]||d.units[0], false) + '</div>';
@@ -560,9 +566,9 @@ function updateCount() {
   vis.forEach(m => {
     const d = m._raw;
     if (d.units) {
-      d.units.forEach(u => { 
-        if (activeQAs.has('all') || activeQAs.has(u.qa)) {
-          total += parseInt(u.count) || 0; 
+      d.units.forEach(u => {
+        if (matchQA(u)) {
+          total += parseInt(u.count) || 0;
         }
       });
     } else {
@@ -723,7 +729,7 @@ function submitAdd() {
   DATA.push(entry);
   const m = L.marker([lat,lng],{icon:makeIconForData(entry)});
   m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},entry), true) + '</div>',{maxWidth:300});
-  m._raw=entry; m._qaList=[qa]; m._size=getSizeFromCount(entry.count); m.addTo(map); markers.push(m);
+  m._raw=entry; m._qaList=qaTags(entry); m._size=getSizeFromCount(entry.count); m.addTo(map); markers.push(m);
   rebuildSearchIndex();
   updateCount();
   document.getElementById('totalBadge').textContent = markers.length+' จุด';
@@ -817,12 +823,12 @@ function submitEdit() {
 
   if (ui === -1) {
     Object.assign(d, {code, name, qa, count, lat, lng, link}, extra);
-    m.setLatLng([lat,lng]); m.setIcon(makeIconForData(d)); m._qaList=[qa]; m._size=getSizeFromCount(d.count);
+    m.setLatLng([lat,lng]); m.setIcon(makeIconForData(d)); m._qaList=qaListOf(d); m._size=getSizeFromCount(d.count);
     m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},d), true) + '</div>', {maxWidth:300});
   } else {
     Object.assign(d.units[ui], {code, name, qa, count, link}, extra);
     d.lat=lat; d.lng=lng; m.setLatLng([lat,lng]);
-    m.setIcon(makeIconForData(d)); m._qaList=d.units.map(u=>u.qa);
+    m.setIcon(makeIconForData(d)); m._qaList=qaListOf(d);
     const pop = d.units.length > 1
       ? '<div class="my-popup"><div class="pop-location">📍 ' + d.units.length + ' หน่วยงาน</div>' + d.units.map(u=>renderUnit(u,false)).join('') + '</div>'
       : '<div class="my-popup">' + renderUnit(d.units[0], false) + '</div>';
@@ -881,7 +887,7 @@ function deleteUnit(mi, ui) {
     } else if (d.units.length === 1) {
       removeFbDoc(groupDocId);                 // ลบ doc กลุ่มเดิมทิ้ง
       const u = d.units[0]; Object.assign(d, u); delete d.units;
-      m.setIcon(makeIconForData(d)); m._qaList=[d.qa]; m._size=getSizeFromCount(d.count);
+      m.setIcon(makeIconForData(d)); m._qaList=qaListOf(d); m._size=getSizeFromCount(d.count);
       m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},d), true) + '</div>', {maxWidth:300});
       if (window._fbReady && window._setDoc && window._docRef) {
         const newKey = (d.code||'x').replace(/[^a-zA-Z0-9_-]/g,'_');
@@ -889,7 +895,7 @@ function deleteUnit(mi, ui) {
         window._setDoc(window._docRef('units', newKey), JSON.parse(JSON.stringify(d))).catch(e => console.warn(e));
       }
     } else {
-      m.setIcon(makeIconForData(d)); m._qaList=d.units.map(u=>u.qa);
+      m.setIcon(makeIconForData(d)); m._qaList=qaListOf(d);
       m.bindPopup('<div class="my-popup"><div class="pop-location">📍 ' + d.units.length + ' หน่วยงาน</div>' + d.units.map(u=>renderUnit(u,false)).join('') + '</div>', {maxWidth:320});
       if (window._fbReady && window._setDoc && window._docRef) {
         window._setDoc(window._docRef('units', groupDocId), JSON.parse(JSON.stringify(d))).catch(e => console.warn(e));
@@ -973,7 +979,7 @@ function exportPDF() {
   markers.forEach(m => {
     if (!map.hasLayer(m)) return;
     const d = m._raw;
-    const push = u => { if (activeQAs.has('all') || activeQAs.has(u.qa)) rows.push({
+    const push = u => { if (matchQA(u)) rows.push({
       code:u.code||'', name:u.name||'', qa:u.qa||'', count:u.count||0,
       supervisor:u.supervisor||'', supervisorPhone:u.supervisorPhone||'',
       clientName:u.clientName||'', clientPhone:u.clientPhone||'', clientEmail:u.clientEmail||'', contractStart:u.contractStart||'', contractEnd:u.contractEnd||'', note:u.note||'' }); };
