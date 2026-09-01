@@ -316,6 +316,11 @@ function isEcs(u) { return /^E/i.test((u && u.code) || ''); }
 function qaTags(u) { const t = [u.qa]; if (isEcs(u) && u.qa !== 'Ecs') t.push('Ecs'); return t; }
 function qaListOf(d) { return d.units ? d.units.reduce((a, u) => a.concat(qaTags(u)), []) : qaTags(d); }
 function matchQA(u) { return activeQAs.has('all') || qaTags(u).some(q => activeQAs.has(q)); }
+// ตัวกรองทำงานที่ระดับ "หน่วยงาน" ไม่ใช่ระดับหมุด — หมุดซ้อนจะโผล่ถ้ามีหน่วยไหนตรงตัวกรอง
+function matchSize(u) { return activeSizes.has('all') || activeSizes.has(getSizeFromCount(u.count)); }
+function matchUnit(u) { return matchQA(u) && matchSize(u); }
+function visibleUnits(d) { return d.units ? d.units.filter(matchUnit) : (matchUnit(d) ? [d] : []); }
+function markerVisible(m) { return visibleUnits(m._raw).length > 0; }
 
 // ── ประกาศตัวแปรทั้งหมดไว้ด้านบนสุด เพื่อป้องกัน Error "before initialization" ──
 const searchIndex = [];
@@ -519,11 +524,8 @@ function filterSize(size) {
     if (b.dataset.size === 'all') b.classList.toggle('active', activeSizes.has('all'));
     else b.classList.toggle('active', !activeSizes.has('all') && activeSizes.has(b.dataset.size));
   });
-  markers.forEach(m => {
-    const qaOk   = activeQAs.has('all') || m._qaList.some(q => activeQAs.has(q));
-    const sizeOk = activeSizes.has('all') || activeSizes.has(m._size);
-    qaOk && sizeOk ? m.addTo(map) : map.removeLayer(m);
-  });
+  markers.forEach(m => markerVisible(m) ? m.addTo(map) : map.removeLayer(m));
+  refreshPopups();
   updateCount();
   updateFilterLabels();
 }
@@ -540,13 +542,8 @@ function filterQA(qa) {
     if (b.dataset.qa === 'all') b.classList.toggle('active', activeQAs.has('all'));
     else b.classList.toggle('active', !activeQAs.has('all') && activeQAs.has(b.dataset.qa));
   });
-  markers.forEach(m => {
-    const qaOk   = activeQAs.has('all') || m._qaList.some(q => activeQAs.has(q));
-    const sizeOk = activeSizes.has('all') || activeSizes.has(m._size);
-    qaOk && sizeOk ? m.addTo(map) : map.removeLayer(m);
-  });
-  const fqa = activeQAs.has('all') || activeQAs.size > 1 ? 'all' : [...activeQAs][0];
-  refreshPopups(fqa);
+  markers.forEach(m => markerVisible(m) ? m.addTo(map) : map.removeLayer(m));
+  refreshPopups();
   updateCount();
   updateFilterLabels();
 }
@@ -584,11 +581,11 @@ document.addEventListener('click', e => {
 });
 updateFilterLabels();
 
-function refreshPopups(qa) {
+function refreshPopups() {
   markers.forEach(m => {
     const d = m._raw;
     if (d.units) {
-      const vis = qa === 'all' ? d.units : d.units.filter(u => qaTags(u).indexOf(qa) > -1);
+      const vis = visibleUnits(d).length ? visibleUnits(d) : d.units;   // หมุดที่ถูกซ่อนอยู่ ให้คงป็อปอัปเต็มไว้
       const pop = vis.length > 1
         ? '<div class="my-popup"><div class="pop-location">📍 ' + vis.length + ' หน่วยงานในพิกัดนี้</div>' + vis.map(u=>renderUnit(u,false)).join('') + '</div>'
         : '<div class="my-popup">' + renderUnit(vis[0]||d.units[0], false) + '</div>';
@@ -606,18 +603,7 @@ function updateCount() {
   document.getElementById('cnt').textContent = vis.length;
   let total = 0;
   
-  vis.forEach(m => {
-    const d = m._raw;
-    if (d.units) {
-      d.units.forEach(u => {
-        if (matchQA(u)) {
-          total += parseInt(u.count) || 0;
-        }
-      });
-    } else {
-      total += parseInt(d.count) || 0;
-    }
-  });
+  vis.forEach(m => visibleUnits(m._raw).forEach(u => { total += parseInt(u.count) || 0; }));
   
   document.getElementById('staffCnt').textContent = total.toLocaleString();
 }
@@ -1049,7 +1035,7 @@ function exportPDF() {
   markers.forEach(m => {
     if (!map.hasLayer(m)) return;
     const d = m._raw;
-    const push = u => { if (matchQA(u)) rows.push({
+    const push = u => { if (matchUnit(u)) rows.push({
       code:u.code||'', name:u.name||'', qa:u.qa||'', count:u.count||0,
       supervisor:u.supervisor||'', supervisorPhone:u.supervisorPhone||'',
       clientName:u.clientName||'', clientPhone:u.clientPhone||'', clientEmail:u.clientEmail||'', contractStart:u.contractStart||'', contractEnd:u.contractEnd||'', note:u.note||'' }); };
