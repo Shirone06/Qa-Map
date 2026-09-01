@@ -383,7 +383,50 @@ function renderUnit(u, showCoords) {
     + '</div>';
 }
 
+// หมุดที่เก็บแบบ "ซ้อน" แต่มีหน่วยงานเดียว → ทำให้เป็นหมุดเดี่ยวปกติ (ใช้ doc id เดิม ไม่เกิด doc กำพร้า)
+function normalizeData() {
+  DATA.forEach(d => {
+    if (!d.units) return;
+    if (!d.units.length) { delete d.units; return; }
+    if (d.units.length === 1) {
+      const u = d.units[0];
+      delete d.units;
+      Object.assign(d, u);            // u ไม่มี lat/lng → พิกัดเดิมของหมุดยังอยู่
+    }
+  });
+}
+
+// ตั้งค่าไอคอน/ป็อปอัป/แท็ก/ขนาด ของหมุดใหม่ตามข้อมูลล่าสุดใน m._raw
+function refreshMarker(m) {
+  const d = m._raw;
+  let cnt = 0;
+  if (d.units) d.units.forEach(u => cnt += (u.count||0)); else cnt = d.count||0;
+  m.setLatLng([d.lat, d.lng]);
+  m.setIcon(makeIconForData(d));
+  m._qaList = qaListOf(d);
+  m._size   = getSizeFromCount(cnt);
+  if (d.units) {
+    m.bindPopup('<div class="my-popup"><div class="pop-location">📍 ' + d.units.length + ' หน่วยงานในพิกัดนี้</div>' + d.units.map(u=>renderUnit(u,false)).join('') + '</div>', {maxWidth:320});
+  } else {
+    m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},d), true) + '</div>', {maxWidth:300});
+  }
+}
+
+// บันทึกหมุดลง Firestore (ใช้ doc id เดิมถ้ามี กันสร้าง doc ซ้ำ)
+function saveDoc(d) {
+  if (!(window._fbReady && window._setDoc && window._docRef)) return;
+  const key = d._docId || (d.units
+    ? 'multi_' + String(d.lat).replace(/[^0-9]/g,'') + String(d.lng).replace(/[^0-9]/g,'')
+    : (d.code||'x').replace(/[^a-zA-Z0-9_-]/g,'_'));
+  d._docId = key;
+  const payload = JSON.parse(JSON.stringify(d));
+  delete payload._docId;
+  window._setDoc(window._docRef('units', key), payload).catch(e => console.warn(e));
+}
+
 function buildMarkers() {
+  normalizeData();
+
   // ลบ marker เก่าออกก่อน
   markers.forEach(m => { try { map.removeLayer(m); } catch(e){} });
   markers.length = 0;
@@ -825,6 +868,40 @@ function submitEdit() {
     Object.assign(d, {code, name, qa, count, lat, lng, link}, extra);
     m.setLatLng([lat,lng]); m.setIcon(makeIconForData(d)); m._qaList=qaListOf(d); m._size=getSizeFromCount(d.count);
     m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},d), true) + '</div>', {maxWidth:300});
+  } else if (d.units.length > 1 && (lat !== d.lat || lng !== d.lng)) {
+    // ── ย้ายพิกัดหน่วยเดียวที่อยู่ในหมุดซ้อน → แยกออกมาเป็นหมุดใหม่ หน่วยที่เหลืออยู่ที่เดิม ──
+    const entry = Object.assign({}, d.units[ui], {code, name, qa, count, lat, lng, link}, extra);
+    delete entry._docId;
+    d.units.splice(ui, 1);
+
+    const groupDocId = d._docId || ('multi_' + String(d.lat).replace(/[^0-9]/g,'') + String(d.lng).replace(/[^0-9]/g,''));
+    if (d.units.length === 1) {
+      // เหลือหน่วยเดียว → กลายเป็นหมุดเดี่ยว ต้องลบ doc กลุ่มเดิมทิ้งแล้วเขียน doc ใหม่
+      Object.assign(d, d.units[0]);
+      delete d.units;
+      delete d._docId;
+      if (window._deleteDoc && window._docRef) window._deleteDoc(window._docRef('units', groupDocId)).catch(e => console.warn(e));
+    }
+    refreshMarker(m);
+    saveDoc(d);
+
+    const nm = L.marker([lat, lng]);
+    nm._raw = entry;
+    refreshMarker(nm);
+    nm.addTo(map);
+    markers.push(nm);
+    DATA.push(entry);
+    saveDoc(entry);
+
+    rebuildSearchIndex();
+    updateCount();
+    document.getElementById('totalBadge').textContent = markers.length + ' จุด';
+    closeModal('editDetailModal');
+    map.setView([lat, lng], 15, {animate:true});
+    setTimeout(() => nm.openPopup(), 400);
+    saveData();
+    showToast('📍 แยก ' + code + ' ออกเป็นหมุดใหม่แล้ว');
+    return;
   } else {
     Object.assign(d.units[ui], {code, name, qa, count, link}, extra);
     d.lat=lat; d.lng=lng; m.setLatLng([lat,lng]);
@@ -835,14 +912,7 @@ function submitEdit() {
     m.bindPopup(pop, {maxWidth:320});
   }
 
-  if (window._fbReady && window._setDoc && window._docRef) {
-    // เขียนทับ document id เดิม (ใช้ id จริงจาก Firestore กันคีย์คำนวณไม่ตรง → ไม่เกิด doc กำพร้า)
-    const key = d._docId || (d.units
-      ? 'multi_' + String(d.lat).replace(/[^0-9]/g,'') + String(d.lng).replace(/[^0-9]/g,'')
-      : (d.code||'x').replace(/[^a-zA-Z0-9_-]/g,'_'));
-    d._docId = key;
-    window._setDoc(window._docRef('units', key), JSON.parse(JSON.stringify(d))).catch(e => console.warn(e));
-  }
+  saveDoc(d);
 
   rebuildSearchIndex();
   closeModal('editDetailModal');
