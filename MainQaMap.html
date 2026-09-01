@@ -226,7 +226,7 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
   <button class="login-btn" id="loginBtn" onclick="openLoginModal()">🔓 เข้าสู่ระบบ</button>
   <span class="user-box" id="userBox" style="display:none">👤 <b id="userEmail"></b><button class="logout-btn" onclick="doLogout()">ออก</button></span>
   </div>
-  <div class="stat">แสดง <span id="cnt">—</span> หมุด  |  🧹 <span id="staffCnt">—</span> คน</div>
+  <div class="stat">แสดง <span id="cnt">—</span> หน่วยงาน  |  🧹 <span id="staffCnt">—</span> คน</div>
 </div>
 <div id="loadingOverlay" style="position:fixed;inset:0;background:#0f1623;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px"><div style="font-size:32px">🔥</div><div style="color:#4299e1;font-size:15px;font-family:Sarabun,sans-serif;font-weight:700">กำลังโหลดข้อมูล...</div></div>
 <div class="map-wrap">
@@ -637,11 +637,11 @@ function refreshPopups() {
 
 function updateCount() {
   const vis = markers.filter(m => map.hasLayer(m));
-  document.getElementById('cnt').textContent = vis.length;
-  let total = 0;
-  
-  vis.forEach(m => visibleUnits(m._raw).forEach(u => { total += parseInt(u.count) || 0; }));
-  
+  let units = 0, total = 0;
+
+  vis.forEach(m => visibleUnits(m._raw).forEach(u => { units++; total += parseInt(u.count) || 0; }));
+
+  document.getElementById('cnt').textContent      = units.toLocaleString();
   document.getElementById('staffCnt').textContent = total.toLocaleString();
 }
 
