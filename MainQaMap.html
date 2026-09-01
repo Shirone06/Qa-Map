@@ -69,6 +69,19 @@ html,body{height:100%;font-family:'Sarabun',sans-serif;background:#0f1623;color:
 .pop-location{font-size:12px;font-weight:700;color:#4299e1;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #e2e8f0}
 .pop-unit{padding:8px 0;border-bottom:1px solid #f0f0f0}
 .pop-unit:last-child{border-bottom:none;padding-bottom:0}
+/* หมุดที่มีหลายหน่วยงาน → การ์ดเลื่อนทีละใบ (ปัดนิ้วบนมือถือ / กดปุ่มบนคอม) */
+.pop-location{display:flex;align-items:center;gap:6px}
+.pop-idx{margin-left:auto;font-size:11px;font-weight:700;color:#a0aec0;white-space:nowrap}
+.pop-track{display:flex;width:264px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+.pop-track::-webkit-scrollbar{display:none}
+.pop-track>.pop-unit{flex:0 0 100%;scroll-snap-align:start;border-bottom:none;padding:0 1px 2px}
+.pop-nav{display:flex;align-items:center;gap:8px;margin-top:8px;padding-top:8px;border-top:1px solid #e2e8f0}
+.pop-nav button{width:24px;height:24px;flex:0 0 auto;border-radius:50%;border:1px solid #cbd5e0;background:#fff;color:#2b6cb0;font-family:'Sarabun',sans-serif;font-size:15px;line-height:1;cursor:pointer;padding:0}
+.pop-nav button:hover:not(:disabled){background:#ebf8ff;border-color:#4299e1}
+.pop-nav button:disabled{opacity:.3;cursor:default}
+.pop-dots{display:flex;flex:1;justify-content:center;align-items:center;gap:6px;flex-wrap:wrap}
+.pop-dot{width:7px;height:7px;border-radius:50%;background:#cbd5e0;cursor:pointer;transition:background .15s}
+.pop-dot.on{background:#4299e1}
 .pop-code{display:inline-block;font-size:11px;font-weight:700;padding:2px 10px;border-radius:20px;margin-bottom:6px}
 .pop-name{font-size:14px;font-weight:700;color:#1a202c;margin-bottom:6px}
 .pop-row{font-size:12px;color:#4a5568;margin-bottom:3px}
@@ -401,6 +414,53 @@ function normalizeData() {
   });
 }
 
+// สร้าง HTML ป็อปอัป — หลายหน่วยงานในหมุดเดียวจะกลายเป็นการ์ดเลื่อนทีละใบ
+function popupHTML(d, units) {
+  const list = (units && units.length) ? units : (d.units || [d]);
+  const solo = !d.units;
+  if (list.length === 1) return '<div class="my-popup">' + renderUnit(solo ? Object.assign({}, d) : list[0], solo) + '</div>';
+  const dots = list.length <= 8
+    ? list.map((u, i) => '<span class="pop-dot' + (i ? '' : ' on') + '"></span>').join('')
+    : '';
+  return '<div class="my-popup">'
+    + '<div class="pop-location">📍 ' + list.length + ' หน่วยงานในพิกัดนี้<span class="pop-idx">1/' + list.length + '</span></div>'
+    + '<div class="pop-track">' + list.map(u => renderUnit(u, false)).join('') + '</div>'
+    + '<div class="pop-nav"><button class="pop-prev" type="button" title="ก่อนหน้า">‹</button>'
+    + '<span class="pop-dots">' + dots + '</span>'
+    + '<button class="pop-next" type="button" title="ถัดไป">›</button></div>'
+    + '</div>';
+}
+
+// ผูกปุ่ม ‹ › และจุดบอกตำแหน่งเข้ากับแถบเลื่อน (การปัดนิ้วใช้ scroll-snap ของเบราว์เซอร์เอง)
+function wireCarousel(el) {
+  const track = el.querySelector('.pop-track');
+  if (!track || track.dataset.wired) return;
+  track.dataset.wired = '1';
+  const cards = track.querySelectorAll('.pop-unit');
+  const idxEl = el.querySelector('.pop-idx');
+  const prev  = el.querySelector('.pop-prev');
+  const next  = el.querySelector('.pop-next');
+  const dots  = el.querySelectorAll('.pop-dot');
+  const at = () => Math.round(track.scrollLeft / track.clientWidth);
+  const sync = i => {
+    if (i == null) i = at();
+    if (idxEl) idxEl.textContent = (i + 1) + '/' + cards.length;
+    if (prev) prev.disabled = i <= 0;
+    if (next) next.disabled = i >= cards.length - 1;
+    dots.forEach((dot, j) => dot.classList.toggle('on', j === i));
+  };
+  const go = i => {
+    i = Math.max(0, Math.min(cards.length - 1, i));
+    track.scrollLeft = i * track.clientWidth;      // ใช้ scrollLeft ตรงๆ (scrollTo behavior:smooth บางเบราว์เซอร์ไม่ทำงานคู่ scroll-snap)
+    sync(i);
+  };
+  track.addEventListener('scroll', () => sync());
+  if (prev) prev.addEventListener('click', () => go(at() - 1));
+  if (next) next.addEventListener('click', () => go(at() + 1));
+  dots.forEach((dot, j) => dot.addEventListener('click', () => go(j)));
+  sync();
+}
+
 // ตั้งค่าไอคอน/ป็อปอัป/แท็ก/ขนาด ของหมุดใหม่ตามข้อมูลล่าสุดใน m._raw
 function refreshMarker(m) {
   const d = m._raw;
@@ -410,11 +470,7 @@ function refreshMarker(m) {
   m.setIcon(makeIconForData(d));
   m._qaList = qaListOf(d);
   m._size   = getSizeFromCount(cnt);
-  if (d.units) {
-    m.bindPopup('<div class="my-popup"><div class="pop-location">📍 ' + d.units.length + ' หน่วยงานในพิกัดนี้</div>' + d.units.map(u=>renderUnit(u,false)).join('') + '</div>', {maxWidth:320});
-  } else {
-    m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},d), true) + '</div>', {maxWidth:300});
-  }
+  m.bindPopup(popupHTML(d), {maxWidth: d.units ? 320 : 300});
 }
 
 // บันทึกหมุดลง Firestore (ใช้ doc id เดิมถ้ามี กันสร้าง doc ซ้ำ)
@@ -437,20 +493,9 @@ function buildMarkers() {
   markers.length = 0;
 
   DATA.forEach(d => {
-    let m;
-    if (d.units) {
-      m = L.marker([d.lat, d.lng], {icon: makeIconForData(d)});
-      m.bindPopup('<div class="my-popup"><div class="pop-location">📍 ' + d.units.length + ' หน่วยงานในพิกัดนี้</div>' + d.units.map(u=>renderUnit(u,false)).join('') + '</div>', {maxWidth:320});
-      m._qaList = qaListOf(d);
-    } else {
-      m = L.marker([d.lat, d.lng], {icon: makeIconForData(d)});
-      m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},d), true) + '</div>', {maxWidth:300});
-      m._qaList = qaListOf(d);
-    }
+    const m = L.marker([d.lat, d.lng]);
     m._raw = d;
-    let _cnt = 0;
-    if (d.units) d.units.forEach(u => _cnt += (u.count||0)); else _cnt = d.count||0;
-    m._size = getSizeFromCount(_cnt);
+    refreshMarker(m);
     m.addTo(map);
     markers.push(m);
   });
@@ -468,12 +513,13 @@ window.rebuildMarkers = buildMarkers;
 
 // ── เพิ่มปุ่ม แก้ไข/ลบ เข้าไปในป็อปอัปของหมุด (แก้ข้อมูลตรงหมุดได้เลย) ──
 map.on('popupopen', function(e) {
+  const el = e.popup.getElement();
+  if (!el) return;
+  wireCarousel(el);                               // แถบเลื่อนใช้ได้ทุกคน
   if (!window._isEditor) return;                  // ดูอย่างเดียว ไม่ต้องมีปุ่มแก้/ลบ
   const marker = e.popup._source;
   if (!marker || !marker._raw) return;
   const d = marker._raw;
-  const el = e.popup.getElement();
-  if (!el) return;
   el.querySelectorAll('.pop-unit').forEach(unitEl => {
     if (unitEl.querySelector('.pop-edit-actions')) return;          // กันเพิ่มซ้ำ
     const codeEl = unitEl.querySelector('.pop-code');
@@ -584,17 +630,8 @@ updateFilterLabels();
 function refreshPopups() {
   markers.forEach(m => {
     const d = m._raw;
-    if (d.units) {
-      const vis = visibleUnits(d).length ? visibleUnits(d) : d.units;   // หมุดที่ถูกซ่อนอยู่ ให้คงป็อปอัปเต็มไว้
-      const pop = vis.length > 1
-        ? '<div class="my-popup"><div class="pop-location">📍 ' + vis.length + ' หน่วยงานในพิกัดนี้</div>' + vis.map(u=>renderUnit(u,false)).join('') + '</div>'
-        : '<div class="my-popup">' + renderUnit(vis[0]||d.units[0], false) + '</div>';
-      m.bindPopup(pop, {maxWidth:320});
-      m.setIcon(makeIconForData(d));
-    } else {
-      m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},d), true) + '</div>', {maxWidth:300});
-      m.setIcon(makeIconForData(d));
-    }
+    m.bindPopup(popupHTML(d, visibleUnits(d)), {maxWidth: d.units ? 320 : 300});   // หมุดที่ถูกซ่อนอยู่ ให้คงป็อปอัปเต็มไว้
+    m.setIcon(makeIconForData(d));
   });
 }
 
@@ -756,9 +793,8 @@ function submitAdd() {
   if (!code||!name||isNaN(lat)||isNaN(lng)) { showToast('⚠️ กรอก รหัส ชื่อ Lat Lng ให้ครบ'); return; }
   const entry = Object.assign({qa,code,name,count,lat,lng,link}, getExtra('a'));
   DATA.push(entry);
-  const m = L.marker([lat,lng],{icon:makeIconForData(entry)});
-  m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},entry), true) + '</div>',{maxWidth:300});
-  m._raw=entry; m._qaList=qaTags(entry); m._size=getSizeFromCount(entry.count); m.addTo(map); markers.push(m);
+  const m = L.marker([lat,lng]);
+  m._raw = entry; refreshMarker(m); m.addTo(map); markers.push(m);
   rebuildSearchIndex();
   updateCount();
   document.getElementById('totalBadge').textContent = markers.length+' จุด';
@@ -852,8 +888,7 @@ function submitEdit() {
 
   if (ui === -1) {
     Object.assign(d, {code, name, qa, count, lat, lng, link}, extra);
-    m.setLatLng([lat,lng]); m.setIcon(makeIconForData(d)); m._qaList=qaListOf(d); m._size=getSizeFromCount(d.count);
-    m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},d), true) + '</div>', {maxWidth:300});
+    refreshMarker(m);
   } else if (d.units.length > 1 && (lat !== d.lat || lng !== d.lng)) {
     // ── ย้ายพิกัดหน่วยเดียวที่อยู่ในหมุดซ้อน → แยกออกมาเป็นหมุดใหม่ หน่วยที่เหลืออยู่ที่เดิม ──
     const entry = Object.assign({}, d.units[ui], {code, name, qa, count, lat, lng, link}, extra);
@@ -890,12 +925,8 @@ function submitEdit() {
     return;
   } else {
     Object.assign(d.units[ui], {code, name, qa, count, link}, extra);
-    d.lat=lat; d.lng=lng; m.setLatLng([lat,lng]);
-    m.setIcon(makeIconForData(d)); m._qaList=qaListOf(d);
-    const pop = d.units.length > 1
-      ? '<div class="my-popup"><div class="pop-location">📍 ' + d.units.length + ' หน่วยงาน</div>' + d.units.map(u=>renderUnit(u,false)).join('') + '</div>'
-      : '<div class="my-popup">' + renderUnit(d.units[0], false) + '</div>';
-    m.bindPopup(pop, {maxWidth:320});
+    d.lat=lat; d.lng=lng;
+    refreshMarker(m);
   }
 
   saveDoc(d);
@@ -943,16 +974,14 @@ function deleteUnit(mi, ui) {
     } else if (d.units.length === 1) {
       removeFbDoc(groupDocId);                 // ลบ doc กลุ่มเดิมทิ้ง
       const u = d.units[0]; Object.assign(d, u); delete d.units;
-      m.setIcon(makeIconForData(d)); m._qaList=qaListOf(d); m._size=getSizeFromCount(d.count);
-      m.bindPopup('<div class="my-popup">' + renderUnit(Object.assign({},d), true) + '</div>', {maxWidth:300});
+      refreshMarker(m);
       if (window._fbReady && window._setDoc && window._docRef) {
         const newKey = (d.code||'x').replace(/[^a-zA-Z0-9_-]/g,'_');
         d._docId = newKey;                     // กลายเป็นหมุดเดี่ยว ใช้ id ใหม่
         window._setDoc(window._docRef('units', newKey), JSON.parse(JSON.stringify(d))).catch(e => console.warn(e));
       }
     } else {
-      m.setIcon(makeIconForData(d)); m._qaList=qaListOf(d);
-      m.bindPopup('<div class="my-popup"><div class="pop-location">📍 ' + d.units.length + ' หน่วยงาน</div>' + d.units.map(u=>renderUnit(u,false)).join('') + '</div>', {maxWidth:320});
+      refreshMarker(m);
       if (window._fbReady && window._setDoc && window._docRef) {
         window._setDoc(window._docRef('units', groupDocId), JSON.parse(JSON.stringify(d))).catch(e => console.warn(e));
       }
